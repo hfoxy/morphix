@@ -55,18 +55,26 @@ public class ArrayMapper<T> extends FieldMapper<T> {
 
         list = origin;
         Object array = Array.newInstance(type, dimensions);
-        array(array, list);
+        array(array, list, sizes);
 
         return array;
     }
 
-    public Object array(Object array, BasicDBList list) {
+    public Object array(Object array, BasicDBList list, int[] sizes) {
+        int[] updated = new int[sizes.length - 1];
+        for (int j = 1; j < sizes.length; j++) {
+            updated[j - 1] = sizes[j];
+        }
+
+        sizes = updated;
+
         for (int i = 0; i < list.size(); i++) {
             Object entry = list.get(i);
 
             Object value;
             if (entry instanceof BasicDBList) {
-                value = array(Array.get(array, i), (BasicDBList) entry);
+                BasicDBList entryList = (BasicDBList) entry;
+                value = array(Array.newInstance(type, sizes), entryList, sizes);
             } else {
                 value = mapper.marshal(entry);
             }
