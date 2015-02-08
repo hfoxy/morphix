@@ -11,13 +11,23 @@ public class EnumMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public T marshal(Object obj) {
-        return null;
+    @SuppressWarnings("unchecked")
+    public Object marshal(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+
+        Class<? extends Enum> cls = (Class<? extends Enum>) type;
+        return Enum.valueOf(cls, (String) obj);
     }
 
     @Override
     public Object unmarshal(Object obj) {
-        return null;
+        if (obj == null) {
+            return null;
+        }
+
+        return ((Enum) obj).name();
     }
 
 }
