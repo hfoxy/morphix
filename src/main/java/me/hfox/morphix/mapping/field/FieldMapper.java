@@ -3,7 +3,7 @@ package me.hfox.morphix.mapping.field;
 import com.mongodb.DBObject;
 import me.hfox.morphix.Morphix;
 import me.hfox.morphix.annotation.Entity;
-import me.hfox.morphix.helper.AnnotationHelper;
+import me.hfox.morphix.util.AnnotationUtils;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -40,7 +40,7 @@ public abstract class FieldMapper<T> {
     protected void discover() {
         if (field != null) {
             field.setAccessible(true);
-            fieldName = AnnotationHelper.getFieldName(field);
+            fieldName = AnnotationUtils.getFieldName(field);
         }
     }
 
@@ -79,7 +79,7 @@ public abstract class FieldMapper<T> {
             return (FieldMapper<T>) new CollectionMapper(parent, field, morphix);
         } else if (type.isArray()) {
             return new ArrayMapper<>(type, parent, field, morphix);
-        } else if (AnnotationHelper.getHierarchicalAnnotation(type, Entity.class) != null) {
+        } else if (AnnotationUtils.getHierarchicalAnnotation(type, Entity.class) != null) {
             return new EntityMapper<>(type, parent, field, morphix);
         } else {
             return new ObjectMapper<>(type, parent, field, morphix);

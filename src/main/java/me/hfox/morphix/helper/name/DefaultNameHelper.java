@@ -7,6 +7,10 @@ public class DefaultNameHelper implements NameHelper {
 
     private Morphix morphix;
 
+    public DefaultNameHelper(Morphix morphix) {
+        this.morphix = morphix;
+    }
+
     @Override
     public String generate(Class<?> clazz) {
         String name = clazz.getSimpleName();
