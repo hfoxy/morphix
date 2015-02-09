@@ -24,6 +24,11 @@ public class CollectionMapper extends FieldMapper<Collection> {
         this.type = ((ParameterizedType) parent.type).getActualTypeArguments()[0];
     }
 
+    public CollectionMapper(MapMapper parent, ParameterizedType type) {
+        super(Collection.class, parent.parent, null, parent.morphix);
+        this.type = type.getActualTypeArguments()[0];
+    }
+
     @Override
     protected void discover() {
         super.discover();
@@ -34,16 +39,16 @@ public class CollectionMapper extends FieldMapper<Collection> {
         mapper = null;
         if (type instanceof Class) {
             Class<?> cls = (Class) type;
-            if (Collection.class.isAssignableFrom(cls)) {
-                mapper = new CollectionMapper(this);
-            } else {
-                mapper = FieldMapper.create(cls, parent, null, morphix);
-            }
+            mapper = FieldMapper.create(cls, parent, null, morphix);
         } else if (type instanceof ParameterizedType) {
             ParameterizedType param = (ParameterizedType) type;
-            Class<?> cls = (Class) param.getRawType();
-            if (Map.class.isAssignableFrom(cls)) {
-                mapper = new MapMapper(this);
+            if (param.getRawType() instanceof Class) {
+                Class<?> cls = (Class) param.getRawType();
+                if (Collection.class.isAssignableFrom(cls)) {
+                    mapper = new CollectionMapper(this);
+                } else if (Map.class.isAssignableFrom(cls)) {
+                    mapper = new MapMapper(this);
+                }
             }
         }
 
