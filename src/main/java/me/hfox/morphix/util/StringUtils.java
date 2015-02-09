@@ -8,7 +8,7 @@ public final class StringUtils {
 
     private StringUtils() {}
 
-    private static final String SNAKE_CASE_SPLIT_REGEX = "(?<!^)(?<![A-Z])(?=[A-Z])";
+    private static final String SNAKE_CASE_SPLIT_REGEX = "(?<!^)(?<![A-Z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])";
 
     public static String toSnakeCase(String camelCase) {
         if (camelCase == null) {

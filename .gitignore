@@ -102,3 +102,5 @@ dependency-reduced-pom.xml
 
 Thumbs.db
 src/main/resources/rebel.xml
+
+src/main/java/me/hfox/morphix/Testing.java
