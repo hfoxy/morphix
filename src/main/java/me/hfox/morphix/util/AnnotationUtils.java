@@ -1,9 +1,13 @@
-package me.hfox.morphix.helper;
+package me.hfox.morphix.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
-public class AnnotationHelper {
+public final class AnnotationUtils {
+
+    private AnnotationUtils() {
+        // can't be accessed
+    }
 
     public static String getFieldName(Field field) {
         return field.getName();
