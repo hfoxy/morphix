@@ -57,13 +57,13 @@ public class ArrayMapper<T> extends FieldMapper<T> {
         }
 
         list = origin;
-        Object array = Array.newInstance(type, sizes);
-        array(array, list, sizes, true);
+        Object array = Array.newInstance(super.type, sizes);
+        array(super.type, array, list, sizes, true);
 
         return array;
     }
 
-    public Object array(Object array, BasicDBList list, int[] sizes, boolean first) {
+    public Object array(Class<?> type, Object array, BasicDBList list, int[] sizes, boolean first) {
         if (!first) {
             int[] updated = new int[sizes.length - 1];
             for (int j = 1; j < sizes.length; j++) {
@@ -71,7 +71,12 @@ public class ArrayMapper<T> extends FieldMapper<T> {
             }
 
             sizes = updated;
+        } else if (array == null) {
+            array = Array.newInstance(type, sizes);
         }
+
+        type = type.getComponentType();
+
 
         for (int i = 0; i < list.size(); i++) {
             Object entry = list.get(i);
@@ -79,15 +84,16 @@ public class ArrayMapper<T> extends FieldMapper<T> {
             Object value;
             if (entry instanceof BasicDBList) {
                 BasicDBList entryList = (BasicDBList) entry;
-                value = array(Array.newInstance(type, sizes), entryList, sizes, false);
+                value = array(type, Array.newInstance(type, sizes), entryList, sizes, false);
             } else {
                 value = mapper.marshal(entry);
             }
 
+            System.out.println("Attempting to set '" + value + "' at " + i + " in " + array);
             Array.set(array, i, value);
         }
 
-        return list;
+        return array;
     }
 
     @Override

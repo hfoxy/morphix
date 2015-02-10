@@ -33,6 +33,28 @@ public class FieldMapperTest extends TestCase {
         for (int i = 0; i < strings.length; i++) {
             assertEquals(strings[i], result[i]);
         }
+
+        mapper = new ArrayMapper<>(String[][].class, FieldMapperTest.class, null, morphix);
+        String[][] multidimensional = new String[][]{new String[]{"goodbye", "sun"}, new String[]{"hello", "moon"}};
+
+        object = mapper.unmarshal(multidimensional);
+        for (int i = 0; i < multidimensional.length; i++) {
+            BasicDBList dbList = (BasicDBList) object.get(i);
+            String[] array = multidimensional[i];
+            for (int j = 0; j < array.length; j++) {
+                String string = (String) dbList.get(j);
+                assertEquals(array[j], string);
+            }
+        }
+
+        String[][] multidimensionalResult = (String[][]) mapper.marshal(object);
+        for (int i = 0; i < multidimensional.length; i++) {
+            String[] array = multidimensional[i];
+            String[] resultArray = multidimensionalResult[i];
+            for (int j = 0; j < array.length; j++) {
+                assertEquals(array[i], resultArray[i]);
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
