@@ -1,11 +1,16 @@
 package me.hfox.morphix.mapping.field;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.DBObject;
 import junit.framework.TestCase;
 import me.hfox.morphix.Morphix;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class FieldMapperTest extends TestCase {
 
@@ -13,6 +18,13 @@ public class FieldMapperTest extends TestCase {
 
     private List<String> list = Arrays.asList("hello", "world");
     private List<List<String>> multidimensionalList = Arrays.asList(Arrays.asList("goodbye", "sun"), Arrays.asList("hello", "moon"));
+    private Map<String, Integer> stringIntegerMap;
+
+    public FieldMapperTest() {
+        stringIntegerMap = new HashMap<>();
+        stringIntegerMap.put("goodbye", 1);
+        stringIntegerMap.put("hello", 5);
+    }
 
     @Override
     protected void setUp() throws Exception {
@@ -111,6 +123,44 @@ public class FieldMapperTest extends TestCase {
         }
 
         assertEquals(null, result);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testMapMapper() throws Exception {
+        MapMapper stringIntegerMapper = new MapMapper(getClass(), getClass().getDeclaredField("stringIntegerMap"), morphix);
+        ObjectMapper<String> stringObjectMapper = new ObjectMapper<>(String.class, getClass(), null, morphix);
+        ObjectMapper<Integer> integerObjectMapper = new ObjectMapper<>(Integer.class, getClass(), null, morphix);
+
+        BasicDBList stringIntegerObject = stringIntegerMapper.unmarshal(stringIntegerMap);
+        assertEquals(2, stringIntegerObject.size());
+
+        List<String> keys = new ArrayList<>(stringIntegerMap.keySet());
+        for (int i = 0; i < stringIntegerObject.size(); i++) {
+            DBObject object = (DBObject) stringIntegerObject.get(i);
+            String key = stringObjectMapper.unmarshal(object.get("key"));
+            int value = integerObjectMapper.unmarshal(object.get("value"));
+
+            String origKey = keys.get(i);
+            int origValue = stringIntegerMap.get(origKey);
+            assertEquals(origKey, key);
+            assertEquals(origValue, value);
+        }
+
+        Map<String, Integer> resultStringIntegerMap = (Map<String, Integer>) stringIntegerMapper.marshal(stringIntegerObject);
+        assertEquals(2, resultStringIntegerMap.size());
+
+        int i = 0;
+        for (Entry<String, Integer> entry : resultStringIntegerMap.entrySet()) {
+            String key = entry.getKey();
+            int value = entry.getValue();
+
+            String origKey = keys.get(i);
+            int origValue = stringIntegerMap.get(origKey);
+            assertEquals(origKey, key);
+            assertEquals(origValue, value);
+
+            i++;
+        }
     }
 
     public void testObjectMapper() throws Exception {
