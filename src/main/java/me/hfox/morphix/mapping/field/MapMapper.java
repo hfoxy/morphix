@@ -59,8 +59,8 @@ public class MapMapper extends FieldMapper<Map> {
             for (Object object : list) {
                 if (object instanceof DBObject) {
                     DBObject dbObject = (DBObject) object;
-                    Object key = dbObject.get("key");
-                    Object value = dbObject.get("value");
+                    Object key = mappers[0].marshal(dbObject.get("key"));
+                    Object value = mappers[1].marshal(dbObject.get("value"));
                     map.put(key, value);
                 }
             }
@@ -79,8 +79,8 @@ public class MapMapper extends FieldMapper<Map> {
                 if (obj2 instanceof Entry) {
                     Entry entry = (Entry) obj2;
                     BasicDBObject dbObject = new BasicDBObject();
-                    dbObject.put("key", entry.getKey());
-                    dbObject.put("value", entry.getValue());
+                    dbObject.put("key", mappers[0].unmarshal(entry.getKey()));
+                    dbObject.put("value", mappers[1].unmarshal(entry.getValue()));
                     list.add(dbObject);
                 }
             }

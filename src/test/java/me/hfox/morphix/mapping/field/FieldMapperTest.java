@@ -18,12 +18,24 @@ public class FieldMapperTest extends TestCase {
 
     private List<String> list = Arrays.asList("hello", "world");
     private List<List<String>> multidimensionalList = Arrays.asList(Arrays.asList("goodbye", "sun"), Arrays.asList("hello", "moon"));
-    private Map<String, Integer> stringIntegerMap;
+    private Map<String, Integer> map;
+    private Map<String, Map<String, List<Integer>>> stringMapMap;
 
     public FieldMapperTest() {
-        stringIntegerMap = new HashMap<>();
-        stringIntegerMap.put("goodbye", 1);
-        stringIntegerMap.put("hello", 5);
+        map = new HashMap<>();
+        map.put("goodbye", 1);
+        map.put("hello", 5);
+
+        stringMapMap = new HashMap<>();
+        Map<String, List<Integer>> helloMap = new HashMap<>();
+        helloMap.put("world", Arrays.asList(5, 7, 9, 2, 3));
+        helloMap.put("earth", Arrays.asList(2, 6, 12, 476));
+        stringMapMap.put("hello", helloMap);
+
+        Map<String, List<Integer>> goodbyeMap = new HashMap<>();
+        goodbyeMap.put("solar system", Arrays.asList(12, 98, 7, 5));
+        goodbyeMap.put("penguins", Arrays.asList(8, 4, 9, 23, 189));
+        stringMapMap.put("goodbye", goodbyeMap);
     }
 
     @Override
@@ -127,21 +139,21 @@ public class FieldMapperTest extends TestCase {
 
     @SuppressWarnings("unchecked")
     public void testMapMapper() throws Exception {
-        MapMapper stringIntegerMapper = new MapMapper(getClass(), getClass().getDeclaredField("stringIntegerMap"), morphix);
-        ObjectMapper<String> stringObjectMapper = new ObjectMapper<>(String.class, getClass(), null, morphix);
-        ObjectMapper<Integer> integerObjectMapper = new ObjectMapper<>(Integer.class, getClass(), null, morphix);
+        MapMapper stringIntegerMapper = new MapMapper(getClass(), getClass().getDeclaredField("map"), morphix);
+        ObjectMapper<String> stringMapper = new ObjectMapper<>(String.class, getClass(), null, morphix);
+        ObjectMapper<Integer> integerMapper = new ObjectMapper<>(Integer.class, getClass(), null, morphix);
 
-        BasicDBList stringIntegerObject = stringIntegerMapper.unmarshal(stringIntegerMap);
+        BasicDBList stringIntegerObject = stringIntegerMapper.unmarshal(map);
         assertEquals(2, stringIntegerObject.size());
 
-        List<String> keys = new ArrayList<>(stringIntegerMap.keySet());
+        List<String> keys = new ArrayList<>(map.keySet());
         for (int i = 0; i < stringIntegerObject.size(); i++) {
             DBObject object = (DBObject) stringIntegerObject.get(i);
-            String key = stringObjectMapper.unmarshal(object.get("key"));
-            int value = integerObjectMapper.unmarshal(object.get("value"));
+            String key = stringMapper.unmarshal(object.get("key"));
+            int value = integerMapper.unmarshal(object.get("value"));
 
             String origKey = keys.get(i);
-            int origValue = stringIntegerMap.get(origKey);
+            int origValue = map.get(origKey);
             assertEquals(origKey, key);
             assertEquals(origValue, value);
         }
@@ -149,17 +161,81 @@ public class FieldMapperTest extends TestCase {
         Map<String, Integer> resultStringIntegerMap = (Map<String, Integer>) stringIntegerMapper.marshal(stringIntegerObject);
         assertEquals(2, resultStringIntegerMap.size());
 
-        int i = 0;
+        int index = 0;
         for (Entry<String, Integer> entry : resultStringIntegerMap.entrySet()) {
             String key = entry.getKey();
             int value = entry.getValue();
 
-            String origKey = keys.get(i);
-            int origValue = stringIntegerMap.get(origKey);
+            String origKey = keys.get(index);
+            int origValue = map.get(origKey);
             assertEquals(origKey, key);
             assertEquals(origValue, value);
 
-            i++;
+            index++;
+        }
+
+        MapMapper mapMapper = new MapMapper(getClass(), getClass().getDeclaredField("stringMapMap"), morphix);
+
+        BasicDBList dbList = mapMapper.unmarshal(stringMapMap);
+        assertEquals(2, dbList.size());
+
+        List<String> stringMapMapKeys = new ArrayList<>(stringMapMap.keySet());
+        for (int i = 0; i < dbList.size(); i++) {
+            DBObject fMapObject = (DBObject) dbList.get(i); // fMap = first map
+            String fMapKey = stringMapper.unmarshal(fMapObject.get("key"));
+            BasicDBList fMapValue = (BasicDBList) fMapObject.get("value");
+            Map<String, List<Integer>> fMapValueMap = stringMapMap.get(fMapKey);
+
+            String fMapOrigKey = stringMapMapKeys.get(i);
+            assertEquals(fMapOrigKey, fMapKey);
+
+            List<String> stringListMapKeys = new ArrayList<>(fMapValueMap.keySet());
+            for (int j = 0; j < fMapValue.size(); j++) {
+                DBObject sMapObject = (DBObject) fMapValue.get(j); // sMap = second map
+                String sMapKey = stringMapper.unmarshal(sMapObject.get("key"));
+                BasicDBList sMapValue = (BasicDBList) sMapObject.get("value");
+                List<Integer> sMapValueList = fMapValueMap.get(sMapKey);
+
+                String sMapOrigKey = stringListMapKeys.get(j);
+                assertEquals(sMapOrigKey, sMapKey);
+
+                for (int k = 0; k < sMapValueList.size(); k++) {
+                    int value = integerMapper.unmarshal(sMapValue.get(k));
+                    assertEquals((int) sMapValueList.get(k), value);
+                }
+            }
+        }
+
+        Map<String, Map<String, List<Integer>>> resultMap = mapMapper.marshal(dbList);
+        assertEquals(stringMapMap.size(), resultMap.size());
+
+        List<String> fMapKeys = new ArrayList<>(resultMap.keySet());
+        for (int i = 0; i < stringMapMapKeys.size(); i++) {
+            String origMapKey = stringMapMapKeys.get(i);
+            String fMapKey = fMapKeys.get(i);
+            assertEquals(origMapKey, fMapKey);
+
+            Map<String, List<Integer>> origMap = stringMapMap.get(origMapKey);
+            Map<String, List<Integer>> map = resultMap.get(origMapKey);
+            assertEquals(origMap.size(), map.size());
+
+            List<String> origMapKeys = new ArrayList<>(origMap.keySet());
+            List<String> sMapKeys = new ArrayList<>(map.keySet());
+            for (int j = 0; j < sMapKeys.size(); j++) {
+                String origKey = origMapKeys.get(j);
+                String key = sMapKeys.get(j);
+                assertEquals(origKey, key);
+
+                List<Integer> origList = origMap.get(origKey);
+                List<Integer> list = map.get(origKey);
+                assertEquals(origList.size(), list.size());
+
+                for (int k = 0; k < origList.size(); k++) {
+                    int origEntry = origList.get(k);
+                    int entry = list.get(k);
+                    assertEquals(origEntry, entry);
+                }
+            }
         }
     }
 
