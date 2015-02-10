@@ -11,31 +11,36 @@ public class ObjectMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public Object marshal(Object obj) {
-        if (obj instanceof Number) {
-            Number num = (Number) obj;
-            if (Integer.class.equals(obj.getClass()) || int.class.equals(obj.getClass())) {
-                return num.intValue();
-            } else if (Double.class.equals(obj.getClass()) || double.class.equals(obj.getClass())) {
-                return num.doubleValue();
-            } else if (Float.class.equals(obj.getClass()) || float.class.equals(obj.getClass())) {
-                return num.floatValue();
-            } else if (Byte.class.equals(obj.getClass()) || byte.class.equals(obj.getClass())) {
-                return num.byteValue();
-            } else if (Short.class.equals(obj.getClass()) || short.class.equals(obj.getClass())) {
-                return num.byteValue();
-            } else if (Long.class.equals(obj.getClass()) || long.class.equals(obj.getClass())) {
-                return num.byteValue();
-            }
-        }
-
-        return obj;
+    @SuppressWarnings("unchecked")
+    public T marshal(Object obj) {
+        return (T) convert(obj);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public T unmarshal(Object obj) {
-        return (T) obj;
+        return (T) convert(obj);
+    }
+
+    public Object convert(Object obj) {
+        if (obj instanceof Number) {
+            Number num = (Number) obj;
+            if (Integer.class.equals(type) || int.class.equals(type)) {
+                return num.intValue();
+            } else if (Double.class.equals(type) || double.class.equals(type)) {
+                return num.doubleValue();
+            } else if (Float.class.equals(type) || float.class.equals(type)) {
+                return num.floatValue();
+            } else if (Byte.class.equals(type) || byte.class.equals(type)) {
+                return num.byteValue();
+            } else if (Short.class.equals(type) || short.class.equals(type)) {
+                return num.shortValue();
+            } else if (Long.class.equals(type) || long.class.equals(type)) {
+                return num.longValue();
+            }
+        }
+
+        return obj;
     }
 
 }

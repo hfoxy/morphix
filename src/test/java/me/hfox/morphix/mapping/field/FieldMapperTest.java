@@ -144,7 +144,7 @@ public class FieldMapperTest extends TestCase {
         ObjectMapper<Integer> integerMapper = new ObjectMapper<>(Integer.class, getClass(), null, morphix);
 
         BasicDBList stringIntegerObject = stringIntegerMapper.unmarshal(map);
-        assertEquals(2, stringIntegerObject.size());
+        assertEquals(map.size(), stringIntegerObject.size());
 
         List<String> keys = new ArrayList<>(map.keySet());
         for (int i = 0; i < stringIntegerObject.size(); i++) {
@@ -159,7 +159,7 @@ public class FieldMapperTest extends TestCase {
         }
 
         Map<String, Integer> resultStringIntegerMap = (Map<String, Integer>) stringIntegerMapper.marshal(stringIntegerObject);
-        assertEquals(2, resultStringIntegerMap.size());
+        assertEquals(map.size(), resultStringIntegerMap.size());
 
         int index = 0;
         for (Entry<String, Integer> entry : resultStringIntegerMap.entrySet()) {
@@ -177,7 +177,7 @@ public class FieldMapperTest extends TestCase {
         MapMapper mapMapper = new MapMapper(getClass(), getClass().getDeclaredField("stringMapMap"), morphix);
 
         BasicDBList dbList = mapMapper.unmarshal(stringMapMap);
-        assertEquals(2, dbList.size());
+        assertEquals(stringMapMap.size(), dbList.size());
 
         List<String> stringMapMapKeys = new ArrayList<>(stringMapMap.keySet());
         for (int i = 0; i < dbList.size(); i++) {
@@ -240,19 +240,32 @@ public class FieldMapperTest extends TestCase {
     }
 
     public void testObjectMapper() throws Exception {
-        String string = "hello world";
-        ObjectMapper<String> stringMapper = new ObjectMapper<>(String.class, FieldMapperTest.class, null, morphix);
-        String stringObject = stringMapper.unmarshal(string);
-        assertEquals(string, stringObject);
-        Object stringResult = stringMapper.marshal(stringObject);
-        assertEquals(string, stringResult);
+        testObject(String.class, "hello world");
+        testObject(Integer.class, 12);
+        testObject(Double.class, 15.87);
+        testObject(Float.class, 187.72F);
+        testObject(Short.class, (short) 5);
+        testObject(Long.class, 1276L);
+        testObject(Byte.class, (byte) 8);
 
-        int integer = 12;
-        ObjectMapper<Integer> intMapper = new ObjectMapper<>(int.class, FieldMapperTest.class, null, morphix);
-        int intObject = intMapper.unmarshal(integer);
-        assertEquals(integer, intObject);
-        Object intResult = intMapper.marshal(intObject);
-        assertEquals(integer, intResult);
+        testNumber(Integer.class, 178.12, 178);
+        testNumber(Integer.class, 178.97, 178);
+    }
+
+    public <T> void testObject(Class<T> cls, T object) {
+        ObjectMapper<T> stringMapper = new ObjectMapper<>(cls, FieldMapperTest.class, null, morphix);
+        T unmarshal = stringMapper.unmarshal(object);
+        assertEquals(object, unmarshal);
+        Object marshal = stringMapper.marshal(unmarshal);
+        assertEquals(object, marshal);
+    }
+
+    public <T extends Number> void testNumber(Class<T> cls, Number object, T expect) {
+        ObjectMapper<T> stringMapper = new ObjectMapper<>(cls, FieldMapperTest.class, null, morphix);
+        T unmarshal = stringMapper.unmarshal(object);
+        assertEquals(expect, unmarshal);
+        Object marshal = stringMapper.marshal(unmarshal);
+        assertEquals(expect, marshal);
     }
 
     public static enum TestEnum {
