@@ -12,6 +12,7 @@ public class FieldMapperTest extends TestCase {
     private Morphix morphix;
 
     private List<String> list = Arrays.asList("hello", "world");
+    private List<List<String>> multidimensionalList = Arrays.asList(Arrays.asList("goodbye", "sun"), Arrays.asList("hello", "moon"));
 
     @Override
     protected void setUp() throws Exception {
@@ -46,6 +47,27 @@ public class FieldMapperTest extends TestCase {
         List<String> result = (List<String>) mapper.marshal(object);
         for (int i = 0; i < list.size(); i++) {
             assertEquals(list.get(i), result.get(i));
+        }
+
+        mapper = new CollectionMapper(FieldMapperTest.class, getClass().getDeclaredField("multidimensionalList"), morphix);
+
+        object = mapper.unmarshal(multidimensionalList);
+        for (int i = 0; i < multidimensionalList.size(); i++) {
+            BasicDBList dbList = (BasicDBList) object.get(i);
+            List<String> list = multidimensionalList.get(i);
+            for (int j = 0; j < list.size(); j++) {
+                String string = (String) dbList.get(j);
+                assertEquals(list.get(j), string);
+            }
+        }
+
+        List<List<String>> multidimensionalResult = (List<List<String>>) mapper.marshal(object);
+        for (int i = 0; i < multidimensionalList.size(); i++) {
+            List<String> list = multidimensionalList.get(i);
+            List<String> resultList = multidimensionalResult.get(i);
+            for (int j = 0; j < list.size(); j++) {
+                assertEquals(list.get(i), resultList.get(i));
+            }
         }
     }
 

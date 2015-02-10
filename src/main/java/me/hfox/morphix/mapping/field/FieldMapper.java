@@ -18,11 +18,18 @@ public abstract class FieldMapper<T> {
     protected Morphix morphix;
 
     public FieldMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
+        this(type, parent, field, morphix, true);
+    }
+
+    public FieldMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix, boolean discover) {
         this.type = type;
         this.parent = parent;
         this.field = field;
         this.morphix = morphix;
-        discover();
+
+        if (discover) {
+            discover();
+        }
     }
 
     public Class<?> getParent() {

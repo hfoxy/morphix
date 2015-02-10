@@ -25,13 +25,15 @@ public class MapMapper extends FieldMapper<Map> {
     }
 
     public MapMapper(MapMapper parent, ParameterizedType type) {
-        super(Map.class, parent.parent, null, parent.morphix);
+        super(Map.class, parent.parent, null, parent.morphix, false);
         types = type.getActualTypeArguments();
+        discover();
     }
 
     public MapMapper(CollectionMapper parent) {
-        super(Map.class, parent.parent, null, parent.morphix);
+        super(Map.class, parent.parent, null, parent.morphix, false);
         types = ((ParameterizedType) parent.type).getActualTypeArguments();
+        discover();
     }
 
     @Override

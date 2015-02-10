@@ -21,13 +21,15 @@ public class CollectionMapper extends FieldMapper<Collection> {
     }
 
     public CollectionMapper(CollectionMapper parent) {
-        super(Collection.class, parent.parent, null, parent.morphix);
+        super(Collection.class, parent.parent, null, parent.morphix, false);
         this.type = ((ParameterizedType) parent.type).getActualTypeArguments()[0];
+        discover();
     }
 
     public CollectionMapper(MapMapper parent, ParameterizedType type) {
-        super(Collection.class, parent.parent, null, parent.morphix);
+        super(Collection.class, parent.parent, null, parent.morphix, false);
         this.type = type.getActualTypeArguments()[0];
+        discover();
     }
 
     @Override
@@ -65,7 +67,7 @@ public class CollectionMapper extends FieldMapper<Collection> {
             return null;
         }
 
-        Collection collection = new ArrayList<>();
+        Collection collection = new ArrayList();
         if (obj instanceof BasicDBList) {
             BasicDBList list = (BasicDBList) obj;
             for (Object object : list) {
