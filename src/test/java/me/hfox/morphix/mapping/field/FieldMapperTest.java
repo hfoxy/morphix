@@ -20,7 +20,6 @@ public class FieldMapperTest extends TestCase {
     }
 
     public void testArrayMapper() throws Exception {
-        /*
         ArrayMapper<?> mapper = new ArrayMapper<>(String[].class, FieldMapperTest.class, null, morphix);
         String[] strings = new String[]{"hello", "world"};
 
@@ -56,7 +55,6 @@ public class FieldMapperTest extends TestCase {
                 assertEquals(array[i], resultArray[i]);
             }
         }
-        */
     }
 
     @SuppressWarnings("unchecked")

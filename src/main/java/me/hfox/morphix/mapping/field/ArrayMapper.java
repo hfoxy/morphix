@@ -9,12 +9,16 @@ import java.util.Arrays;
 
 public class ArrayMapper<T> extends FieldMapper<T> {
 
-    private Class<?> type;
-    private FieldMapper<?> mapper;
+    private Class<?> arrayType;
     private int dimensions;
+    private FieldMapper<?> mapper;
 
     public ArrayMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
         super(type, parent, field, morphix);
+    }
+
+    public ArrayMapper(Class<T> type, ArrayMapper parent) {
+        super(type, parent.parent, parent.field, parent.morphix);
     }
 
     @Override
@@ -22,14 +26,15 @@ public class ArrayMapper<T> extends FieldMapper<T> {
         super.discover();
 
         dimensions = 0;
-        Class<?> type = super.type;
-        while (type.isArray()) {
-            type = type.getComponentType();
+        Class<?> cls = type;
+        while (cls.isArray()) {
             dimensions++;
+            cls = cls.getComponentType();
         }
 
-        this.type = type;
-        mapper = FieldMapper.create(type, parent, null, morphix);
+        arrayType = cls;
+        Class<?> component = type.getComponentType();
+        mapper = component.isArray() ? new ArrayMapper<>(component, this) : FieldMapper.create(component, parent, field, morphix);
     }
 
     @Override
@@ -38,62 +43,37 @@ public class ArrayMapper<T> extends FieldMapper<T> {
             return null;
         }
 
-        int[] sizes = new int[dimensions];
-        for (int i = 0; i < sizes.length; i++) {
-            sizes[i] = 0;
+        BasicDBList list = (BasicDBList) obj;
+        int[] sizes = sizes(list);
+
+        Object array = Array.newInstance(arrayType, sizes);
+        for (int i = 0; i < list.size(); i++) {
+            Object value = list.get(i);
+            Object result = mapper.marshal(value);
+            Array.set(array, i, result);
         }
-
-        BasicDBList origin = (BasicDBList) obj;
-        BasicDBList list = origin;
-        for (int i = 0; i < sizes.length; i++) {
-            sizes[i] = list.size();
-
-            Object entry = list.get(i);
-            if (entry == null || !(entry instanceof BasicDBList)) {
-                break;
-            }
-
-            list = (BasicDBList) entry;
-        }
-
-        list = origin;
-        Object array = Array.newInstance(super.type, sizes);
-        array(super.type, array, list, sizes, true);
 
         return array;
     }
 
-    public Object array(Class<?> type, Object array, BasicDBList list, int[] sizes, boolean first) {
-        if (!first) {
-            int[] updated = new int[sizes.length - 1];
-            for (int j = 1; j < sizes.length; j++) {
-                updated[j - 1] = sizes[j];
+    private int[] sizes(BasicDBList list) {
+        int[] sizes = new int[dimensions];
+
+        int i = 0;
+        while (list != null && i < sizes.length) {
+            sizes[i] = list.size();
+            for (int j = 0; j < list.size(); j++) {
+                Object value = list.get(j);
+                if (value instanceof BasicDBList) {
+                    list = (BasicDBList) value;
+                    break;
+                }
             }
 
-            sizes = updated;
-        } else if (array == null) {
-            array = Array.newInstance(type, sizes);
+            i++;
         }
 
-        type = type.getComponentType();
-
-
-        for (int i = 0; i < list.size(); i++) {
-            Object entry = list.get(i);
-
-            Object value;
-            if (entry instanceof BasicDBList) {
-                BasicDBList entryList = (BasicDBList) entry;
-                value = array(type, Array.newInstance(type, sizes), entryList, sizes, false);
-            } else {
-                value = mapper.marshal(entry);
-            }
-
-            System.out.println("Attempting to set '" + value + "' at " + i + " in " + array);
-            Array.set(array, i, value);
-        }
-
-        return array;
+        return sizes;
     }
 
     @Override
@@ -102,19 +82,13 @@ public class ArrayMapper<T> extends FieldMapper<T> {
             return null;
         }
 
-        return array(obj);
-    }
-
-    public BasicDBList array(Object object) {
         BasicDBList list = new BasicDBList();
-        int length = Array.getLength(object);
+
+        int length = Array.getLength(obj);
         for (int i = 0; i < length; i++) {
-            Object item = Array.get(object, i);
-            if (item.getClass().isArray()) {
-                list.addAll(array(item));
-            } else {
-                list.add(mapper.unmarshal(item));
-            }
+            Object value = Array.get(obj, i);
+            Object result = mapper.unmarshal(value);
+            list.add(result);
         }
 
         return list;

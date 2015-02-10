@@ -25,13 +25,13 @@ public class MapMapper extends FieldMapper<Map> {
     }
 
     public MapMapper(MapMapper parent, ParameterizedType type) {
-        super(Map.class, parent.parent, null, parent.morphix, false);
+        super(Map.class, parent.parent, parent.field, parent.morphix, false);
         types = type.getActualTypeArguments();
         discover();
     }
 
     public MapMapper(CollectionMapper parent) {
-        super(Map.class, parent.parent, null, parent.morphix, false);
+        super(Map.class, parent.parent, parent.field, parent.morphix, false);
         types = ((ParameterizedType) parent.type).getActualTypeArguments();
         discover();
     }
@@ -39,7 +39,7 @@ public class MapMapper extends FieldMapper<Map> {
     @Override
     protected void discover() {
         super.discover();
-        if (field != null) {
+        if (field != null && types == null) {
             types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
         }
 
@@ -93,7 +93,7 @@ public class MapMapper extends FieldMapper<Map> {
         FieldMapper mapper = null;
         if (type instanceof Class) {
             Class<?> cls = (Class) type;
-            mapper = FieldMapper.create(cls, parent, null, morphix);
+            mapper = FieldMapper.create(cls, parent, field, morphix);
         } else if (type instanceof ParameterizedType) {
             ParameterizedType param = (ParameterizedType) type;
             if (param.getRawType() instanceof Class) {
