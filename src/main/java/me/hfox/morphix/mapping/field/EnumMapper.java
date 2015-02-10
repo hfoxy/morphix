@@ -12,13 +12,13 @@ public class EnumMapper<T> extends FieldMapper<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object marshal(Object obj) {
+    public T marshal(Object obj) {
         if (obj == null) {
             return null;
         }
 
         Class<? extends Enum> cls = (Class<? extends Enum>) type;
-        return Enum.valueOf(cls, (String) obj);
+        return (T) Enum.valueOf(cls, (String) obj);
     }
 
     @Override

@@ -20,6 +20,7 @@ public class FieldMapperTest extends TestCase {
     }
 
     public void testArrayMapper() throws Exception {
+        /*
         ArrayMapper<?> mapper = new ArrayMapper<>(String[].class, FieldMapperTest.class, null, morphix);
         String[] strings = new String[]{"hello", "world"};
 
@@ -55,6 +56,7 @@ public class FieldMapperTest extends TestCase {
                 assertEquals(array[i], resultArray[i]);
             }
         }
+        */
     }
 
     @SuppressWarnings("unchecked")
@@ -91,6 +93,50 @@ public class FieldMapperTest extends TestCase {
                 assertEquals(list.get(i), resultList.get(i));
             }
         }
+    }
+
+    public void testEnumMapper() throws Exception {
+        TestEnum value = TestEnum.SOME;
+        EnumMapper<TestEnum> mapper = new EnumMapper<>(TestEnum.class, FieldMapperTest.class, null, morphix);
+
+        Object enumObject = mapper.unmarshal(value);
+        assertEquals("SOME", enumObject);
+
+        TestEnum result = mapper.marshal(enumObject);
+        assertEquals(value, result);
+
+        try {
+            result = mapper.marshal("NOT_VALID");
+            // fail("Expected a IllegalArgumentException to be thrown");
+        } catch (IllegalArgumentException ex) {
+            result = null;
+        }
+
+        assertEquals(null, result);
+    }
+
+    public void testObjectMapper() throws Exception {
+        String string = "hello world";
+        ObjectMapper<String> stringMapper = new ObjectMapper<>(String.class, FieldMapperTest.class, null, morphix);
+        String stringObject = stringMapper.unmarshal(string);
+        assertEquals(string, stringObject);
+        Object stringResult = stringMapper.marshal(stringObject);
+        assertEquals(string, stringResult);
+
+        int integer = 12;
+        ObjectMapper<Integer> intMapper = new ObjectMapper<>(int.class, FieldMapperTest.class, null, morphix);
+        int intObject = intMapper.unmarshal(integer);
+        assertEquals(integer, intObject);
+        Object intResult = intMapper.marshal(intObject);
+        assertEquals(integer, intResult);
+    }
+
+    public static enum TestEnum {
+
+        SOME,
+        ENUM,
+        VALUES
+
     }
 
 }

@@ -33,8 +33,9 @@ public class ObjectMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public Object unmarshal(Object obj) {
-        return obj;
+    @SuppressWarnings("unchecked")
+    public T unmarshal(Object obj) {
+        return (T) obj;
     }
 
 }

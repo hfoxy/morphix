@@ -35,7 +35,7 @@ public class MorphixTest extends TestCase {
 
         try {
             helper.getCollectionName(FakeClass.class);
-            fail("Expected an IndexOutOfBoundsException to be thrown");
+            fail("Expected a MorphixException to be thrown");
         } catch (MorphixException ex) {
             // passed
         }
