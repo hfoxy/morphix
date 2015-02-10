@@ -2,6 +2,7 @@ package me.hfox.morphix.mapping.field;
 
 import com.mongodb.BasicDBList;
 import me.hfox.morphix.Morphix;
+import me.hfox.morphix.exception.MorphixException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -53,7 +54,7 @@ public class CollectionMapper extends FieldMapper<Collection> {
         }
 
         if (mapper == null) {
-            throw new RuntimeException("Could not find suitable Mapper for " + type);
+            throw new MorphixException("Could not find suitable Mapper for " + type);
         }
     }
 

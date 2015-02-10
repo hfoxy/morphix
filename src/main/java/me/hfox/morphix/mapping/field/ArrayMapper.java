@@ -5,6 +5,7 @@ import me.hfox.morphix.Morphix;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public class ArrayMapper<T> extends FieldMapper<T> {
 
@@ -21,11 +22,13 @@ public class ArrayMapper<T> extends FieldMapper<T> {
         super.discover();
 
         dimensions = 0;
+        Class<?> type = super.type;
         while (type.isArray()) {
             type = type.getComponentType();
             dimensions++;
         }
 
+        this.type = type;
         mapper = FieldMapper.create(type, parent, null, morphix);
     }
 
@@ -54,19 +57,21 @@ public class ArrayMapper<T> extends FieldMapper<T> {
         }
 
         list = origin;
-        Object array = Array.newInstance(type, dimensions);
-        array(array, list, sizes);
+        Object array = Array.newInstance(type, sizes);
+        array(array, list, sizes, true);
 
         return array;
     }
 
-    public Object array(Object array, BasicDBList list, int[] sizes) {
-        int[] updated = new int[sizes.length - 1];
-        for (int j = 1; j < sizes.length; j++) {
-            updated[j - 1] = sizes[j];
-        }
+    public Object array(Object array, BasicDBList list, int[] sizes, boolean first) {
+        if (!first) {
+            int[] updated = new int[sizes.length - 1];
+            for (int j = 1; j < sizes.length; j++) {
+                updated[j - 1] = sizes[j];
+            }
 
-        sizes = updated;
+            sizes = updated;
+        }
 
         for (int i = 0; i < list.size(); i++) {
             Object entry = list.get(i);
@@ -74,7 +79,7 @@ public class ArrayMapper<T> extends FieldMapper<T> {
             Object value;
             if (entry instanceof BasicDBList) {
                 BasicDBList entryList = (BasicDBList) entry;
-                value = array(Array.newInstance(type, sizes), entryList, sizes);
+                value = array(Array.newInstance(type, sizes), entryList, sizes, false);
             } else {
                 value = mapper.marshal(entry);
             }

@@ -4,6 +4,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import me.hfox.morphix.Morphix;
+import me.hfox.morphix.exception.MorphixException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -104,7 +105,7 @@ public class MapMapper extends FieldMapper<Map> {
         }
 
         if (mapper == null) {
-            throw new RuntimeException("Could not find suitable Mapper for " + type);
+            throw new MorphixException("Could not find suitable Mapper for " + type);
         }
 
         return mapper;

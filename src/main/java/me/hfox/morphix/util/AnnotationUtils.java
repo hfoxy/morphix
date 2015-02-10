@@ -2,6 +2,7 @@ package me.hfox.morphix.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public final class AnnotationUtils {
 
@@ -17,7 +18,8 @@ public final class AnnotationUtils {
         T anno = null;
         do {
             anno = cls.getAnnotation(annoCls);
-        } while (anno == null && cls != Object.class);
+            cls = cls.getSuperclass();
+        } while (anno != null && cls != Object.class);
 
         return anno;
     }
