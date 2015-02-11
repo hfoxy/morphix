@@ -17,6 +17,8 @@ public @interface Entity {
 
     public boolean createOnDelete() default true;
 
+    public boolean inheritParentFields() default true;
+
     public Class<? extends NameHelper> nameHelper() default DefaultNameHelper.class;
 
 }

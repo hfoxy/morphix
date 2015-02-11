@@ -4,6 +4,8 @@ import me.hfox.morphix.exception.MorphixException;
 import me.hfox.morphix.helper.entity.DefaultEntityHelper;
 import me.hfox.morphix.helper.entity.EntityHelper;
 import me.hfox.morphix.helper.name.NameHelper;
+import me.hfox.morphix.helper.polymorphism.DefaultPolymorhpismHelper;
+import me.hfox.morphix.helper.polymorphism.PolymorhpismHelper;
 import me.hfox.morphix.mapping.ObjectMapper;
 import me.hfox.morphix.mapping.ObjectMapperImpl;
 
@@ -19,6 +21,7 @@ public class Morphix {
 
     private EntityHelper entityHelper;
     private Map<Class<? extends NameHelper>, NameHelper> nameHelpers;
+    private PolymorhpismHelper polymorhpismHelper;
 
     public Morphix() {
         this(null, null);
@@ -39,6 +42,8 @@ public class Morphix {
         this.entityHelper = new DefaultEntityHelper(this);
         this.nameHelpers = new HashMap<>();
         getNameHelper(MorphixDefaults.DEFAULT_NAME_HELPER);
+
+        this.polymorhpismHelper = new DefaultPolymorhpismHelper();
     }
 
     public MorphixOptions getOptions() {
@@ -64,20 +69,28 @@ public class Morphix {
     public NameHelper getNameHelper(Class<? extends NameHelper> clazz) {
         NameHelper helper = nameHelpers.get(clazz);
         if (helper == null) {
-            helper = createHelper(clazz);
+            helper = createNameHelper(clazz);
             nameHelpers.put(clazz, helper);
         }
 
         return helper;
     }
 
-    public NameHelper createHelper(Class<? extends NameHelper> clazz) {
+    public NameHelper createNameHelper(Class<? extends NameHelper> clazz) {
         try {
             Constructor<? extends NameHelper> constructor = clazz.getConstructor(Morphix.class);
             return constructor.newInstance(this);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException ex) {
             throw new MorphixException(ex);
         }
+    }
+
+    public PolymorhpismHelper getPolymorhpismHelper() {
+        return polymorhpismHelper;
+    }
+
+    public void setPolymorhpismHelper(PolymorhpismHelper polymorhpismHelper) {
+        this.polymorhpismHelper = polymorhpismHelper;
     }
 
 }

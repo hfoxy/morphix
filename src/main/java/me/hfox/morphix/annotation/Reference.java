@@ -8,4 +8,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Reference {
+
+    public boolean dbRef() default true;
+
 }

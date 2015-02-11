@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface IgnoreEmpty {
+public @interface StoreEmpty {
 
     public boolean value() default true;
 
