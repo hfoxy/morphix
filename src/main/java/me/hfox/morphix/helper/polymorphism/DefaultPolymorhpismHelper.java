@@ -24,4 +24,9 @@ public class DefaultPolymorhpismHelper implements PolymorhpismHelper {
         }
     }
 
+    @Override
+    public void store(DBObject dbObject, Class<?> cls) {
+        dbObject.put("class_name", cls.getName());
+    }
+
 }

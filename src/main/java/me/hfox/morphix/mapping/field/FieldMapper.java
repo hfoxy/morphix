@@ -58,8 +58,10 @@ public abstract class FieldMapper<T> {
             }
 
             if (name == null || name.equals(MorphixDefaults.DEFAULT_FIELD_NAME)) {
-                fieldName = AnnotationUtils.getFieldName(field);
+                name = AnnotationUtils.getFieldName(field);
             }
+
+            fieldName = name;
         }
     }
 

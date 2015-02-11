@@ -8,4 +8,6 @@ public interface PolymorhpismHelper {
 
     public Class<?> generate(String string);
 
+    public void store(DBObject dbObject, Class<?> cls);
+
 }

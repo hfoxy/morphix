@@ -1,5 +1,6 @@
 package me.hfox.morphix.mapping.field;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
 import me.hfox.morphix.Morphix;
@@ -68,7 +69,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
         Class<?> cls = type;
         do {
             for (Field field : cls.getDeclaredFields()) {
-                FieldMapper mapper = create(parent, field, morphix);
+                FieldMapper mapper = create(type, field, morphix);
                 if (mapper != null) {
                     fields.put(field, mapper);
                 }
@@ -89,7 +90,8 @@ public class EntityMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public Object unmarshal(Object obj) {
+    @SuppressWarnings("unchecked")
+    public T unmarshal(Object obj) {
         if (obj == null) {
             return null;
         }
@@ -143,21 +145,21 @@ public class EntityMapper<T> extends FieldMapper<T> {
             FieldMapper mapper = entry.getValue();
 
             Object dbResult = object.get(mapper.fieldName);
-            if (dbResult == null && (storeNull == null || !storeNull.value())) {
-                continue;
-            }
+            // if (dbResult == null && (storeNull == null || !storeNull.value())) {
+            //     continue;
+            // }
 
-            Object value = mapper.unmarshal(object.get(mapper.fieldName));
+            Object value = mapper.unmarshal(dbResult);
             if ((storeEmpty == null || !storeEmpty.value())) {
                 if (value instanceof Collection) {
                     Collection collection = (Collection) value;
                     if (collection.isEmpty()) {
-                        continue;
+                        value = null;
                     }
                 } else if (value instanceof Map) {
                     Map map = (Map) value;
                     if (map.isEmpty()) {
-                        continue;
+                        value = null;
                     }
                 }
             }
@@ -177,12 +179,72 @@ public class EntityMapper<T> extends FieldMapper<T> {
             }
         }
 
-        return result;
+        return (T) result;
     }
 
     @Override
-    public Object marshal(Object obj) {
-        return null;
+    public DBObject marshal(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+
+        if (lifecycle != null) {
+            if (suppliedResult != null) {
+                // TODO: call @PreSave
+            } else {
+                // TODO: call @PreCreate
+            }
+        }
+
+        BasicDBObject document = new BasicDBObject();
+        if (polymorphEnabled) {
+            morphix.getPolymorhpismHelper().store(document, obj.getClass());
+        }
+
+        for (Entry<Field, FieldMapper> entry : fields.entrySet()) {
+            Field field = entry.getKey();
+            field.setAccessible(true);
+
+            FieldMapper mapper = entry.getValue();
+
+            Object value;
+            try {
+                value = field.get(obj);
+            } catch (IllegalAccessException ex) {
+                throw new MorphixException(ex);
+            }
+
+            if (value == null && (storeNull == null || !storeNull.value())) {
+                continue;
+            }
+
+            if ((storeEmpty == null || !storeEmpty.value())) {
+                if (value instanceof Collection) {
+                    Collection collection = (Collection) value;
+                    if (collection.isEmpty()) {
+                        continue;
+                    }
+                } else if (value instanceof Map) {
+                    Map map = (Map) value;
+                    if (map.isEmpty()) {
+                        continue;
+                    }
+                }
+            }
+
+            Object store = mapper.marshal(value);
+            document.put(mapper.fieldName, store);
+        }
+
+        if (lifecycle != null) {
+            if (suppliedResult != null) {
+                // TODO: call @PostSave
+            } else {
+                // TODO: call @PostCreate
+            }
+        }
+
+        return document;
     }
 
 }

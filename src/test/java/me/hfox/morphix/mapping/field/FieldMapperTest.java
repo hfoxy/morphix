@@ -4,6 +4,8 @@ import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import junit.framework.TestCase;
 import me.hfox.morphix.Morphix;
+import me.hfox.morphix.examples.EmbeddedClass;
+import me.hfox.morphix.examples.TestClass;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,12 +18,16 @@ public class FieldMapperTest extends TestCase {
 
     private Morphix morphix;
 
+    private TestClass testClass;
     private List<String> list = Arrays.asList("hello", "world");
     private List<List<String>> multidimensionalList = Arrays.asList(Arrays.asList("goodbye", "sun"), Arrays.asList("hello", "moon"));
     private Map<String, Integer> map;
     private Map<String, Map<String, List<Integer>>> stringMapMap;
 
-    public FieldMapperTest() {
+    @Override
+    protected void setUp() throws Exception {
+        morphix = new Morphix();
+
         map = new HashMap<>();
         map.put("goodbye", 1);
         map.put("hello", 5);
@@ -36,11 +42,8 @@ public class FieldMapperTest extends TestCase {
         goodbyeMap.put("solar system", Arrays.asList(12, 98, 7, 5));
         goodbyeMap.put("penguins", Arrays.asList(8, 4, 9, 23, 189));
         stringMapMap.put("goodbye", goodbyeMap);
-    }
 
-    @Override
-    protected void setUp() throws Exception {
-        morphix = new Morphix();
+        testClass = new TestClass("hello world", Arrays.asList("hello", "world"), new EmbeddedClass("I'm embedded"));
     }
 
     public void testArrayMapper() throws Exception {
@@ -266,6 +269,32 @@ public class FieldMapperTest extends TestCase {
         assertEquals(expect, unmarshal);
         Object marshal = stringMapper.unmarshal(unmarshal);
         assertEquals(expect, marshal);
+    }
+
+    public void testEntityMapper() throws Exception {
+        EntityMapper<TestClass> mapper = new EntityMapper<>(TestClass.class, getClass(), getClass().getDeclaredField("testClass"), morphix);
+
+        DBObject dbObject = mapper.marshal(testClass);
+        assertEquals(testClass.getTest(), (String) dbObject.get("test"));
+
+        BasicDBList list = (BasicDBList) dbObject.get("strings");
+        assertEquals(testClass.getStrings().size(), list.size());
+        for (int i = 0; i < testClass.getStrings().size(); i++) {
+            assertEquals(testClass.getStrings().get(i), (String) list.get(i));
+        }
+
+        DBObject embedded = (DBObject) dbObject.get("embedded");
+        assertEquals(testClass.getEmbedded().getEmbedded(), (String) embedded.get("some_string"));
+
+        TestClass remapped = mapper.unmarshal(dbObject);
+        assertEquals(testClass.getTest(), remapped.getTest());
+
+        assertEquals(testClass.getStrings().size(), remapped.getStrings().size());
+        for (int i = 0; i < testClass.getStrings().size(); i++) {
+            assertEquals(testClass.getStrings().get(i), remapped.getStrings().get(i));
+        }
+
+        assertEquals(testClass.getEmbedded().getEmbedded(), remapped.getEmbedded().getEmbedded());
     }
 
     public static enum TestEnum {
