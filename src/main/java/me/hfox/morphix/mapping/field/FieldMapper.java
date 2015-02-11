@@ -2,7 +2,7 @@ package me.hfox.morphix.mapping.field;
 
 import com.mongodb.DBObject;
 import me.hfox.morphix.Morphix;
-import me.hfox.morphix.annotation.Entity;
+import me.hfox.morphix.annotation.entity.Entity;
 import me.hfox.morphix.util.AnnotationUtils;
 
 import java.lang.reflect.Field;

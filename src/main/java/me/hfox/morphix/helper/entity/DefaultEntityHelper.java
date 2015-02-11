@@ -2,7 +2,7 @@ package me.hfox.morphix.helper.entity;
 
 import me.hfox.morphix.Morphix;
 import me.hfox.morphix.MorphixDefaults;
-import me.hfox.morphix.annotation.Entity;
+import me.hfox.morphix.annotation.entity.Entity;
 import me.hfox.morphix.exception.MorphixException;
 import me.hfox.morphix.util.AnnotationUtils;
 

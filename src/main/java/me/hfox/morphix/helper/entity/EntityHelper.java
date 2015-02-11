@@ -1,6 +1,6 @@
 package me.hfox.morphix.helper.entity;
 
-import me.hfox.morphix.annotation.Entity;
+import me.hfox.morphix.annotation.entity.Entity;
 
 public interface EntityHelper {
 

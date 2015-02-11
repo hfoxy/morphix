@@ -1,4 +1,4 @@
-package me.hfox.morphix.annotation;
+package me.hfox.morphix.annotation.entity;
 
 import me.hfox.morphix.MorphixDefaults;
 import me.hfox.morphix.helper.name.DefaultNameHelper;
@@ -14,6 +14,8 @@ import java.lang.annotation.Target;
 public @interface Entity {
 
     public String value() default MorphixDefaults.DEFAULT_COLLECTION_NAME;
+
+    public boolean createOnDelete() default true;
 
     public Class<? extends NameHelper> nameHelper() default DefaultNameHelper.class;
 
