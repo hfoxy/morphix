@@ -50,6 +50,38 @@ public class EntityMapper<T> extends FieldMapper<T> {
         this.suppliedResult = result;
     }
 
+    public Entity getEntity() {
+        return entity;
+    }
+
+    public Lifecycle getLifecycle() {
+        return lifecycle;
+    }
+
+    public StoreEmpty getStoreEmpty() {
+        return storeEmpty;
+    }
+
+    public StoreNull getStoreNull() {
+        return storeNull;
+    }
+
+    public Polymorph getPolymorph() {
+        return polymorph;
+    }
+
+    public boolean isPolymorphEnabled() {
+        return polymorphEnabled;
+    }
+
+    public Reference getReference() {
+        return reference;
+    }
+
+    public NotSaved getNotSaved() {
+        return notSaved;
+    }
+
     @Override
     protected void discover() {
         super.discover();
@@ -86,7 +118,6 @@ public class EntityMapper<T> extends FieldMapper<T> {
 
         Entity entity = cls.getAnnotation(Entity.class);
         return entity == null || entity.inheritParentFields();
-
     }
 
     @Override
