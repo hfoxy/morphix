@@ -2,6 +2,9 @@ package me.hfox.morphix.mapping.field;
 
 import com.mongodb.DBObject;
 import me.hfox.morphix.Morphix;
+import me.hfox.morphix.MorphixDefaults;
+import me.hfox.morphix.annotation.Property;
+import me.hfox.morphix.annotation.Transient;
 import me.hfox.morphix.annotation.entity.Entity;
 import me.hfox.morphix.util.AnnotationUtils;
 
@@ -47,30 +50,39 @@ public abstract class FieldMapper<T> {
     protected void discover() {
         if (field != null) {
             field.setAccessible(true);
-            fieldName = AnnotationUtils.getFieldName(field);
+
+            String name = ".";
+            Property property = field.getAnnotation(Property.class);
+            if (property != null) {
+                name = property.value();
+            }
+
+            if (name == null || name.equals(MorphixDefaults.DEFAULT_FIELD_NAME)) {
+                fieldName = AnnotationUtils.getFieldName(field);
+            }
         }
     }
 
-    public void marshal(DBObject dbObject, Object toMap) throws IllegalAccessException {
+    public void unmarshal(DBObject dbObject, Object toMap) throws IllegalAccessException {
         Object store = null;
         Object value = dbObject.get(fieldName);
         if (value == null || value.getClass().isAssignableFrom(type)) {
             store = value;
         } else {
-            marshal(value);
+            unmarshal(value);
         }
 
         field.set(toMap, store);
     }
 
-    public abstract Object marshal(Object obj);
+    public abstract Object unmarshal(Object obj);
 
-    public void unmarshal(DBObject dbObject, Object toMap) throws IllegalAccessException {
+    public void marshal(DBObject dbObject, Object toMap) throws IllegalAccessException {
         Object value = field.get(toMap);
-        dbObject.put(fieldName, unmarshal(value));
+        dbObject.put(fieldName, marshal(value));
     }
 
-    public abstract Object unmarshal(Object obj);
+    public abstract Object marshal(Object obj);
 
     public static FieldMapper create(Class<?> parent, Field field, Morphix morphix) {
         return create(field == null ? parent : field.getType(), parent, field, morphix);
@@ -78,6 +90,10 @@ public abstract class FieldMapper<T> {
 
     @SuppressWarnings("unchecked")
     public static <T> FieldMapper<T> create(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
+        if (field != null && field.getAnnotation(Transient.class) != null) {
+            return null;
+        }
+
         if (type.isEnum()) {
             return new EnumMapper<>(type, parent, field, morphix);
         } else if (Map.class.isAssignableFrom(type)) {

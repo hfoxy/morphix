@@ -62,7 +62,7 @@ public class CollectionMapper extends FieldMapper<Collection> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Collection marshal(Object obj) {
+    public Collection unmarshal(Object obj) {
         if (obj == null) {
             return null;
         }
@@ -71,7 +71,7 @@ public class CollectionMapper extends FieldMapper<Collection> {
         if (obj instanceof BasicDBList) {
             BasicDBList list = (BasicDBList) obj;
             for (Object object : list) {
-                collection.add(mapper.marshal(object));
+                collection.add(mapper.unmarshal(object));
             }
         }
 
@@ -79,13 +79,13 @@ public class CollectionMapper extends FieldMapper<Collection> {
     }
 
     @Override
-    public BasicDBList unmarshal(Object obj) {
+    public BasicDBList marshal(Object obj) {
         BasicDBList list = new BasicDBList();
 
         if (obj instanceof Collection) {
             Collection collection = (Collection) obj;
             for (Object object : collection) {
-                list.add(mapper.unmarshal(object));
+                list.add(mapper.marshal(object));
             }
         }
 

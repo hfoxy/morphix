@@ -9,12 +9,12 @@ public class ObjectMapperImpl implements ObjectMapper {
     }
 
     @Override
-    public DBObject unmarshal(Object obj) {
+    public DBObject marshal(Object obj) {
         return null;
     }
 
     @Override
-    public Object marshal(DBObject object) {
+    public Object unmarshal(DBObject object) {
         return null;
     }
 

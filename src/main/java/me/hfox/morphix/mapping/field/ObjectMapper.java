@@ -12,13 +12,13 @@ public class ObjectMapper<T> extends FieldMapper<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public T marshal(Object obj) {
+    public T unmarshal(Object obj) {
         return (T) convert(obj);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public T unmarshal(Object obj) {
+    public T marshal(Object obj) {
         return (T) convert(obj);
     }
 

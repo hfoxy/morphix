@@ -4,9 +4,9 @@ import com.mongodb.DBObject;
 
 public interface ObjectMapper {
 
-    public DBObject unmarshal(Object obj);
+    public DBObject marshal(Object obj);
 
-    public Object marshal(DBObject object);
+    public Object unmarshal(DBObject object);
 
     public <T> T marshal(Class<? extends T> cls, DBObject object);
 

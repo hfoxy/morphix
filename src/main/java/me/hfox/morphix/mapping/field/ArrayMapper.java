@@ -5,7 +5,6 @@ import me.hfox.morphix.Morphix;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 public class ArrayMapper<T> extends FieldMapper<T> {
 
@@ -38,7 +37,7 @@ public class ArrayMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public Object marshal(Object obj) {
+    public Object unmarshal(Object obj) {
         if (obj == null || !(obj instanceof BasicDBList)) {
             return null;
         }
@@ -49,7 +48,7 @@ public class ArrayMapper<T> extends FieldMapper<T> {
         Object array = Array.newInstance(arrayType, sizes);
         for (int i = 0; i < list.size(); i++) {
             Object value = list.get(i);
-            Object result = mapper.marshal(value);
+            Object result = mapper.unmarshal(value);
             Array.set(array, i, result);
         }
 
@@ -77,7 +76,7 @@ public class ArrayMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public BasicDBList unmarshal(Object obj) {
+    public BasicDBList marshal(Object obj) {
         if (obj == null || !obj.getClass().isArray()) {
             return null;
         }
@@ -87,7 +86,7 @@ public class ArrayMapper<T> extends FieldMapper<T> {
         int length = Array.getLength(obj);
         for (int i = 0; i < length; i++) {
             Object value = Array.get(obj, i);
-            Object result = mapper.unmarshal(value);
+            Object result = mapper.marshal(value);
             list.add(result);
         }
 

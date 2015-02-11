@@ -9,7 +9,6 @@ import me.hfox.morphix.exception.MorphixException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +47,7 @@ public class MapMapper extends FieldMapper<Map> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Map marshal(Object obj) {
+    public Map unmarshal(Object obj) {
         if (obj == null) {
             return null;
         }
@@ -59,8 +58,8 @@ public class MapMapper extends FieldMapper<Map> {
             for (Object object : list) {
                 if (object instanceof DBObject) {
                     DBObject dbObject = (DBObject) object;
-                    Object key = mappers[0].marshal(dbObject.get("key"));
-                    Object value = mappers[1].marshal(dbObject.get("value"));
+                    Object key = mappers[0].unmarshal(dbObject.get("key"));
+                    Object value = mappers[1].unmarshal(dbObject.get("value"));
                     map.put(key, value);
                 }
             }
@@ -70,7 +69,7 @@ public class MapMapper extends FieldMapper<Map> {
     }
 
     @Override
-    public BasicDBList unmarshal(Object obj) {
+    public BasicDBList marshal(Object obj) {
         BasicDBList list = new BasicDBList();
 
         if (obj instanceof Map) {
@@ -79,8 +78,8 @@ public class MapMapper extends FieldMapper<Map> {
                 if (obj2 instanceof Entry) {
                     Entry entry = (Entry) obj2;
                     BasicDBObject dbObject = new BasicDBObject();
-                    dbObject.put("key", mappers[0].unmarshal(entry.getKey()));
-                    dbObject.put("value", mappers[1].unmarshal(entry.getValue()));
+                    dbObject.put("key", mappers[0].marshal(entry.getKey()));
+                    dbObject.put("value", mappers[1].marshal(entry.getValue()));
                     list.add(dbObject);
                 }
             }

@@ -12,7 +12,7 @@ public class EnumMapper<T> extends FieldMapper<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public T marshal(Object obj) {
+    public T unmarshal(Object obj) {
         if (obj == null) {
             return null;
         }
@@ -22,7 +22,7 @@ public class EnumMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public Object unmarshal(Object obj) {
+    public Object marshal(Object obj) {
         if (obj == null) {
             return null;
         }
