@@ -143,12 +143,12 @@ public class EntityMapper<T> extends FieldMapper<T> {
             FieldMapper mapper = entry.getValue();
 
             Object dbResult = object.get(mapper.fieldName);
-            if (dbResult == null && storeNull == null) {
+            if (dbResult == null && (storeNull == null || !storeNull.value())) {
                 continue;
             }
 
             Object value = mapper.unmarshal(object.get(mapper.fieldName));
-            if (storeEmpty == null) {
+            if ((storeEmpty == null || !storeEmpty.value())) {
                 if (value instanceof Collection) {
                     Collection collection = (Collection) value;
                     if (collection.isEmpty()) {
