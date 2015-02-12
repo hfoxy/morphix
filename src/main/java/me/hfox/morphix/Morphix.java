@@ -1,5 +1,6 @@
 package me.hfox.morphix;
 
+import me.hfox.morphix.annotation.entity.Cache;
 import me.hfox.morphix.cache.EntityCache;
 import me.hfox.morphix.cache.EntityCacheImpl;
 import me.hfox.morphix.exception.MorphixException;
@@ -10,6 +11,7 @@ import me.hfox.morphix.helper.polymorphism.DefaultPolymorhpismHelper;
 import me.hfox.morphix.helper.polymorphism.PolymorhpismHelper;
 import me.hfox.morphix.mapping.ObjectMapper;
 import me.hfox.morphix.mapping.ObjectMapperImpl;
+import me.hfox.morphix.util.AnnotationUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -64,6 +66,19 @@ public class Morphix {
 
     public EntityCache getCache() {
         return getCache(MorphixDefaults.DEFAULT_CACHE_NAME);
+    }
+
+    public EntityCache getCache(Class<?> cls) {
+        Cache cache = AnnotationUtils.getHierarchicalAnnotation(cls, Cache.class);
+        if (cache == null) {
+            return getCache();
+        }
+
+        if (!cache.enabled()) {
+            return null;
+        }
+
+        return getCache(cache.value());
     }
 
     public EntityCache getCache(String name) {
