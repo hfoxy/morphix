@@ -274,7 +274,7 @@ public class FieldMapperTest extends TestCase {
     public void testEntityMapper() throws Exception {
         EntityMapper<TestClass> mapper = new EntityMapper<>(TestClass.class, getClass(), getClass().getDeclaredField("testClass"), morphix);
 
-        DBObject dbObject = mapper.marshal(testClass);
+        DBObject dbObject = (DBObject) mapper.marshal(testClass);
         assertEquals(testClass.getTest(), (String) dbObject.get("test"));
 
         BasicDBList list = (BasicDBList) dbObject.get("strings");

@@ -98,26 +98,12 @@ public class EntityMapper<T> extends FieldMapper<T> {
         }
 
         fields = new HashMap<>();
-        Class<?> cls = type;
-        do {
-            for (Field field : cls.getDeclaredFields()) {
-                FieldMapper mapper = create(type, field, morphix);
-                if (mapper != null) {
-                    fields.put(field, mapper);
-                }
+        for (Field field : morphix.getEntityHelper().getFields(type)) {
+            FieldMapper mapper = create(type, field, morphix);
+            if (mapper != null) {
+                fields.put(field, mapper);
             }
-
-            cls = cls.getSuperclass();
-        } while (cont(cls));
-    }
-
-    private boolean cont(Class<?> cls) {
-        if (cls == Object.class) {
-            return false;
         }
-
-        Entity entity = cls.getAnnotation(Entity.class);
-        return entity == null || entity.inheritParentFields();
     }
 
     @Override
@@ -128,10 +114,10 @@ public class EntityMapper<T> extends FieldMapper<T> {
         }
 
         if (reference != null) {
-            if (reference.dbRef() && obj instanceof DBRef) {
+            if (obj instanceof DBRef) {
                 DBRef ref = (DBRef) obj;
                 return null; // TODO: update to fetch using reference
-            } else if (!reference.dbRef() && obj instanceof ObjectId) {
+            } else if (obj instanceof ObjectId) {
                 ObjectId id = (ObjectId) obj;
                 return null;  // TODO: update to fetch using id
             }
@@ -214,9 +200,22 @@ public class EntityMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public DBObject marshal(Object obj) {
+    public Object marshal(Object obj) {
         if (obj == null) {
             return null;
+        }
+
+        if (reference != null) {
+            ObjectId id = morphix.getEntityHelper().getObjectId(obj);
+            if (id == null) {
+                throw new MorphixException("Can't reference an Entity with no id");
+            }
+
+            if (reference.dbRef()) {
+                return new DBRef(null, morphix.getEntityHelper().getCollectionName(obj.getClass()), id);
+            }
+
+            return id;
         }
 
         if (lifecycle != null) {
