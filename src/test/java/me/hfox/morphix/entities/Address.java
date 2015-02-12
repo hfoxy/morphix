@@ -36,7 +36,23 @@ public class Address {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{hash=[" + hashCode() + "], id=[" + id + "], address=[" + address + "], postCode=" + postCode + "}";
+        return getClass().getSimpleName() + "{hash=[" + hashCode() + "], id=[" + id + "], address=[" + address + "], postCode=\"" + postCode + "\"}";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Address) {
+            Address address = (Address) obj;
+
+            boolean equals = address.id.equals(id) && address.postCode.equals(postCode);
+            for (int i = 0; i < address.address.size(); i++) {
+                equals = equals && address.address.get(i).equals(this.address.get(i));
+            }
+
+            return equals;
+        }
+
+        return super.equals(obj);
     }
 
 }

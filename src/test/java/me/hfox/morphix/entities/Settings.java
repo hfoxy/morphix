@@ -24,4 +24,15 @@ public class Settings {
         return getClass().getSimpleName() + "{hash=[" + hashCode() + "], displayAddress=" + displayAddress + "}";
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Settings) {
+            Settings settings = (Settings) obj;
+
+            return settings.displayAddress == displayAddress;
+        }
+
+        return super.equals(obj);
+    }
+
 }

@@ -3,6 +3,8 @@ package me.hfox.morphix.entities;
 import me.hfox.morphix.annotation.Id;
 import me.hfox.morphix.annotation.Reference;
 import me.hfox.morphix.annotation.entity.Entity;
+import me.hfox.morphix.annotation.entity.StoreEmpty;
+import me.hfox.morphix.annotation.entity.StoreNull;
 import me.hfox.morphix.annotation.lifecycle.PostDelete;
 import org.bson.types.ObjectId;
 
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@StoreNull
+@StoreEmpty
 @Entity("users")
 public class User {
 
@@ -69,8 +73,28 @@ public class User {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{hash=[" + hashCode() + "], id=[" + id + "], email=\"[" + email + "\", username=\"[" + username + "\", password=\""
-                + password + "], additional=" + additional + ", addresses=" + addresses + ", settings=" + settings + "}";
+        return getClass().getSimpleName() + "{hash=[" + hashCode() + "], id=[" + id + "], email=\"" + email + "\", username=\"" + username + "\", password=\""
+                + password + "\", additional=" + additional + ", addresses=" + addresses + ", settings=" + settings + "}";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof User) {
+            User user = (User) obj;
+
+            boolean equals = user.id.equals(id) && user.email.equals(email) && user.username.equals(username) && user.password.equals(password) && user.settings.equals(settings);
+            for (int i = 0; i < user.additional.size(); i++) {
+                equals = equals && user.additional.get(i).equals(additional.get(i));
+            }
+
+            for (int i = 0; i < user.addresses.size(); i++) {
+                equals = equals && user.addresses.get(i).equals(addresses.get(i));
+            }
+
+            return equals;
+        }
+
+        return super.equals(obj);
     }
 
 }

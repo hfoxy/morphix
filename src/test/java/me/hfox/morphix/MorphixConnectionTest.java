@@ -5,6 +5,7 @@ import com.mongodb.MongoTimeoutException;
 import junit.framework.TestCase;
 import me.hfox.morphix.entities.Address;
 import me.hfox.morphix.entities.User;
+import me.hfox.morphix.query.Query;
 
 import java.util.Arrays;
 
@@ -24,12 +25,17 @@ public class MorphixConnectionTest extends TestCase {
             morphix.store(address);
 
             User user = new User("email", "username", "password", address);
-            System.out.println(user);
             morphix.store(user);
+            // System.out.println(user.getId());
 
             morphix.getCache(User.class).clear();
-            User queried = morphix.createQuery(User.class).field("email").equal("email").get();
-            System.out.println(queried);
+
+            Query<User> query = morphix.createQuery(User.class).field("_id").equal(user.getId());
+            // System.out.println(query.toQueryObject());
+            User queried = query.get();
+            // System.out.println(queried.getId());
+
+            assertEquals(user, queried);
         } catch (MongoTimeoutException ex) {
             System.out.println("Could not connect to MongoDB server - ignoring tests which require DB connection");
         }

@@ -202,7 +202,7 @@ public class QueryImpl<T> implements Query<T> {
             List<FieldQueryImpl<T>> queries = fields.get(name);
             for (FieldQueryImpl<T> field : queries) {
                 Object object = result.get(name);
-                if (field.getObject() == null) {
+                if (field.getOperator() == null) {
                     if (object != null && object instanceof DBObject) {
                         throw new IllegalQueryException("Equals operators are standalone");
                     }
@@ -215,6 +215,7 @@ public class QueryImpl<T> implements Query<T> {
 
                     DBObject operators = object != null ? (DBObject) object : new BasicDBObject();
                     operators.put(field.getOperator(), field.getObject());
+                    result.put(name, operators);
                 }
             }
         }

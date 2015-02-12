@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 
 public class EntityMapper<T> extends FieldMapper<T> {
 
+    private Class<T> cls;
     private Object suppliedResult;
     
     private Entity entity;
@@ -42,11 +43,12 @@ public class EntityMapper<T> extends FieldMapper<T> {
 
     public EntityMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
         super(type, parent, field, morphix);
+        this.cls = type;
     }
 
     @SuppressWarnings("unchecked")
     public EntityMapper(T result, Morphix morphix) {
-        super((Class<T>) result.getClass(), null, null, morphix);
+        this((Class<T>) result.getClass(), null, null, morphix);
         this.suppliedResult = result;
     }
 
@@ -116,10 +118,10 @@ public class EntityMapper<T> extends FieldMapper<T> {
         if (reference != null) {
             if (obj instanceof DBRef) {
                 DBRef ref = (DBRef) obj;
-                return null; // TODO: update to fetch using reference
+                return morphix.createQuery(cls, ref.getRef()).field("_id").equal(ref.getId()).get();
             } else if (obj instanceof ObjectId) {
                 ObjectId id = (ObjectId) obj;
-                return null;  // TODO: update to fetch using id
+                return morphix.createQuery(cls).field("_id").equal(id).get();
             }
 
             return null;
@@ -167,7 +169,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
             // }
 
             Object value = mapper.unmarshal(dbResult);
-            if ((storeEmpty == null || !storeEmpty.value())) {
+            if (storeEmpty == null || !storeEmpty.value()) {
                 if (value instanceof Collection) {
                     Collection collection = (Collection) value;
                     if (collection.isEmpty()) {
