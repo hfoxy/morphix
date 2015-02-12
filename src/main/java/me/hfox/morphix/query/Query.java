@@ -19,6 +19,10 @@ public interface Query<T> extends Iterator<T> {
 
     public Query<T> and(Query<T>... expressions);
 
+    public void delete();
+
+    public void delete(boolean justOne);
+
     public void update();
 
     public T get();

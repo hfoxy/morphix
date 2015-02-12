@@ -98,6 +98,25 @@ public class QueryImpl<T> implements Query<T> {
     }
 
     @Override
+    public void delete() {
+        delete(false);
+    }
+
+    @Override
+    public void delete(boolean justOne) {
+        if (justOne) {
+            if (getDB() == null) {
+                return;
+            }
+
+            morphix.getDatabase().getCollection(collection).remove(new BasicDBObject("_id", getDB().get("_id")));
+            return;
+        }
+
+        morphix.getDatabase().getCollection(collection).remove(toQueryObject());
+    }
+
+    @Override
     public void update() {
         List<DBObject> list = asDBList();
         for (DBObject object : list) {
