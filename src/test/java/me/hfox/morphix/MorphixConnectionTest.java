@@ -18,7 +18,7 @@ public class MorphixConnectionTest extends TestCase {
         morphix = new Morphix(client, "morphix_testing");
 
         try {
-            morphix.getDatabase().getCollection("users");
+            morphix.getDatabase().getCollection("users").find();
             cont = true;
         } catch (Exception ex) {
             System.out.println("Could not connect to MongoDB server - ignoring tests which require DB connection");
