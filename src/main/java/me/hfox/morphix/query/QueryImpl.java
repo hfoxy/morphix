@@ -253,4 +253,9 @@ public class QueryImpl<T> implements Query<T> {
         return morphix.getMapper().unmarshal(cls, dbObject);
     }
 
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("remove");
+    }
+
 }
