@@ -12,7 +12,7 @@ public class MorphixTest extends TestCase {
     private Morphix morphix;
 
     public void setUp() throws Exception {
-        morphix = new Morphix();
+        morphix = new Morphix(null, null);
     }
 
     public void testCreate() {

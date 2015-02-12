@@ -1,11 +1,11 @@
 package me.hfox.morphix.query;
 
 import com.mongodb.DBObject;
-import me.hfox.morphix.Morphix;
 
+import java.util.Iterator;
 import java.util.List;
 
-public interface Query<T> {
+public interface Query<T> extends Iterator<T> {
 
     public Query<T> where(String where);
 
@@ -19,11 +19,15 @@ public interface Query<T> {
 
     public Query<T> and(Query<T>... expressions);
 
-    public T update();
+    public void update();
 
     public T get();
 
+    public DBObject getDB();
+
     public List<T> asList();
+
+    public List<DBObject> asDBList();
 
     public DBObject toQueryObject();
 

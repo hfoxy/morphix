@@ -26,7 +26,7 @@ public class FieldMapperTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        morphix = new Morphix();
+        morphix = new Morphix(null, null);
 
         map = new HashMap<>();
         map.put("goodbye", 1);

@@ -16,8 +16,9 @@ import java.util.Map;
 public class QueryImpl<T> implements Query<T> {
 
     private Morphix morphix;
-
     private Class<T> cls;
+    private String collection;
+
     private String where;
     private Map<String, List<FieldQueryImpl<T>>> fields;
     private List<Query<T>> orQueries;
@@ -28,8 +29,13 @@ public class QueryImpl<T> implements Query<T> {
     private DBCursor cursor;
 
     public QueryImpl(Morphix morphix, Class<T> cls) {
+        this(morphix, cls, morphix.getEntityHelper().getCollectionName(cls));
+    }
+
+    public QueryImpl(Morphix morphix, Class<T> cls, String collection) {
         this.morphix = morphix;
         this.cls = cls;
+        this.collection = collection;
         this.fields = new HashMap<>();
         this.orQueries = new ArrayList<>();
         this.norQueries = new ArrayList<>();
@@ -92,18 +98,97 @@ public class QueryImpl<T> implements Query<T> {
     }
 
     @Override
-    public T update() {
-        return null;
+    public void update() {
+        List<DBObject> list = asDBList();
+        for (DBObject object : list) {
+            Class<?> cls = morphix.getPolymorhpismHelper().generate(object);
+            if (cls == null) {
+                cls = this.cls;
+            }
+
+            Object cached = morphix.getCache(cls).getEntity(object);
+            if (cached == null) {
+                continue;
+            }
+
+            morphix.getMapper().update(cached, object);
+        }
     }
 
     @Override
     public T get() {
-        return null;
+        return create(getDB());
+    }
+
+    public DBObject getDB() {
+        DBCursor cursor = cursor();
+
+        DBObject result = null;
+        if (cursor.hasNext()) {
+            result = cursor.next();
+        }
+
+        return result;
     }
 
     @Override
     public List<T> asList() {
-        return null;
+        List<DBObject> objects = asDBList();
+        List<T> results = new ArrayList<>();
+        for (DBObject object : objects) {
+            results.add(create(object));
+        }
+
+        return results;
+    }
+
+    public List<DBObject> asDBList() {
+        DBCursor cursor = cursor();
+
+        List<DBObject> objects = new ArrayList<>();
+        while (cursor.hasNext()) {
+            objects.add(cursor.next());
+        }
+
+        return objects;
+    }
+
+    public DBCursor cursor() {
+        DBCursor cursor = morphix.getDatabase().getCollection(collection).find(toQueryObject());
+        if (order != null) {
+            BasicDBObject sort = new BasicDBObject();
+            for (String string : order) {
+                boolean desc = false;
+                if (string.startsWith("-")) {
+                    desc = true;
+                    string = string.substring(1);
+                }
+
+                sort.put(string, desc ? -1 : 1);
+            }
+
+            cursor.sort(sort);
+        }
+
+        return (this.cursor = cursor);
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (cursor == null) {
+            cursor();
+        }
+
+        return cursor.hasNext();
+    }
+
+    @Override
+    public T next() {
+        if (cursor == null) {
+            cursor();
+        }
+
+        return create(cursor.next());
     }
 
     @Override
@@ -162,6 +247,10 @@ public class QueryImpl<T> implements Query<T> {
         }
 
         return result;
+    }
+
+    public T create(DBObject dbObject) {
+        return morphix.getMapper().unmarshal(cls, dbObject);
     }
 
 }

@@ -1,5 +1,7 @@
 package me.hfox.morphix;
 
+import com.mongodb.DB;
+import com.mongodb.MongoClient;
 import me.hfox.morphix.annotation.entity.Cache;
 import me.hfox.morphix.cache.EntityCache;
 import me.hfox.morphix.cache.EntityCacheImpl;
@@ -20,6 +22,9 @@ import java.util.Map;
 
 public class Morphix {
 
+    private MongoClient connection;
+    private DB database;
+
     private MorphixOptions options;
     private ObjectMapper mapper;
     private Map<String, EntityCache> caches;
@@ -28,19 +33,21 @@ public class Morphix {
     private Map<Class<? extends NameHelper>, NameHelper> nameHelpers;
     private PolymorhpismHelper polymorhpismHelper;
 
-    public Morphix() {
-        this(null, null);
+    public Morphix(MongoClient client, String database) {
+        this(client, database, null, null);
     }
 
-    public Morphix(MorphixOptions options) {
-        this(options, null);
+    public Morphix(MongoClient client, String database, MorphixOptions options) {
+        this(client, database, options, null);
     }
 
-    public Morphix(ObjectMapper mapper) {
-        this(null, mapper);
+    public Morphix(MongoClient client, String database, ObjectMapper mapper) {
+        this(client, database, null, mapper);
     }
 
-    public Morphix(MorphixOptions options, ObjectMapper mapper) {
+    public Morphix(MongoClient client, String database, MorphixOptions options, ObjectMapper mapper) {
+        this.connection = client;
+        this.database = connection.getDB(database);
         this.options = (options == null ? MorphixOptions.builder().build() : options);
         this.mapper = (mapper == null ? new ObjectMapperImpl() : mapper);
         this.caches = new HashMap<>();
@@ -50,6 +57,14 @@ public class Morphix {
         getNameHelper(MorphixDefaults.DEFAULT_NAME_HELPER);
 
         this.polymorhpismHelper = new DefaultPolymorhpismHelper();
+    }
+
+    public MongoClient getConnection() {
+        return connection;
+    }
+
+    public DB getDatabase() {
+        return database;
     }
 
     public MorphixOptions getOptions() {
