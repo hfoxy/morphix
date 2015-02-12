@@ -22,10 +22,12 @@ public class MorphixConnectionTest extends TestCase {
         morphix.store(address);
 
         User user = new User("email", "username", "password", address);
+        System.out.println(user);
         morphix.store(user);
 
         morphix.getCache(User.class).clear();
         User queried = morphix.createQuery(User.class).field("email").equal("email").get();
+        System.out.println(queried);
     }
 
 }

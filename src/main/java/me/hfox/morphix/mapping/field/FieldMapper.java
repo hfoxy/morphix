@@ -3,6 +3,7 @@ package me.hfox.morphix.mapping.field;
 import com.mongodb.DBObject;
 import me.hfox.morphix.Morphix;
 import me.hfox.morphix.MorphixDefaults;
+import me.hfox.morphix.annotation.Id;
 import me.hfox.morphix.annotation.Property;
 import me.hfox.morphix.annotation.Transient;
 import me.hfox.morphix.annotation.entity.Entity;
@@ -59,6 +60,11 @@ public abstract class FieldMapper<T> {
 
             if (name == null || name.equals(MorphixDefaults.DEFAULT_FIELD_NAME)) {
                 name = AnnotationUtils.getFieldName(field);
+            }
+
+            Id id = field.getAnnotation(Id.class);
+            if (id != null) {
+                name = "_id";
             }
 
             fieldName = name;
