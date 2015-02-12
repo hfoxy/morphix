@@ -1,5 +1,7 @@
 package me.hfox.morphix;
 
+import me.hfox.morphix.cache.EntityCache;
+import me.hfox.morphix.cache.EntityCacheImpl;
 import me.hfox.morphix.exception.MorphixException;
 import me.hfox.morphix.helper.entity.DefaultEntityHelper;
 import me.hfox.morphix.helper.entity.EntityHelper;
@@ -18,6 +20,7 @@ public class Morphix {
 
     private MorphixOptions options;
     private ObjectMapper mapper;
+    private Map<String, EntityCache> caches;
 
     private EntityHelper entityHelper;
     private Map<Class<? extends NameHelper>, NameHelper> nameHelpers;
@@ -38,6 +41,7 @@ public class Morphix {
     public Morphix(MorphixOptions options, ObjectMapper mapper) {
         this.options = (options == null ? MorphixOptions.builder().build() : options);
         this.mapper = (mapper == null ? new ObjectMapperImpl() : mapper);
+        this.caches = new HashMap<>();
 
         this.entityHelper = new DefaultEntityHelper(this);
         this.nameHelpers = new HashMap<>();
@@ -52,6 +56,32 @@ public class Morphix {
 
     public ObjectMapper getMapper() {
         return mapper;
+    }
+
+    public Map<String, EntityCache> getCaches() {
+        return caches;
+    }
+
+    public EntityCache getCache() {
+        return getCache(MorphixDefaults.DEFAULT_CACHE_NAME);
+    }
+
+    public EntityCache getCache(String name) {
+        EntityCache cache = caches.get(name);
+        if (cache == null) {
+            cache = new EntityCacheImpl(this);
+            caches.put(name, cache);
+        }
+
+        return cache;
+    }
+
+    public boolean hasCache(String name) {
+        return caches.get(name) != null;
+    }
+
+    public void setCache(String name, EntityCache cache) {
+        caches.put(name, cache);
     }
 
     public EntityHelper getEntityHelper() {
