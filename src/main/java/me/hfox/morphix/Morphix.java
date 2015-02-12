@@ -1,6 +1,7 @@
 package me.hfox.morphix;
 
 import com.mongodb.DB;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import me.hfox.morphix.annotation.entity.Cache;
 import me.hfox.morphix.cache.EntityCache;
@@ -13,7 +14,10 @@ import me.hfox.morphix.helper.polymorphism.DefaultPolymorhpismHelper;
 import me.hfox.morphix.helper.polymorphism.PolymorhpismHelper;
 import me.hfox.morphix.mapping.ObjectMapper;
 import me.hfox.morphix.mapping.ObjectMapperImpl;
+import me.hfox.morphix.query.Query;
+import me.hfox.morphix.query.QueryImpl;
 import me.hfox.morphix.util.AnnotationUtils;
+import org.bson.types.ObjectId;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -47,9 +51,12 @@ public class Morphix {
 
     public Morphix(MongoClient client, String database, MorphixOptions options, ObjectMapper mapper) {
         this.connection = client;
-        this.database = connection.getDB(database);
+        if (connection != null) {
+            this.database = connection.getDB(database);
+        }
+
         this.options = (options == null ? MorphixOptions.builder().build() : options);
-        this.mapper = (mapper == null ? new ObjectMapperImpl() : mapper);
+        this.mapper = (mapper == null ? new ObjectMapperImpl(this) : mapper);
         this.caches = new HashMap<>();
 
         this.entityHelper = new DefaultEntityHelper(this);
@@ -151,6 +158,32 @@ public class Morphix {
 
     public void setPolymorhpismHelper(PolymorhpismHelper polymorhpismHelper) {
         this.polymorhpismHelper = polymorhpismHelper;
+    }
+
+    public Query<Object> createQuery() {
+        return new QueryImpl<>(this, Object.class);
+    }
+
+    public <T> Query<T> createQuery(Class<T> cls) {
+        return new QueryImpl<>(this, cls);
+    }
+
+    public <T> Query<T> createQuery(Class<T> cls, String collection) {
+        return new QueryImpl<>(this, cls, collection);
+    }
+
+    public void store(Object object) {
+        store(object, getEntityHelper().getCollectionName(object.getClass()));
+    }
+
+    public void store(Object object, String collection) {
+        DBObject dbObject = getMapper().marshal(object);
+        database.getCollection(collection).insert(dbObject);
+
+        ObjectId id = (ObjectId) dbObject.get("_id");
+        getEntityHelper().setObjectId(object, id);
+
+        getCache(object.getClass()).put(object);
     }
 
 }

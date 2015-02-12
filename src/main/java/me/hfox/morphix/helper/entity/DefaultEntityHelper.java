@@ -46,6 +46,11 @@ public class DefaultEntityHelper implements EntityHelper {
 
     @Override
     public ObjectId getObjectId(Object object) {
+        return getObjectId(object, false);
+    }
+
+    @Override
+    public ObjectId getObjectId(Object object, boolean error) {
         for (Field field : getFields(object)) {
             if (field.getAnnotation(Id.class) != null) {
                 try {
@@ -56,7 +61,24 @@ public class DefaultEntityHelper implements EntityHelper {
             }
         }
 
+        if (error) {
+            throw new MorphixException("No @Id found for " + object.getClass().getSimpleName());
+        }
+
         return null;
+    }
+
+    @Override
+    public void setObjectId(Object object, ObjectId id) {
+        for (Field field : getFields(object)) {
+            if (field.getAnnotation(Id.class) != null) {
+                try {
+                    field.set(object, id);
+                } catch (IllegalAccessException ex) {
+                    throw new MorphixException(ex);
+                }
+            }
+        }
     }
 
     public List<Field> getFields(Object object) {
@@ -67,7 +89,10 @@ public class DefaultEntityHelper implements EntityHelper {
         List<Field> fields = new ArrayList<>();
 
         do {
-            Collections.addAll(fields, clazz.getDeclaredFields());
+            for (Field field : clazz.getDeclaredFields()) {
+                field.setAccessible(true);
+                fields.add(field);
+            }
 
             clazz = clazz.getSuperclass();
         } while (cont(clazz));

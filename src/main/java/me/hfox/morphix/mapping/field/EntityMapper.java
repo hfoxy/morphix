@@ -206,10 +206,10 @@ public class EntityMapper<T> extends FieldMapper<T> {
         }
 
         if (reference != null) {
-            ObjectId id = morphix.getEntityHelper().getObjectId(obj);
-            if (id == null) {
-                throw new MorphixException("Can't reference an Entity with no id");
-            }
+            ObjectId id = morphix.getEntityHelper().getObjectId(obj, true);
+            // if (id == null) {
+            //     throw new MorphixException("Can't reference an Entity with no id");
+            // }
 
             if (reference.dbRef()) {
                 return new DBRef(null, morphix.getEntityHelper().getCollectionName(obj.getClass()), id);

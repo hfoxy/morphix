@@ -15,4 +15,6 @@ public interface EntityCache {
 
     public Object getEntity(ObjectId id);
 
+    public void clear();
+
 }

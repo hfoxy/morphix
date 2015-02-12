@@ -53,4 +53,9 @@ public class EntityCacheImpl implements EntityCache {
         return cache.get(id);
     }
 
+    @Override
+    public void clear() {
+        cache.clear();
+    }
+
 }

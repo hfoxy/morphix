@@ -14,6 +14,10 @@ public interface EntityHelper {
 
     public ObjectId getObjectId(Object object);
 
+    public ObjectId getObjectId(Object object, boolean error);
+
+    public void setObjectId(Object object, ObjectId id);
+
     public List<Field> getFields(Class<?> clazz);
 
     public List<Field> getFields(Object object);
