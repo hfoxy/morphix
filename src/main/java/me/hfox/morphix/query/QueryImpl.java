@@ -11,6 +11,7 @@ import me.hfox.morphix.annotation.lifecycle.PostUpdate;
 import me.hfox.morphix.annotation.lifecycle.PreDelete;
 import me.hfox.morphix.annotation.lifecycle.PreUpdate;
 import me.hfox.morphix.exception.query.IllegalQueryException;
+import me.hfox.morphix.mapping.field.FieldMapper;
 import me.hfox.morphix.util.AnnotationUtils;
 
 import java.util.ArrayList;
@@ -46,6 +47,10 @@ public class QueryImpl<T> implements Query<T> {
         this.orQueries = new ArrayList<>();
         this.norQueries = new ArrayList<>();
         this.andQueries = new ArrayList<>();
+    }
+
+    public Class<T> getQueryType() {
+        return cls;
     }
 
     @Override
@@ -335,7 +340,16 @@ public class QueryImpl<T> implements Query<T> {
             return null;
         }
 
-        T entity = (T) morphix.getCache(cls).getEntity(dbObject);
+        Object result = morphix.getCache(cls).getEntity(dbObject);
+
+        T entity = null;
+        try {
+            entity = (T) result;
+        } catch (ClassCastException ex) {
+            System.out.println("Cached entity could not be cast to " + cls.getName());
+            ex.printStackTrace();
+        }
+
         if (entity != null) {
             return entity;
         }

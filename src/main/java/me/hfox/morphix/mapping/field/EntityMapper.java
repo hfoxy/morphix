@@ -11,7 +11,6 @@ import me.hfox.morphix.annotation.entity.Entity;
 import me.hfox.morphix.annotation.entity.StoreEmpty;
 import me.hfox.morphix.annotation.entity.StoreNull;
 import me.hfox.morphix.annotation.entity.Polymorph;
-import me.hfox.morphix.annotation.lifecycle.Lifecycle;
 import me.hfox.morphix.annotation.lifecycle.PostLoad;
 import me.hfox.morphix.annotation.lifecycle.PreLoad;
 import me.hfox.morphix.exception.MorphixException;
@@ -21,7 +20,6 @@ import sun.reflect.ReflectionFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,13 +87,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
             notSaved = field.getAnnotation(NotSaved.class);
         }
 
-        fields = new HashMap<>();
-        for (Field field : morphix.getEntityHelper().getFields(type)) {
-            FieldMapper mapper = create(type, field, morphix);
-            if (mapper != null) {
-                fields.put(field, mapper);
-            }
-        }
+        fields = getFields(type);
     }
 
     @Override
@@ -128,35 +120,50 @@ public class EntityMapper<T> extends FieldMapper<T> {
 
         DBObject object = (DBObject) obj;
         Class<?> cls = polymorphEnabled ? morphix.getPolymorhpismHelper().generate(object) : type;
+        if (cls == null) {
+            cls = type;
+        }
 
-        Object result;
-
+        Object result = null;
         try {
-            ReflectionFactory factory = ReflectionFactory.getReflectionFactory();
-            Constructor empty = Object.class.getDeclaredConstructor();
-            Constructor constructor = factory.newConstructorForSerialization(cls, empty);
+            result = cls.newInstance();
+        } catch (Exception ex) {}
 
-            result = constructor.newInstance();
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException ex) {
-            throw new MorphixException(ex);
+        if (result == null) {
+            final ReflectionFactory reflection = ReflectionFactory.getReflectionFactory();
+            final Constructor constructor;
+            try {
+                // System.out.println("Class: " + cls);
+                constructor = reflection.newConstructorForSerialization(cls, Object.class.getDeclaredConstructor());
+                // System.out.println("Constructor: " + constructor);
+                result = constructor.newInstance();
+                // System.out.println("Result: " + result);
+            } catch (Exception ex) {
+                throw new MorphixException(ex);
+            }
         }
         
         if (lifecycle) {
             morphix.getLifecycleHelper().call(PreLoad.class, result);
         }
 
+        Map<Field, FieldMapper> fields = getFields(cls);
         for (Entry<Field, FieldMapper> entry : fields.entrySet()) {
             Field field = entry.getKey();
+            // System.out.println("Attempting to pull " + field);
+
             field.setAccessible(true);
 
             FieldMapper mapper = entry.getValue();
 
             Object dbResult = object.get(mapper.fieldName);
+            // System.out.println("Result: " + dbResult);
             // if (dbResult == null && (storeNull == null || !storeNull.value())) {
             //     continue;
             // }
 
             Object value = mapper.unmarshal(dbResult);
+            // System.out.println("Mapped: " + value);
             if (storeEmpty == null || !storeEmpty.value()) {
                 if (value instanceof Collection) {
                     Collection collection = (Collection) value;
@@ -191,6 +198,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
             return null;
         }
 
+        Class<?> cls = obj.getClass();
         if (reference != null) {
             ObjectId id = morphix.getEntityHelper().getObjectId(obj, true);
             // if (id == null) {
@@ -209,6 +217,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
             morphix.getPolymorhpismHelper().store(document, obj.getClass());
         }
 
+        Map<Field, FieldMapper> fields = getFields(cls);
         for (Entry<Field, FieldMapper> entry : fields.entrySet()) {
             Field field = entry.getKey();
             field.setAccessible(true);
@@ -245,6 +254,22 @@ public class EntityMapper<T> extends FieldMapper<T> {
         }
 
         return document;
+    }
+
+    private Map<Field, FieldMapper> getFields(Class<?> cls) {
+        if (cls.equals(type) && fields != null) {
+            return fields;
+        }
+
+        Map<Field, FieldMapper> fields = new HashMap<>();
+        for (Field field : morphix.getEntityHelper().getFields(cls)) {
+            FieldMapper mapper = createFromField(cls, field, morphix);
+            if (mapper != null) {
+                fields.put(field, mapper);
+            }
+        }
+
+        return fields;
     }
 
 }

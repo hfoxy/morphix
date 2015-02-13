@@ -11,10 +11,14 @@ import me.hfox.morphix.util.AnnotationUtils;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public abstract class FieldMapper<T> {
 
+    private static FieldMappers mappers = new FieldMappers();
+
+    protected FieldData data;
     protected Class<?> type;
     protected Class<?> parent;
     protected Field field;
@@ -26,10 +30,12 @@ public abstract class FieldMapper<T> {
     }
 
     public FieldMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix, boolean discover) {
+        this.data = new FieldData(type, parent, field, morphix);
         this.type = type;
         this.parent = parent;
         this.field = field;
         this.morphix = morphix;
+        mappers.put(data, this);
 
         if (discover) {
             discover();
@@ -128,6 +134,11 @@ public abstract class FieldMapper<T> {
     public static <T> FieldMapper<T> createFromField(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
         if (field != null && field.getAnnotation(Transient.class) != null) {
             return null;
+        }
+
+        FieldMapper<T> mapper = mappers.get(new FieldData(type, parent, field, morphix));
+        if (mapper != null) {
+            return mapper;
         }
 
         if (type.isEnum()) {

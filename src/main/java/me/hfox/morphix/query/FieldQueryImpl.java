@@ -98,7 +98,7 @@ public class FieldQueryImpl<T> implements FieldQuery<T> {
                 continue;
             }
 
-            FieldMapper mapper = FieldMapper.create(object.getClass(), null, morphix);
+            FieldMapper mapper = FieldMapper.createFromField(object.getClass(), null, morphix);
             list.add(mapper.marshal(object));
         }
 

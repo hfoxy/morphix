@@ -34,7 +34,7 @@ public class ArrayMapper<T> extends FieldMapper<T> {
 
         arrayType = cls;
         Class<?> component = type.getComponentType();
-        mapper = component.isArray() ? new ArrayMapper<>(component, this) : FieldMapper.create(component, parent, field, morphix);
+        mapper = component.isArray() ? new ArrayMapper<>(component, this) : FieldMapper.createFromField(component, parent, field, morphix);
     }
 
     @Override

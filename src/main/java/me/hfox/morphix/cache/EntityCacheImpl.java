@@ -45,7 +45,7 @@ public class EntityCacheImpl implements EntityCache {
             return null;
         }
 
-        if (!result.isAssignableFrom(cached.getClass())) {
+        if (result != null && !result.isAssignableFrom(cached.getClass())) {
             // TODO: display warning that cache has been updated with a new entity
             return null;
         }

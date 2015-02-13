@@ -17,9 +17,13 @@ public class DefaultPolymorhpismHelper implements PolymorhpismHelper {
 
     @Override
     public Class<?> generate(String string) {
+        if (string == null) {
+            return null;
+        }
+
         try {
             return Class.forName(string);
-        } catch (ClassNotFoundException ex) {
+        } catch (NullPointerException | ClassNotFoundException ex) {
             throw new MorphixException(ex);
         }
     }

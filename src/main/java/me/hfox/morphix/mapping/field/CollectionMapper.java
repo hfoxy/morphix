@@ -43,7 +43,7 @@ public class CollectionMapper extends FieldMapper<Collection> {
         mapper = null;
         if (type instanceof Class) {
             Class<?> cls = (Class) type;
-            mapper = FieldMapper.create(cls, parent, field, morphix);
+            mapper = FieldMapper.createFromField(cls, parent, field, morphix);
         } else if (type instanceof ParameterizedType) {
             ParameterizedType param = (ParameterizedType) type;
             if (param.getRawType() instanceof Class) {
