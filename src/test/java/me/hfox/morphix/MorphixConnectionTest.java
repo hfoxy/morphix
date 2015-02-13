@@ -31,11 +31,15 @@ public class MorphixConnectionTest extends TestCase {
             morphix.store(user); // save
             // System.out.println(user.getId());
 
+            Query<User> query = morphix.createQuery(User.class).field("_id").equal(user.getId());
+            User queried = query.get();
+            assertSame(user, queried);
+
             morphix.getCache(User.class).clear();
 
-            Query<User> query = morphix.createQuery(User.class).field("_id").equal(user.getId());
+            query = morphix.createQuery(User.class).field("_id").equal(user.getId());
             // System.out.println(query.toQueryObject());
-            User queried = query.get();
+            queried = query.get();
             // System.out.println(queried.getId());
 
             assertEquals(user, queried);
