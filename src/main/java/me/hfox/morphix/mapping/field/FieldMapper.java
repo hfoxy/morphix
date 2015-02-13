@@ -83,14 +83,22 @@ public abstract class FieldMapper<T> {
         field.set(toMap, store);
     }
 
-    public abstract Object unmarshal(Object obj);
+    public Object unmarshal(Object obj) {
+        return unmarshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    public abstract Object unmarshal(Object obj, boolean lifecycle);
 
     public void marshal(DBObject dbObject, Object toMap) throws IllegalAccessException {
         Object value = field.get(toMap);
         dbObject.put(fieldName, marshal(value));
     }
 
-    public abstract Object marshal(Object obj);
+    public Object marshal(Object obj) {
+        return marshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    public abstract Object marshal(Object obj, boolean lifecycle);
 
     public static FieldMapper create(Class<?> parent, Field field, Morphix morphix) {
         return create(field == null ? parent : field.getType(), parent, field, morphix);

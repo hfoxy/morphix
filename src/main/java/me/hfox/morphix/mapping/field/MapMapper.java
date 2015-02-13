@@ -4,6 +4,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import me.hfox.morphix.Morphix;
+import me.hfox.morphix.MorphixDefaults;
 import me.hfox.morphix.exception.MorphixException;
 
 import java.lang.reflect.Field;
@@ -46,8 +47,13 @@ public class MapMapper extends FieldMapper<Map> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Map unmarshal(Object obj) {
+        return unmarshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Map unmarshal(Object obj, boolean lifecycle) {
         if (obj == null) {
             return null;
         }
@@ -70,6 +76,11 @@ public class MapMapper extends FieldMapper<Map> {
 
     @Override
     public BasicDBList marshal(Object obj) {
+        return marshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    @Override
+    public BasicDBList marshal(Object obj, boolean lifecycle) {
         BasicDBList list = new BasicDBList();
 
         if (obj instanceof Map) {

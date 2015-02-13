@@ -1,14 +1,23 @@
 package me.hfox.morphix;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import me.hfox.morphix.annotation.entity.Cache;
+import me.hfox.morphix.annotation.lifecycle.PostCreate;
+import me.hfox.morphix.annotation.lifecycle.PostSave;
+import me.hfox.morphix.annotation.lifecycle.PostUpdate;
+import me.hfox.morphix.annotation.lifecycle.PreCreate;
+import me.hfox.morphix.annotation.lifecycle.PreSave;
+import me.hfox.morphix.annotation.lifecycle.PreUpdate;
 import me.hfox.morphix.cache.EntityCache;
 import me.hfox.morphix.cache.EntityCacheImpl;
 import me.hfox.morphix.exception.MorphixException;
 import me.hfox.morphix.helper.entity.DefaultEntityHelper;
 import me.hfox.morphix.helper.entity.EntityHelper;
+import me.hfox.morphix.helper.lifecycle.LifecycleHelper;
+import me.hfox.morphix.helper.lifecycle.DefaultLifecycleHelper;
 import me.hfox.morphix.helper.name.NameHelper;
 import me.hfox.morphix.helper.polymorphism.DefaultPolymorhpismHelper;
 import me.hfox.morphix.helper.polymorphism.PolymorhpismHelper;
@@ -36,6 +45,7 @@ public class Morphix {
     private EntityHelper entityHelper;
     private Map<Class<? extends NameHelper>, NameHelper> nameHelpers;
     private PolymorhpismHelper polymorhpismHelper;
+    private LifecycleHelper lifecycleHelper;
 
     public Morphix(MongoClient client, String database) {
         this(client, database, null, null);
@@ -64,6 +74,7 @@ public class Morphix {
         getNameHelper(MorphixDefaults.DEFAULT_NAME_HELPER);
 
         this.polymorhpismHelper = new DefaultPolymorhpismHelper();
+        this.lifecycleHelper = new DefaultLifecycleHelper(this);
     }
 
     public MongoClient getConnection() {
@@ -160,6 +171,14 @@ public class Morphix {
         this.polymorhpismHelper = polymorhpismHelper;
     }
 
+    public LifecycleHelper getLifecycleHelper() {
+        return lifecycleHelper;
+    }
+
+    public void setLifecycleHelper(LifecycleHelper lifecycleHelper) {
+        this.lifecycleHelper = lifecycleHelper;
+    }
+
     public Query<Object> createQuery() {
         return new QueryImpl<>(this, Object.class);
     }
@@ -177,13 +196,34 @@ public class Morphix {
     }
 
     public void store(Object object, String collection) {
+        if (object == null) {
+            throw new MorphixException("Can't store null object in collection");
+        }
+
+        if (collection == null) {
+            throw new MorphixException("Can't store object in a null collection");
+        }
+
         DBObject dbObject = getMapper().marshal(object);
-        database.getCollection(collection).insert(dbObject);
+        if (dbObject.get("_id") == null) {
+            database.getCollection(collection).insert(dbObject);
 
-        ObjectId id = (ObjectId) dbObject.get("_id");
-        getEntityHelper().setObjectId(object, id);
+            ObjectId id = (ObjectId) dbObject.get("_id");
+            getEntityHelper().setObjectId(object, id);
 
-        getCache(object.getClass()).put(object);
+            getLifecycleHelper().call(PreCreate.class, object);
+            getCache(object.getClass()).put(object);
+            getLifecycleHelper().call(PostCreate.class, object);
+        } else {
+            ObjectId id = (ObjectId) dbObject.get("_id");
+
+            DBObject update = new BasicDBObject(dbObject.toMap());
+            update.removeField("_id");
+
+            getLifecycleHelper().call(PreSave.class, object);
+            database.getCollection(collection).update(new BasicDBObject("_id", id), update);
+            getLifecycleHelper().call(PostSave.class, object);
+        }
     }
 
 }

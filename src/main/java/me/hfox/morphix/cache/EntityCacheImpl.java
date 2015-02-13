@@ -30,6 +30,10 @@ public class EntityCacheImpl implements EntityCache {
     }
 
     public Object getEntity(DBObject object) {
+        if (object == null) {
+            return null;
+        }
+
         ObjectId id = (ObjectId) object.get("_id");
         if (id == null) {
             return null;

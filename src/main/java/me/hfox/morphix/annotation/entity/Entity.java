@@ -15,7 +15,7 @@ public @interface Entity {
 
     public String value() default MorphixDefaults.DEFAULT_COLLECTION_NAME;
 
-    public boolean createOnDelete() default true;
+    public boolean createOnDelete() default false;
 
     public boolean inheritParentFields() default true;
 

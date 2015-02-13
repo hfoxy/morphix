@@ -1,6 +1,7 @@
 package me.hfox.morphix.mapping.field;
 
 import me.hfox.morphix.Morphix;
+import me.hfox.morphix.MorphixDefaults;
 
 import java.lang.reflect.Field;
 
@@ -11,8 +12,13 @@ public class EnumMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public T unmarshal(Object obj) {
+        return unmarshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public T unmarshal(Object obj, boolean lifecycle) {
         if (obj == null) {
             return null;
         }
@@ -22,7 +28,7 @@ public class EnumMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public Object marshal(Object obj) {
+    public Object marshal(Object obj, boolean lifecycle) {
         if (obj == null) {
             return null;
         }

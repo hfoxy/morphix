@@ -6,11 +6,19 @@ public interface ObjectMapper {
 
     public DBObject marshal(Object obj);
 
+    public DBObject marshal(Object obj, boolean lifecycle);
+
     public DBObject marshal(Class<?> cls, Object object);
+
+    public DBObject marshal(Class<?> cls, Object object, boolean lifecycle);
 
     public Object unmarshal(DBObject object);
 
+    public Object unmarshal(DBObject object, boolean lifecycle);
+
     public <T> T unmarshal(Class<T> cls, DBObject object);
+
+    public <T> T unmarshal(Class<T> cls, DBObject object, boolean lifecycle);
 
     public <T> T update(T object, DBObject dbObject);
 

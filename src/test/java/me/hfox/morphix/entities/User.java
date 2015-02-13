@@ -5,6 +5,7 @@ import me.hfox.morphix.annotation.Reference;
 import me.hfox.morphix.annotation.entity.Entity;
 import me.hfox.morphix.annotation.entity.StoreEmpty;
 import me.hfox.morphix.annotation.entity.StoreNull;
+import me.hfox.morphix.annotation.lifecycle.Lifecycle;
 import me.hfox.morphix.annotation.lifecycle.PostDelete;
 import org.bson.types.ObjectId;
 
@@ -14,6 +15,7 @@ import java.util.List;
 
 @StoreNull
 @StoreEmpty
+@Lifecycle
 @Entity("users")
 public class User {
 
@@ -48,6 +50,10 @@ public class User {
 
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

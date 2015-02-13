@@ -2,6 +2,7 @@ package me.hfox.morphix.mapping.field;
 
 import com.mongodb.BasicDBList;
 import me.hfox.morphix.Morphix;
+import me.hfox.morphix.MorphixDefaults;
 import me.hfox.morphix.exception.MorphixException;
 
 import java.lang.reflect.Field;
@@ -61,8 +62,13 @@ public class CollectionMapper extends FieldMapper<Collection> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Collection unmarshal(Object obj) {
+        return unmarshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection unmarshal(Object obj, boolean lifecycle) {
         if (obj == null) {
             return null;
         }
@@ -80,6 +86,11 @@ public class CollectionMapper extends FieldMapper<Collection> {
 
     @Override
     public BasicDBList marshal(Object obj) {
+        return marshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    @Override
+    public BasicDBList marshal(Object obj, boolean lifecycle) {
         BasicDBList list = new BasicDBList();
 
         if (obj instanceof Collection) {

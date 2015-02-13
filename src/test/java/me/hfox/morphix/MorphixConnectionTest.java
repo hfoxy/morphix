@@ -25,7 +25,10 @@ public class MorphixConnectionTest extends TestCase {
             morphix.store(address);
 
             User user = new User("email", "username", "password", address);
-            morphix.store(user);
+            morphix.store(user); // create
+
+            user.setUsername("testing");
+            morphix.store(user); // save
             // System.out.println(user.getId());
 
             morphix.getCache(User.class).clear();
@@ -36,6 +39,13 @@ public class MorphixConnectionTest extends TestCase {
             // System.out.println(queried.getId());
 
             assertEquals(user, queried);
+
+            query = morphix.createQuery(User.class).field("_id").equal(user.getId());
+            query.delete();
+
+            assertNull(queried.getPassword());
+            queried = query.get();
+            assertNull(queried);
         } catch (MongoTimeoutException ex) {
             System.out.println("Could not connect to MongoDB server - ignoring tests which require DB connection");
         }

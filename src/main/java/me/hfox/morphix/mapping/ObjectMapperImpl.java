@@ -2,6 +2,7 @@ package me.hfox.morphix.mapping;
 
 import com.mongodb.DBObject;
 import me.hfox.morphix.Morphix;
+import me.hfox.morphix.MorphixDefaults;
 import me.hfox.morphix.exception.MorphixException;
 import me.hfox.morphix.mapping.field.EntityMapper;
 
@@ -31,16 +32,31 @@ public class ObjectMapperImpl implements ObjectMapper {
 
     @Override
     public DBObject marshal(Object obj) {
-        return marshal(obj.getClass(), obj);
+        return marshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    @Override
+    public DBObject marshal(Object obj, boolean lifecycle) {
+        return marshal(obj.getClass(), obj, lifecycle);
     }
 
     @Override
     public DBObject marshal(Class<?> cls, Object object) {
-        return (DBObject) getMapper(cls).marshal(object);
+        return marshal(cls, object, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    @Override
+    public DBObject marshal(Class<?> cls, Object object, boolean lifecycle) {
+        return (DBObject) getMapper(cls).marshal(object, lifecycle);
     }
 
     @Override
     public Object unmarshal(DBObject object) {
+        return unmarshal(object, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    @Override
+    public Object unmarshal(DBObject object, boolean lifecycle) {
         Class<?> cls = morphix.getPolymorhpismHelper().generate(object);
         if (cls == null) {
             throw new MorphixException("Document does not represent a polymorphic entity");
@@ -51,7 +67,14 @@ public class ObjectMapperImpl implements ObjectMapper {
 
     @Override
     public <T> T unmarshal(Class<T> cls, DBObject object) {
-        return getMapper(cls).unmarshal(object);
+        return unmarshal(cls, object, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    @Override
+    public <T> T unmarshal(Class<T> cls, DBObject object, boolean lifecycle) {
+        T entity = getMapper(cls).unmarshal(object, lifecycle);
+        morphix.getCache(cls).put(entity);
+        return entity;
     }
 
     @Override

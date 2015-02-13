@@ -2,6 +2,7 @@ package me.hfox.morphix.mapping.field;
 
 import com.mongodb.BasicDBList;
 import me.hfox.morphix.Morphix;
+import me.hfox.morphix.MorphixDefaults;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -37,7 +38,7 @@ public class ArrayMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public Object unmarshal(Object obj) {
+    public Object unmarshal(Object obj, boolean lifecycle) {
         if (obj == null || !(obj instanceof BasicDBList)) {
             return null;
         }
@@ -77,6 +78,11 @@ public class ArrayMapper<T> extends FieldMapper<T> {
 
     @Override
     public BasicDBList marshal(Object obj) {
+        return marshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    @Override
+    public BasicDBList marshal(Object obj, boolean lifecycle) {
         if (obj == null || !obj.getClass().isArray()) {
             return null;
         }

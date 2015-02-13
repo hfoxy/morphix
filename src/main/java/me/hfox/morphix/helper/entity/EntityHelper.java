@@ -3,10 +3,14 @@ package me.hfox.morphix.helper.entity;
 import me.hfox.morphix.annotation.entity.Entity;
 import org.bson.types.ObjectId;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 
 public interface EntityHelper {
+
+    public List<Class<? extends Annotation>> getLifecycleAnnotations();
 
     public String getCollectionName(Class<?> clazz);
 
@@ -21,5 +25,9 @@ public interface EntityHelper {
     public List<Field> getFields(Class<?> clazz);
 
     public List<Field> getFields(Object object);
+
+    public List<Method> getMethods(Class<?> clazz);
+
+    public List<Method> getMethods(Object object);
 
 }

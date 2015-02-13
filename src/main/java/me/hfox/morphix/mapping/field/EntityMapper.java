@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
 import me.hfox.morphix.Morphix;
+import me.hfox.morphix.MorphixDefaults;
 import me.hfox.morphix.annotation.NotSaved;
 import me.hfox.morphix.annotation.Reference;
 import me.hfox.morphix.annotation.entity.Entity;
@@ -11,6 +12,8 @@ import me.hfox.morphix.annotation.entity.StoreEmpty;
 import me.hfox.morphix.annotation.entity.StoreNull;
 import me.hfox.morphix.annotation.entity.Polymorph;
 import me.hfox.morphix.annotation.lifecycle.Lifecycle;
+import me.hfox.morphix.annotation.lifecycle.PostLoad;
+import me.hfox.morphix.annotation.lifecycle.PreLoad;
 import me.hfox.morphix.exception.MorphixException;
 import me.hfox.morphix.util.AnnotationUtils;
 import org.bson.types.ObjectId;
@@ -27,10 +30,8 @@ import java.util.Map.Entry;
 public class EntityMapper<T> extends FieldMapper<T> {
 
     private Class<T> cls;
-    private Object suppliedResult;
     
     private Entity entity;
-    private Lifecycle lifecycle;
     private StoreEmpty storeEmpty;
     private StoreNull storeNull;
     private Polymorph polymorph;
@@ -46,18 +47,8 @@ public class EntityMapper<T> extends FieldMapper<T> {
         this.cls = type;
     }
 
-    @SuppressWarnings("unchecked")
-    public EntityMapper(T result, Morphix morphix) {
-        this((Class<T>) result.getClass(), null, null, morphix);
-        this.suppliedResult = result;
-    }
-
     public Entity getEntity() {
         return entity;
-    }
-
-    public Lifecycle getLifecycle() {
-        return lifecycle;
     }
 
     public StoreEmpty getStoreEmpty() {
@@ -88,7 +79,6 @@ public class EntityMapper<T> extends FieldMapper<T> {
     protected void discover() {
         super.discover();
         entity = AnnotationUtils.getHierarchicalAnnotation(type, Entity.class);
-        lifecycle = AnnotationUtils.getHierarchicalAnnotation(type, Lifecycle.class);
         storeEmpty = AnnotationUtils.getHierarchicalAnnotation(type, StoreEmpty.class);
         storeNull = AnnotationUtils.getHierarchicalAnnotation(type, StoreNull.class);
         polymorph = AnnotationUtils.getHierarchicalAnnotation(type, Polymorph.class);
@@ -109,8 +99,13 @@ public class EntityMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public T unmarshal(Object obj) {
+        return unmarshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public T unmarshal(Object obj, boolean lifecycle) {
         if (obj == null) {
             return null;
         }
@@ -135,26 +130,19 @@ public class EntityMapper<T> extends FieldMapper<T> {
         Class<?> cls = polymorphEnabled ? morphix.getPolymorhpismHelper().generate(object) : type;
 
         Object result;
-        if (suppliedResult != null) {
-            result = suppliedResult;
-        } else {
-            try {
-                ReflectionFactory factory = ReflectionFactory.getReflectionFactory();
-                Constructor empty = Object.class.getDeclaredConstructor();
-                Constructor constructor = factory.newConstructorForSerialization(cls, empty);
 
-                result = constructor.newInstance();
-            } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException ex) {
-                throw new MorphixException(ex);
-            }
+        try {
+            ReflectionFactory factory = ReflectionFactory.getReflectionFactory();
+            Constructor empty = Object.class.getDeclaredConstructor();
+            Constructor constructor = factory.newConstructorForSerialization(cls, empty);
+
+            result = constructor.newInstance();
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException ex) {
+            throw new MorphixException(ex);
         }
         
-        if (lifecycle != null) {
-            if (suppliedResult != null) {
-                // TODO: call @PreUpdate
-            } else {
-                // TODO: call @PreLoad
-            }
+        if (lifecycle) {
+            morphix.getLifecycleHelper().call(PreLoad.class, result);
         }
 
         for (Entry<Field, FieldMapper> entry : fields.entrySet()) {
@@ -190,19 +178,15 @@ public class EntityMapper<T> extends FieldMapper<T> {
             }
         }
 
-        if (lifecycle != null) {
-            if (suppliedResult != null) {
-                // TODO: call @PostUpdate
-            } else {
-                // TODO: call @PostLoad
-            }
+        if (lifecycle) {
+            morphix.getLifecycleHelper().call(PostLoad.class, result);
         }
 
         return (T) result;
     }
 
     @Override
-    public Object marshal(Object obj) {
+    public Object marshal(Object obj, boolean lifecycle) {
         if (obj == null) {
             return null;
         }
@@ -218,14 +202,6 @@ public class EntityMapper<T> extends FieldMapper<T> {
             }
 
             return id;
-        }
-
-        if (lifecycle != null) {
-            if (suppliedResult != null) {
-                // TODO: call @PreSave
-            } else {
-                // TODO: call @PreCreate
-            }
         }
 
         BasicDBObject document = new BasicDBObject();
@@ -266,14 +242,6 @@ public class EntityMapper<T> extends FieldMapper<T> {
 
             Object store = mapper.marshal(value);
             document.put(mapper.fieldName, store);
-        }
-
-        if (lifecycle != null) {
-            if (suppliedResult != null) {
-                // TODO: call @PostSave
-            } else {
-                // TODO: call @PostCreate
-            }
         }
 
         return document;

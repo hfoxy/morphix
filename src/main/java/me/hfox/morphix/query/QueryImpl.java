@@ -5,7 +5,13 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import me.hfox.morphix.Morphix;
+import me.hfox.morphix.annotation.entity.Entity;
+import me.hfox.morphix.annotation.lifecycle.PostDelete;
+import me.hfox.morphix.annotation.lifecycle.PostUpdate;
+import me.hfox.morphix.annotation.lifecycle.PreDelete;
+import me.hfox.morphix.annotation.lifecycle.PreUpdate;
 import me.hfox.morphix.exception.query.IllegalQueryException;
+import me.hfox.morphix.util.AnnotationUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,11 +115,34 @@ public class QueryImpl<T> implements Query<T> {
                 return;
             }
 
-            morphix.getDatabase().getCollection(collection).remove(new BasicDBObject("_id", getDB().get("_id")));
+            remove(new BasicDBObject("_id", getDB().get("_id")));
             return;
         }
 
-        morphix.getDatabase().getCollection(collection).remove(toQueryObject());
+        remove(toQueryObject());
+    }
+
+    private void remove(DBObject query) {
+        Entity entity = AnnotationUtils.getHierarchicalAnnotation(cls, Entity.class);
+        List<T> objects;
+
+        if (entity.createOnDelete()) {
+            QueryImpl<T> deleteQuery = new QueryImpl<>(morphix, cls);
+            objects = deleteQuery.asList(morphix.getDatabase().getCollection(collection).find(query));
+        } else {
+            objects = asList(true);
+        }
+
+        for (T object : objects) {
+            morphix.getLifecycleHelper().call(PreDelete.class, object);
+        }
+
+        morphix.getDatabase().getCollection(collection).remove(query);
+        // TODO: Remove deleted objects from the cache
+
+        for (T object : objects) {
+            morphix.getLifecycleHelper().call(PostDelete.class, object);
+        }
     }
 
     @Override
@@ -130,13 +159,19 @@ public class QueryImpl<T> implements Query<T> {
                 continue;
             }
 
+            morphix.getLifecycleHelper().call(PreUpdate.class, object);
             morphix.getMapper().update(cached, object);
+            morphix.getLifecycleHelper().call(PostUpdate.class, object);
         }
     }
 
     @Override
     public T get() {
-        return create(getDB());
+        return get(false);
+    }
+
+    public T get(boolean cacheOnly) {
+        return create(getDB(), cacheOnly);
     }
 
     public DBObject getDB() {
@@ -152,18 +187,36 @@ public class QueryImpl<T> implements Query<T> {
 
     @Override
     public List<T> asList() {
-        List<DBObject> objects = asDBList();
+        return asList(false);
+    }
+
+    public List<T> asList(boolean cacheOnly) {
+        return asList(cursor(), cacheOnly);
+    }
+
+    public List<T> asList(DBCursor cursor) {
+        return asList(cursor, false);
+    }
+
+    public List<T> asList(DBCursor cursor, boolean cacheOnly) {
+        List<DBObject> objects = asDBList(cursor);
         List<T> results = new ArrayList<>();
         for (DBObject object : objects) {
-            results.add(create(object));
+            T entity = create(object, cacheOnly);
+            if (entity != null) {
+                results.add(entity);
+            }
         }
 
         return results;
     }
 
+    @Override
     public List<DBObject> asDBList() {
-        DBCursor cursor = cursor();
+        return asDBList(cursor());
+    }
 
+    public List<DBObject> asDBList(DBCursor cursor) {
         List<DBObject> objects = new ArrayList<>();
         while (cursor.hasNext()) {
             objects.add(cursor.next());
@@ -269,8 +322,23 @@ public class QueryImpl<T> implements Query<T> {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     public T create(DBObject dbObject) {
-        return morphix.getMapper().unmarshal(cls, dbObject);
+        return create(dbObject, false);
+    }
+
+    @SuppressWarnings("unchecked")
+    public T create(DBObject dbObject, boolean cacheOnly) {
+        if (dbObject == null) {
+            return null;
+        }
+
+        T entity = (T) morphix.getCache(cls).getEntity(dbObject);
+        if (entity != null) {
+            return entity;
+        }
+
+        return !cacheOnly ? morphix.getMapper().unmarshal(cls, dbObject, true) : null;
     }
 
     @Override
