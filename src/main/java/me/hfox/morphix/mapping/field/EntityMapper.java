@@ -80,7 +80,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
         storeEmpty = AnnotationUtils.getHierarchicalAnnotation(type, StoreEmpty.class);
         storeNull = AnnotationUtils.getHierarchicalAnnotation(type, StoreNull.class);
         polymorph = AnnotationUtils.getHierarchicalAnnotation(type, Polymorph.class);
-        polymorphEnabled = polymorph == null || polymorph.value();
+        polymorphEnabled = polymorph != null && polymorph.value();
 
         if (field != null) {
             reference = field.getAnnotation(Reference.class);
