@@ -42,7 +42,7 @@ public class DefaultLifecycleHelper implements LifecycleHelper {
                 List<Method> classMethods = morphix.getEntityHelper().getMethods(clazz);
                 for (Method method : classMethods) {
                     method.setAccessible(true);
-                    if (method.getParameters().length > 0) {
+                    if (method.getParameterTypes().length > 0) {
                         continue;
                     }
 
