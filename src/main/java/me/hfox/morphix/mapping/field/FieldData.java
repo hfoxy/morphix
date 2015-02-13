@@ -22,7 +22,12 @@ public class FieldData {
     public boolean equals(Object object) {
         if (object instanceof FieldData) {
             FieldData data = (FieldData) object;
-            return type.equals(data.type) && parent.equals(data.parent) && field.equals(data.field) && morphix.equals(data.morphix);
+            boolean type = (this.type == null && data.type == null) || (this.type != null && data.type != null && this.type.equals(data.type));
+            boolean parent = (this.parent == null && data.parent == null) || (this.parent != null && data.parent != null && this.parent.equals(data.parent));
+            boolean field = (this.field == null && data.field == null) || (this.field != null && data.field != null && this.field.equals(data.field));
+            boolean morphix = (this.morphix == null && data.morphix == null) || (this.morphix != null && data.morphix != null && this.morphix.equals(data.morphix));
+
+            return type && parent && field && morphix;
         }
 
         return super.equals(object);

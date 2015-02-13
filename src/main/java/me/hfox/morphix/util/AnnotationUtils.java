@@ -16,10 +16,26 @@ public final class AnnotationUtils {
 
     public static <T extends Annotation> T getHierarchicalAnnotation(Class<?> cls, Class<T> annoCls) {
         T anno = null;
+        while (true) {
+            anno = cls.getAnnotation(annoCls);
+            if (anno != null) {
+                break;
+            }
+
+            cls = cls.getSuperclass();
+            if (cls == null || cls == Object.class) {
+                break;
+            }
+        }
+
+        /*
         do {
+            System.out.println("Annotation: " + anno);
+            System.out.println("Class: " + cls);
             anno = cls.getAnnotation(annoCls);
             cls = cls.getSuperclass();
-        } while (anno != null && cls != Object.class);
+        } while (cls != Object.class && anno == null);
+        */
 
         return anno;
     }

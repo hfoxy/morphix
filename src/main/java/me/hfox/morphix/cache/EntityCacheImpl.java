@@ -22,7 +22,9 @@ public class EntityCacheImpl implements EntityCache {
     }
 
     public void put(Object object) {
-        put(morphix.getEntityHelper().getObjectId(object), object);
+        ObjectId id = morphix.getEntityHelper().getObjectId(object);
+        put(id, object);
+        // System.out.println("Added ObjectId(\"" + id + "\") (" + object.getClass().getSimpleName() + ") to the cache");
     }
 
     public void put(ObjectId id, Object object) {
@@ -36,17 +38,20 @@ public class EntityCacheImpl implements EntityCache {
 
         ObjectId id = (ObjectId) object.get("_id");
         if (id == null) {
+            // System.out.println("Could not find an entry with that id because the id was null");
             return null;
         }
 
         Class<?> result = morphix.getPolymorhpismHelper().generate(object);
         Object cached = getEntity(id);
         if (cached == null) {
+            // System.out.println("Could not find an entry with the id, \"" + id + "\" because there was no such entity");
             return null;
         }
 
         if (result != null && !result.isAssignableFrom(cached.getClass())) {
             // TODO: display warning that cache has been updated with a new entity
+            // System.out.println("Could not find an entry with the id, \"" + id + "\" because there was no entity that was of a suitable class");
             return null;
         }
 
