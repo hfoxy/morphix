@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface Query<T> extends Iterator<T> {
 
+    public Class<T> getQueryType();
+
     public Query<T> where(String where);
 
     public FieldQuery<T> field(String name);

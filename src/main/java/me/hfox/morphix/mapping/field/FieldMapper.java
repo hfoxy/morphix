@@ -50,27 +50,11 @@ public abstract class FieldMapper<T> {
 
     protected void discover() {
         if (field != null) {
-            field.setAccessible(true);
-
-            String name = ".";
-            Property property = field.getAnnotation(Property.class);
-            if (property != null) {
-                name = property.value();
-            }
-
-            if (name == null || name.equals(MorphixDefaults.DEFAULT_FIELD_NAME)) {
-                name = AnnotationUtils.getFieldName(field);
-            }
-
-            Id id = field.getAnnotation(Id.class);
-            if (id != null) {
-                name = "_id";
-            }
-
-            fieldName = name;
+            fieldName = getName(field);
         }
     }
 
+    /*
     public void unmarshal(DBObject dbObject, Object toMap) throws IllegalAccessException {
         Object store = null;
         Object value = dbObject.get(fieldName);
@@ -82,6 +66,7 @@ public abstract class FieldMapper<T> {
 
         field.set(toMap, store);
     }
+    */
 
     public Object unmarshal(Object obj) {
         return unmarshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
@@ -89,10 +74,12 @@ public abstract class FieldMapper<T> {
 
     public abstract Object unmarshal(Object obj, boolean lifecycle);
 
+    /*
     public void marshal(DBObject dbObject, Object toMap) throws IllegalAccessException {
         Object value = field.get(toMap);
         dbObject.put(fieldName, marshal(value));
     }
+    */
 
     public Object marshal(Object obj) {
         return marshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
@@ -100,12 +87,45 @@ public abstract class FieldMapper<T> {
 
     public abstract Object marshal(Object obj, boolean lifecycle);
 
-    public static FieldMapper create(Class<?> parent, Field field, Morphix morphix) {
-        return create(field == null ? parent : field.getType(), parent, field, morphix);
+    private static String getName(Field field) {
+        field.setAccessible(true);
+
+        String name = ".";
+        Property property = field.getAnnotation(Property.class);
+        if (property != null) {
+            name = property.value();
+        }
+
+        if (name == null || name.equals(MorphixDefaults.DEFAULT_FIELD_NAME)) {
+            name = AnnotationUtils.getFieldName(field);
+        }
+
+        Id id = field.getAnnotation(Id.class);
+        if (id != null) {
+            name = "_id";
+        }
+
+        return name;
+    }
+
+    public static FieldMapper createFromName(Class<?> parent, Class<?> type, String fieldName, Morphix morphix) {
+        List<Field> fields = morphix.getEntityHelper().getFields(parent);
+        for (Field field : fields) {
+            String name = getName(field);
+            if (name.equals(fieldName)) {
+                return createFromField(type, parent, field, morphix);
+            }
+        }
+
+        return createFromField(type, parent, null, morphix);
+    }
+
+    public static FieldMapper createFromField(Class<?> parent, Field field, Morphix morphix) {
+        return createFromField(field == null ? parent : field.getType(), parent, field, morphix);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> FieldMapper<T> create(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
+    public static <T> FieldMapper<T> createFromField(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
         if (field != null && field.getAnnotation(Transient.class) != null) {
             return null;
         }

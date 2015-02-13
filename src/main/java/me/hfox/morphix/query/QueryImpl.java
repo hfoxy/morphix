@@ -279,14 +279,16 @@ public class QueryImpl<T> implements Query<T> {
                         throw new IllegalQueryException("Equals operators are standalone");
                     }
 
-                    result.put(name, field.getObject());
+                    Object store = FieldMapper.createFromName(getQueryType(), field.getObject().getClass(), name, morphix).unmarshal(object);
+                    result.put(name, store);
                 } else {
                     if (object != null && !(object instanceof DBObject)) {
                         throw new IllegalQueryException("Equals operators are standalone");
                     }
 
+                    Object store = FieldMapper.createFromName(getQueryType(), field.getObject().getClass(), name, morphix).unmarshal(object);
                     DBObject operators = object != null ? (DBObject) object : new BasicDBObject();
-                    operators.put(field.getOperator(), field.getObject());
+                    operators.put(field.getOperator(), store);
                     result.put(name, operators);
                 }
             }
