@@ -8,6 +8,17 @@
     <artifactId>morphix</artifactId>
     <version>1.0</version>
 
+    <distributionManagement>
+        <repository>
+            <id>komp-releases</id>
+            <url>http://repo.kompking.info/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>komp-snapshots</id>
+            <url>http://repo.kompking.info/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.mongodb</groupId>
