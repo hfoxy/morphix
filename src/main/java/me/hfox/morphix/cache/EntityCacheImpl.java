@@ -4,7 +4,9 @@ import com.mongodb.DBObject;
 import me.hfox.morphix.Morphix;
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EntityCacheImpl implements EntityCache {
@@ -19,6 +21,24 @@ public class EntityCacheImpl implements EntityCache {
 
     public Map<ObjectId, Object> getCache() {
         return cache;
+    }
+
+    @Override
+    public List<Object> getEntities() {
+        return new ArrayList<>(cache.values());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getEntities(Class<T> cls) {
+        List<T> list = new ArrayList<>();
+        for (Object object : cache.values()) {
+            if (cls.isInstance(object)) {
+                list.add((T) object);
+            }
+        }
+
+        return list;
     }
 
     public void put(Object object) {
