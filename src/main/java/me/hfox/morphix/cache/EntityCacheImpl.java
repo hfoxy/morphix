@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class EntityCacheImpl implements EntityCache {
 
@@ -80,6 +81,20 @@ public class EntityCacheImpl implements EntityCache {
 
     public Object getEntity(ObjectId id) {
         return cache.get(id);
+    }
+
+    public void remove(Object object) {
+        ObjectId key = null;
+        for (Entry<ObjectId, Object> entry : cache.entrySet()) {
+            if (entry.getValue().equals(object)) {
+                key = entry.getKey();
+                break;
+            }
+        }
+
+        if (key != null) {
+            cache.remove(key);
+        }
     }
 
     @Override
