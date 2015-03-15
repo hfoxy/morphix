@@ -1,10 +1,11 @@
 package me.hfox.morphix.helper.remap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultRemapHelper implements RemapHelper {
 
-    private List<ClassEntry<?, ?>> classes;
+    private List<ClassEntry<?, ?>> classes = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
     public <O> ClassEntry<O, ?> getEntry(Class<O> cls) {
