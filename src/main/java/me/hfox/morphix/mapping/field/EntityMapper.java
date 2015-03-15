@@ -8,9 +8,9 @@ import me.hfox.morphix.MorphixDefaults;
 import me.hfox.morphix.annotation.NotSaved;
 import me.hfox.morphix.annotation.Reference;
 import me.hfox.morphix.annotation.entity.Entity;
+import me.hfox.morphix.annotation.entity.Polymorph;
 import me.hfox.morphix.annotation.entity.StoreEmpty;
 import me.hfox.morphix.annotation.entity.StoreNull;
-import me.hfox.morphix.annotation.entity.Polymorph;
 import me.hfox.morphix.annotation.lifecycle.PostLoad;
 import me.hfox.morphix.annotation.lifecycle.PreLoad;
 import me.hfox.morphix.exception.MorphixException;
@@ -103,10 +103,10 @@ public class EntityMapper<T> extends FieldMapper<T> {
         }
 
         if (reference != null) {
-            if (obj instanceof DBRef) {
+            if (obj instanceof DBRef && reference.dbRef()) {
                 DBRef ref = (DBRef) obj;
                 return morphix.createQuery(cls, ref.getRef()).field("_id").equal(ref.getId()).get();
-            } else if (obj instanceof ObjectId) {
+            } else if (obj instanceof ObjectId && !reference.dbRef()) {
                 ObjectId id = (ObjectId) obj;
                 return morphix.createQuery(cls).field("_id").equal(id).get();
             }
