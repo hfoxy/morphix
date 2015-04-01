@@ -78,8 +78,10 @@ public class ObjectMapperImpl implements ObjectMapper {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T update(T object, DBObject dbObject) {
-        return null;
+        EntityMapper<T> mapper = getMapper((Class<T>) object.getClass());
+        return mapper.update(dbObject, object);
     }
 
 }

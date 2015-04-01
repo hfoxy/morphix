@@ -1,6 +1,5 @@
 package me.hfox.morphix.mapping.field;
 
-import com.mongodb.DBObject;
 import me.hfox.morphix.Morphix;
 import me.hfox.morphix.MorphixDefaults;
 import me.hfox.morphix.annotation.Id;
@@ -13,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public abstract class FieldMapper<T> {
 
@@ -115,6 +115,7 @@ public abstract class FieldMapper<T> {
     }
 
     public static FieldMapper createFromName(Class<?> parent, Class<?> type, String fieldName, Morphix morphix) {
+        Logger.getLogger("morphix").info("Parent: " + parent.getSimpleName());
         List<Field> fields = morphix.getEntityHelper().getFields(parent);
         for (Field field : fields) {
             String name = getName(field);

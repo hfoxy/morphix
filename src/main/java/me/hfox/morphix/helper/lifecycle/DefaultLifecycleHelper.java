@@ -2,6 +2,7 @@ package me.hfox.morphix.helper.lifecycle;
 
 import me.hfox.morphix.Morphix;
 import me.hfox.morphix.annotation.lifecycle.Lifecycle;
+import me.hfox.morphix.annotation.lifecycle.PostUpdate;
 import me.hfox.morphix.exception.MorphixException;
 import me.hfox.morphix.util.AnnotationUtils;
 

@@ -164,9 +164,9 @@ public class QueryImpl<T> implements Query<T> {
                 continue;
             }
 
-            morphix.getLifecycleHelper().call(PreUpdate.class, object);
+            morphix.getLifecycleHelper().call(PreUpdate.class, cached);
             morphix.getMapper().update(cached, object);
-            morphix.getLifecycleHelper().call(PostUpdate.class, object);
+            morphix.getLifecycleHelper().call(PostUpdate.class, cached);
         }
     }
 

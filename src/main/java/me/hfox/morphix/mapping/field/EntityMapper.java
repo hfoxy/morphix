@@ -147,6 +147,16 @@ public class EntityMapper<T> extends FieldMapper<T> {
             morphix.getLifecycleHelper().call(PreLoad.class, result);
         }
 
+        result = update(object, (T) result);
+
+        if (lifecycle) {
+            morphix.getLifecycleHelper().call(PostLoad.class, result);
+        }
+
+        return (T) result;
+    }
+
+    public <O extends T> O update(DBObject object, O result) {
         Map<Field, FieldMapper> fields = getFields(cls);
         for (Entry<Field, FieldMapper> entry : fields.entrySet()) {
             Field field = entry.getKey();
@@ -177,7 +187,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
                     }
                 }
             }
-            
+
             try {
                 field.set(result, value);
             } catch (IllegalAccessException ex) {
@@ -185,11 +195,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
             }
         }
 
-        if (lifecycle) {
-            morphix.getLifecycleHelper().call(PostLoad.class, result);
-        }
-
-        return (T) result;
+        return result;
     }
 
     @Override
