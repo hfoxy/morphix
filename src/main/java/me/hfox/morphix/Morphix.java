@@ -7,10 +7,8 @@ import com.mongodb.MongoClient;
 import me.hfox.morphix.annotation.entity.Cache;
 import me.hfox.morphix.annotation.lifecycle.PostCreate;
 import me.hfox.morphix.annotation.lifecycle.PostSave;
-import me.hfox.morphix.annotation.lifecycle.PostUpdate;
 import me.hfox.morphix.annotation.lifecycle.PreCreate;
 import me.hfox.morphix.annotation.lifecycle.PreSave;
-import me.hfox.morphix.annotation.lifecycle.PreUpdate;
 import me.hfox.morphix.cache.EntityCache;
 import me.hfox.morphix.cache.EntityCacheImpl;
 import me.hfox.morphix.exception.MorphixException;
@@ -21,6 +19,8 @@ import me.hfox.morphix.helper.lifecycle.DefaultLifecycleHelper;
 import me.hfox.morphix.helper.name.NameHelper;
 import me.hfox.morphix.helper.polymorphism.DefaultPolymorhpismHelper;
 import me.hfox.morphix.helper.polymorphism.PolymorhpismHelper;
+import me.hfox.morphix.helper.remap.DefaultRemapHelper;
+import me.hfox.morphix.helper.remap.RemapHelper;
 import me.hfox.morphix.mapping.ObjectMapper;
 import me.hfox.morphix.mapping.ObjectMapperImpl;
 import me.hfox.morphix.query.Query;
@@ -46,6 +46,7 @@ public class Morphix {
     private Map<Class<? extends NameHelper>, NameHelper> nameHelpers;
     private PolymorhpismHelper polymorhpismHelper;
     private LifecycleHelper lifecycleHelper;
+    private RemapHelper remapHelper;
 
     public Morphix(MongoClient client, String database) {
         this(client, database, null, null);
@@ -75,6 +76,7 @@ public class Morphix {
 
         this.polymorhpismHelper = new DefaultPolymorhpismHelper();
         this.lifecycleHelper = new DefaultLifecycleHelper(this);
+        this.remapHelper = new DefaultRemapHelper();
     }
 
     public MongoClient getConnection() {
@@ -179,16 +181,24 @@ public class Morphix {
         this.lifecycleHelper = lifecycleHelper;
     }
 
+    public RemapHelper getRemapHelper() {
+        return remapHelper;
+    }
+
+    public void setRemapHelper(RemapHelper remapHelper) {
+        this.remapHelper = remapHelper;
+    }
+
     public Query<Object> createQuery() {
         return new QueryImpl<>(this, Object.class);
     }
 
     public <T> Query<T> createQuery(Class<T> cls) {
-        return new QueryImpl<>(this, cls);
+        return new QueryImpl<>(this, getRemapHelper().remap(cls));
     }
 
     public <T> Query<T> createQuery(Class<T> cls, String collection) {
-        return new QueryImpl<>(this, cls, collection);
+        return new QueryImpl<>(this, getRemapHelper().remap(cls), collection);
     }
 
     public void store(Object object) {
