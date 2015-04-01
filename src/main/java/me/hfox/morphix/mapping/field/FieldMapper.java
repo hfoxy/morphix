@@ -115,7 +115,6 @@ public abstract class FieldMapper<T> {
     }
 
     public static FieldMapper createFromName(Class<?> parent, Class<?> type, String fieldName, Morphix morphix) {
-        Logger.getLogger("morphix").info("Parent: " + parent.getSimpleName());
         List<Field> fields = morphix.getEntityHelper().getFields(parent);
         for (Field field : fields) {
             String name = getName(field);
