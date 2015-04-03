@@ -192,6 +192,8 @@ public class EntityMapper<T> extends FieldMapper<T> {
                 field.set(result, value);
             } catch (IllegalAccessException ex) {
                 throw new MorphixException(ex);
+            } catch (IllegalArgumentException ex) {
+                throw new MorphixException(ex);
             }
         }
 

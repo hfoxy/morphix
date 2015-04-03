@@ -6,9 +6,12 @@ import me.hfox.morphix.MorphixDefaults;
 import me.hfox.morphix.exception.MorphixException;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -41,24 +44,80 @@ public class CollectionMapper extends FieldMapper<Collection> {
         }
 
         mapper = null;
+        if (!find(type) && type instanceof TypeVariable) {
+            // System.out.println("Field: " + (field != null ? field : "null"));
+            // System.out.println("Parent: " + parent);
+
+            int position = 0;
+            TypeVariable typeVar = (TypeVariable) type;
+            GenericDeclaration declaration = typeVar.getGenericDeclaration();
+            TypeVariable<?>[] typeParameters = declaration.getTypeParameters();
+            for (int i = 0; i < typeParameters.length; i++) {
+                Type parameter = typeParameters[i];
+                if (type.equals(parameter)) {
+                    position = i;
+                }
+            }
+
+            // System.out.println("Generic Superclass: " + parent.getGenericSuperclass());
+            Type superclass = parent.getGenericSuperclass();
+            if (superclass instanceof ParameterizedType) {
+                ParameterizedType superParam = (ParameterizedType) superclass;
+                if (superParam.getActualTypeArguments().length > 0) {
+                    // System.out.println("Generic Superclass: Type Arguments: " + superParam.getActualTypeArguments().length);
+                    Type[] actualTypeArguments = superParam.getActualTypeArguments();
+                    for (int i = 0; i < actualTypeArguments.length; i++) {
+                        Type variable = actualTypeArguments[i];
+                        if (i == position) {
+                            find(variable);
+                        }
+                    }
+                }
+            }
+
+            // display((TypeVariable) type);
+        }
+
+        if (mapper == null) {
+            throw new MorphixException("Could not find suitable Mapper for " + type);
+        }
+    }
+
+    public boolean find(Type type) {
         if (type instanceof Class) {
             Class<?> cls = (Class) type;
             mapper = FieldMapper.createFromField(cls, parent, field, morphix);
+            return true;
         } else if (type instanceof ParameterizedType) {
             ParameterizedType param = (ParameterizedType) type;
             if (param.getRawType() instanceof Class) {
                 Class<?> cls = (Class) param.getRawType();
                 if (Collection.class.isAssignableFrom(cls)) {
                     mapper = new CollectionMapper(this);
+                    return true;
                 } else if (Map.class.isAssignableFrom(cls)) {
                     mapper = new MapMapper(this);
+                    return true;
                 }
             }
         }
 
-        if (mapper == null) {
-            throw new MorphixException("Could not find suitable Mapper for " + type);
-        }
+        return false;
+    }
+
+    private void display(TypeVariable variable) {
+        display("", variable);
+    }
+
+    private void display(String prefix, TypeVariable variable) {
+        System.out.println(prefix + "TypeVariable: " + variable);
+        System.out.println(prefix + "TypeVariable: Name: " + variable.getName());
+        System.out.println(prefix + "TypeVariable: Type Name: " + variable.getTypeName());
+        System.out.println(prefix + "TypeVariable: Bounds: " + Arrays.asList(variable.getBounds()));
+        System.out.println(prefix + "TypeVariable: Generic Declaration: " + variable.getGenericDeclaration());
+
+        GenericDeclaration declaration = variable.getGenericDeclaration();
+        System.out.println(prefix + "TypeVariable: Generic Declaration: Type Parameters: " + Arrays.asList(declaration.getTypeParameters()));
     }
 
     @Override
