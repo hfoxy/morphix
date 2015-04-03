@@ -162,7 +162,8 @@ public class EntityMapper<T> extends FieldMapper<T> {
         Map<Field, FieldMapper> fields = getFields(cls);
         for (Entry<Field, FieldMapper> entry : fields.entrySet()) {
             update(object, result, entry);
-            if (field.getAnnotation(Id.class) != null) {
+            Field field = entry.getKey();
+            if (field != null && field.getAnnotation(Id.class) != null) {
                 morphix.getCache(cls).put(result);
             }
         }
