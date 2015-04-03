@@ -143,9 +143,9 @@ public class QueryImpl<T> implements Query<T> {
         }
 
         morphix.getDatabase().getCollection(collection).remove(query);
-        // TODO: Remove deleted objects from the cache
 
         for (T object : objects) {
+            morphix.getCache(cls).remove(object);
             morphix.getLifecycleHelper().call(PostDelete.class, object);
         }
     }

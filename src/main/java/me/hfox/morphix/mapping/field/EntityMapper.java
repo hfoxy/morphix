@@ -5,6 +5,7 @@ import com.mongodb.DBObject;
 import com.mongodb.DBRef;
 import me.hfox.morphix.Morphix;
 import me.hfox.morphix.MorphixDefaults;
+import me.hfox.morphix.annotation.Id;
 import me.hfox.morphix.annotation.NotSaved;
 import me.hfox.morphix.annotation.Reference;
 import me.hfox.morphix.annotation.entity.Entity;
@@ -144,8 +145,6 @@ public class EntityMapper<T> extends FieldMapper<T> {
             }
         }
 
-        morphix.getCache(cls).put(result);
-        
         if (lifecycle) {
             morphix.getLifecycleHelper().call(PreLoad.class, result);
         }
@@ -197,6 +196,10 @@ public class EntityMapper<T> extends FieldMapper<T> {
                 throw new MorphixException(ex);
             } catch (IllegalArgumentException ex) {
                 throw new MorphixException(ex);
+            }
+
+            if (value instanceof ObjectId && field.getAnnotation(Id.class) != null) {
+                morphix.getCache(cls).put(result);
             }
         }
 
