@@ -73,7 +73,6 @@ public class ObjectMapperImpl implements ObjectMapper {
     @Override
     public <T> T unmarshal(Class<T> cls, DBObject object, boolean lifecycle) {
         T entity = getMapper(cls).unmarshal(object, lifecycle);
-        morphix.getCache(cls).put(entity);
         return entity;
     }
 

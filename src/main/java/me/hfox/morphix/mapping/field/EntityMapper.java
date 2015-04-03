@@ -143,6 +143,8 @@ public class EntityMapper<T> extends FieldMapper<T> {
                 throw new MorphixException(ex);
             }
         }
+
+        morphix.getCache(cls).put(result);
         
         if (lifecycle) {
             morphix.getLifecycleHelper().call(PreLoad.class, result);
