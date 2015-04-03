@@ -22,6 +22,15 @@ public final class AnnotationUtils {
                 break;
             }
 
+            Class<?>[] interfaces = cls.getInterfaces();
+            for (Class<?> face : interfaces) {
+                T result = getHierarchicalAnnotation(face, annoCls);
+                if (result != null) {
+                    anno = result;
+                    break;
+                }
+            }
+
             cls = cls.getSuperclass();
             if (cls == null || cls == Object.class) {
                 break;
