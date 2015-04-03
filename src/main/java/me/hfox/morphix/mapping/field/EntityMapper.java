@@ -87,6 +87,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
             notSaved = field.getAnnotation(NotSaved.class);
         }
 
+        type = morphix.getRemapHelper().remap(type);
         fields = getFields(type);
     }
 

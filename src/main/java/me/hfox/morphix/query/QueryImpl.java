@@ -364,6 +364,7 @@ public class QueryImpl<T> implements Query<T> {
             return entity;
         }
 
+        Class<T> cls = morphix.getRemapHelper().remap(this.cls);
         return !cacheOnly ? morphix.getMapper().unmarshal(cls, dbObject, true) : null;
     }
 

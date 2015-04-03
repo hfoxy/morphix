@@ -44,46 +44,17 @@ public class CollectionMapper extends FieldMapper<Collection> {
         }
 
         mapper = null;
-        if (!find(type) && type instanceof TypeVariable) {
-            // System.out.println("Field: " + (field != null ? field : "null"));
-            // System.out.println("Parent: " + parent);
-
-            int position = 0;
-            TypeVariable typeVar = (TypeVariable) type;
-            GenericDeclaration declaration = typeVar.getGenericDeclaration();
-            TypeVariable<?>[] typeParameters = declaration.getTypeParameters();
-            for (int i = 0; i < typeParameters.length; i++) {
-                Type parameter = typeParameters[i];
-                if (type.equals(parameter)) {
-                    position = i;
-                }
-            }
-
-            // System.out.println("Generic Superclass: " + parent.getGenericSuperclass());
-            Type superclass = parent.getGenericSuperclass();
-            if (superclass instanceof ParameterizedType) {
-                ParameterizedType superParam = (ParameterizedType) superclass;
-                if (superParam.getActualTypeArguments().length > 0) {
-                    // System.out.println("Generic Superclass: Type Arguments: " + superParam.getActualTypeArguments().length);
-                    Type[] actualTypeArguments = superParam.getActualTypeArguments();
-                    for (int i = 0; i < actualTypeArguments.length; i++) {
-                        Type variable = actualTypeArguments[i];
-                        if (i == position) {
-                            find(variable);
-                        }
-                    }
-                }
-            }
-
-            // display((TypeVariable) type);
-        }
+        find(type);
 
         if (mapper == null) {
+            // System.out.println("Field: " + (field != null ? field : "null"));
+            // System.out.println("Type: " + type + ", Class: " + type.getClass());
+            // System.out.println("Parent: " + parent);
             throw new MorphixException("Could not find suitable Mapper for " + type);
         }
     }
 
-    public boolean find(Type type) {
+    private boolean find(Type type) {
         if (type instanceof Class) {
             Class<?> cls = (Class) type;
             mapper = FieldMapper.createFromField(cls, parent, field, morphix);
@@ -100,6 +71,40 @@ public class CollectionMapper extends FieldMapper<Collection> {
                     return true;
                 }
             }
+        } else if (type instanceof TypeVariable) {
+            // System.out.println("Field: " + (field != null ? field : "null"));
+            // System.out.println("Parent: " + parent);
+
+            int position = 0;
+            TypeVariable typeVar = (TypeVariable) type;
+            // display(typeVar);
+            GenericDeclaration declaration = typeVar.getGenericDeclaration();
+            TypeVariable<?>[] typeParameters = declaration.getTypeParameters();
+            for (int i = 0; i < typeParameters.length; i++) {
+                TypeVariable parameter = typeParameters[i];
+                // display("Parameter: ", parameter);
+                if (type.equals(parameter)) {
+                    // System.out.println(parameter + " matches");
+                    position = i;
+                    break;
+                }
+            }
+
+            // System.out.println("Generic Superclass: " + parent.getGenericSuperclass());
+            Type superclass = parent.getGenericSuperclass();
+            if (superclass instanceof ParameterizedType) {
+                ParameterizedType superParam = (ParameterizedType) superclass;
+                if (superParam.getActualTypeArguments().length > 0) {
+                    // System.out.println("Generic Superclass: Type Arguments: " + superParam.getActualTypeArguments().length);
+                    Type[] actualTypeArguments = superParam.getActualTypeArguments();
+                    Type variable = actualTypeArguments[position];
+                    // System.out.println(variable);
+
+                    return find(variable);
+                }
+            }
+
+            // display((TypeVariable) type);
         }
 
         return false;
