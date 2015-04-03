@@ -161,14 +161,19 @@ public class EntityMapper<T> extends FieldMapper<T> {
     public <O extends T> O update(DBObject object, O result) {
         Map<Field, FieldMapper> fields = getFields(cls);
         for (Entry<Field, FieldMapper> entry : fields.entrySet()) {
-            update(object, result, entry);
             Field field = entry.getKey();
             if (field != null && field.getAnnotation(Id.class) != null) {
+                update(object, result, entry);
                 morphix.getCache(cls).put(result);
             }
         }
 
         for (Entry<Field, FieldMapper> entry : fields.entrySet()) {
+            Field field = entry.getKey();
+            if (field != null && field.getAnnotation(Id.class) != null) {
+                continue;
+            }
+
             update(object, result, entry);
         }
 
