@@ -161,46 +161,53 @@ public class EntityMapper<T> extends FieldMapper<T> {
     public <O extends T> O update(DBObject object, O result) {
         Map<Field, FieldMapper> fields = getFields(cls);
         for (Entry<Field, FieldMapper> entry : fields.entrySet()) {
-            Field field = entry.getKey();
-            // System.out.println("Attempting to pull " + field);
-
-            field.setAccessible(true);
-
-            FieldMapper mapper = entry.getValue();
-
-            Object dbResult = object.get(mapper.fieldName);
-            // System.out.println("Result: " + dbResult);
-            // if (dbResult == null && (storeNull == null || !storeNull.value())) {
-            //     continue;
-            // }
-
-            Object value = mapper.unmarshal(dbResult);
-            // System.out.println("Mapped: " + value);
-            if (storeEmpty == null || !storeEmpty.value()) {
-                if (value instanceof Collection) {
-                    Collection collection = (Collection) value;
-                    if (collection.isEmpty()) {
-                        value = null;
-                    }
-                } else if (value instanceof Map) {
-                    Map map = (Map) value;
-                    if (map.isEmpty()) {
-                        value = null;
-                    }
-                }
-            }
-
-            try {
-                field.set(result, value);
-            } catch (IllegalAccessException ex) {
-                throw new MorphixException(ex);
-            } catch (IllegalArgumentException ex) {
-                throw new MorphixException(ex);
-            }
-
-            if (value instanceof ObjectId && field.getAnnotation(Id.class) != null) {
+            update(object, result, entry);
+            if (field.getAnnotation(Id.class) != null) {
                 morphix.getCache(cls).put(result);
             }
+        }
+
+        for (Entry<Field, FieldMapper> entry : fields.entrySet()) {
+            update(object, result, entry);
+        }
+
+        return result;
+    }
+
+    public <O extends T> O update(DBObject object, O result, Entry<Field, FieldMapper> entry) {
+        Field field = entry.getKey();
+        // System.out.println("Attempting to pull " + field);
+
+        field.setAccessible(true);
+
+        FieldMapper mapper = entry.getValue();
+
+        Object dbResult = object.get(mapper.fieldName);
+        // System.out.println("Result: " + dbResult);
+        // if (dbResult == null && (storeNull == null || !storeNull.value())) {
+        //     continue;
+        // }
+
+        Object value = mapper.unmarshal(dbResult);
+        // System.out.println("Mapped: " + value);
+        if (storeEmpty == null || !storeEmpty.value()) {
+            if (value instanceof Collection) {
+                Collection collection = (Collection) value;
+                if (collection.isEmpty()) {
+                    value = null;
+                }
+            } else if (value instanceof Map) {
+                Map map = (Map) value;
+                if (map.isEmpty()) {
+                    value = null;
+                }
+            }
+        }
+
+        try {
+            field.set(result, value);
+        } catch (IllegalAccessException | IllegalArgumentException ex) {
+            throw new MorphixException(ex);
         }
 
         return result;
