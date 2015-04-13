@@ -15,6 +15,7 @@ import me.hfox.morphix.annotation.entity.StoreNull;
 import me.hfox.morphix.annotation.lifecycle.PostLoad;
 import me.hfox.morphix.annotation.lifecycle.PreLoad;
 import me.hfox.morphix.exception.MorphixException;
+import me.hfox.morphix.mapping.MappingData;
 import me.hfox.morphix.util.AnnotationUtils;
 import org.bson.types.ObjectId;
 import sun.reflect.ReflectionFactory;
@@ -41,8 +42,8 @@ public class EntityMapper<T> extends FieldMapper<T> {
 
     private Map<Field, FieldMapper> fields;
 
-    public EntityMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
-        super(type, parent, field, morphix);
+    public EntityMapper(MappingData mappingData, Class<T> type, Class<?> parent, Field field, Morphix morphix) {
+        super(mappingData, type, parent, field, morphix);
         this.cls = type;
     }
 
@@ -240,6 +241,8 @@ public class EntityMapper<T> extends FieldMapper<T> {
         }
 
         BasicDBObject document = new BasicDBObject();
+
+
         if (polymorphEnabled) {
             morphix.getPolymorhpismHelper().store(document, obj.getClass());
         }
@@ -290,7 +293,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
 
         Map<Field, FieldMapper> fields = new HashMap<>();
         for (Field field : morphix.getEntityHelper().getFields(cls)) {
-            FieldMapper mapper = createFromField(cls, field, morphix);
+            FieldMapper mapper = createFromField(mappingData, cls, field, morphix);
             if (mapper != null) {
                 fields.put(field, mapper);
             }

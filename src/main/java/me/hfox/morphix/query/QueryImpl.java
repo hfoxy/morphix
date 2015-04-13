@@ -11,6 +11,7 @@ import me.hfox.morphix.annotation.lifecycle.PostUpdate;
 import me.hfox.morphix.annotation.lifecycle.PreDelete;
 import me.hfox.morphix.annotation.lifecycle.PreUpdate;
 import me.hfox.morphix.exception.query.IllegalQueryException;
+import me.hfox.morphix.mapping.MappingData;
 import me.hfox.morphix.mapping.field.FieldMapper;
 import me.hfox.morphix.util.AnnotationUtils;
 
@@ -286,7 +287,7 @@ public class QueryImpl<T> implements Query<T> {
 
                     Object store = field.getObject();
                     if (store != null) {
-                        store = FieldMapper.createFromName(getQueryType(), store.getClass(), name, morphix).marshal(store);
+                        store = FieldMapper.createFromName(new MappingData(), getQueryType(), store.getClass(), name, morphix).marshal(store);
                         // System.out.println("Storing " + store + " instead of " + field.getObject());
                     }
 
@@ -298,7 +299,7 @@ public class QueryImpl<T> implements Query<T> {
 
                     Object store = field.getObject();
                     if (store != null) {
-                        store = FieldMapper.createFromName(getQueryType(), store.getClass(), name, morphix).marshal(store);
+                        store = FieldMapper.createFromName(new MappingData(), getQueryType(), store.getClass(), name, morphix).marshal(store);
                         // System.out.println("Storing " + store + " instead of " + field.getObject());
                     }
 

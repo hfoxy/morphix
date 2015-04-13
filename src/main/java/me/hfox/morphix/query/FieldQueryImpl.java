@@ -2,6 +2,7 @@ package me.hfox.morphix.query;
 
 import com.mongodb.BasicDBList;
 import me.hfox.morphix.Morphix;
+import me.hfox.morphix.mapping.MappingData;
 import me.hfox.morphix.mapping.field.FieldMapper;
 
 public class FieldQueryImpl<T> implements FieldQuery<T> {
@@ -98,7 +99,7 @@ public class FieldQueryImpl<T> implements FieldQuery<T> {
                 continue;
             }
 
-            FieldMapper mapper = FieldMapper.createFromField(object.getClass(), null, morphix);
+            FieldMapper mapper = FieldMapper.createFromField(new MappingData(), object.getClass(), null, morphix);
             list.add(mapper.marshal(object));
         }
 

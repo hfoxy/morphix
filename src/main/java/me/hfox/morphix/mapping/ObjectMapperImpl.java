@@ -23,7 +23,7 @@ public class ObjectMapperImpl implements ObjectMapper {
     public <T> EntityMapper<T> getMapper(Class<T> cls) {
         EntityMapper<T> mapper = mappers.get(cls);
         if (mapper == null) {
-            mapper = new EntityMapper<>(cls, null, null, morphix);
+            mapper = new EntityMapper<>(new MappingData(), cls, null, null, morphix);
             mappers.put(cls, mapper);
         }
 

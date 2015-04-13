@@ -2,13 +2,14 @@ package me.hfox.morphix.mapping.field;
 
 import me.hfox.morphix.Morphix;
 import me.hfox.morphix.MorphixDefaults;
+import me.hfox.morphix.mapping.MappingData;
 
 import java.lang.reflect.Field;
 
 public class EnumMapper<T> extends FieldMapper<T> {
 
-    public EnumMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
-        super(type, parent, field, morphix);
+    public EnumMapper(MappingData mappingData, Class<T> type, Class<?> parent, Field field, Morphix morphix) {
+        super(mappingData, type, parent, field, morphix);
     }
 
     @Override

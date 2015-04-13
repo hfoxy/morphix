@@ -3,6 +3,7 @@ package me.hfox.morphix.mapping.field;
 import com.mongodb.BasicDBList;
 import me.hfox.morphix.Morphix;
 import me.hfox.morphix.MorphixDefaults;
+import me.hfox.morphix.mapping.MappingData;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -13,12 +14,12 @@ public class ArrayMapper<T> extends FieldMapper<T> {
     private int dimensions;
     private FieldMapper<?> mapper;
 
-    public ArrayMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
-        super(type, parent, field, morphix);
+    public ArrayMapper(MappingData mappingData, Class<T> type, Class<?> parent, Field field, Morphix morphix) {
+        super(mappingData, type, parent, field, morphix);
     }
 
-    public ArrayMapper(Class<T> type, ArrayMapper parent) {
-        super(type, parent.parent, parent.field, parent.morphix);
+    public ArrayMapper(MappingData mappingData, Class<T> type, ArrayMapper parent) {
+        super(mappingData, type, parent.parent, parent.field, parent.morphix);
     }
 
     @Override
@@ -34,7 +35,7 @@ public class ArrayMapper<T> extends FieldMapper<T> {
 
         arrayType = cls;
         Class<?> component = type.getComponentType();
-        mapper = component.isArray() ? new ArrayMapper<>(component, this) : FieldMapper.createFromField(component, parent, field, morphix);
+        mapper = component.isArray() ? new ArrayMapper<>(mappingData, component, this) : FieldMapper.createFromField(mappingData, component, parent, field, morphix);
     }
 
     @Override

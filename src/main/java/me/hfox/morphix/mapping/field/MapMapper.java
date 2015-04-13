@@ -6,6 +6,7 @@ import com.mongodb.DBObject;
 import me.hfox.morphix.Morphix;
 import me.hfox.morphix.MorphixDefaults;
 import me.hfox.morphix.exception.MorphixException;
+import me.hfox.morphix.mapping.MappingData;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericDeclaration;
@@ -23,18 +24,18 @@ public class MapMapper extends FieldMapper<Map> {
     protected Type[] types;
     protected FieldMapper[] mappers;
 
-    public MapMapper(Class<?> parent, Field field, Morphix morphix) {
-        super(Map.class, parent, field, morphix);
+    public MapMapper(MappingData mappingData, Class<?> parent, Field field, Morphix morphix) {
+        super(mappingData, Map.class, parent, field, morphix);
     }
 
     public MapMapper(MapMapper parent, ParameterizedType type) {
-        super(Map.class, parent.parent, parent.field, parent.morphix, false);
+        super(parent.mappingData, Map.class, parent.parent, parent.field, parent.morphix, false);
         types = type.getActualTypeArguments();
         discover();
     }
 
     public MapMapper(CollectionMapper parent) {
-        super(Map.class, parent.parent, parent.field, parent.morphix, false);
+        super(parent.mappingData, Map.class, parent.parent, parent.field, parent.morphix, false);
         types = ((ParameterizedType) parent.type).getActualTypeArguments();
         discover();
     }
@@ -106,7 +107,7 @@ public class MapMapper extends FieldMapper<Map> {
         FieldMapper mapper = null;
         if (type instanceof Class) {
             Class<?> cls = (Class) type;
-            mapper = FieldMapper.createFromField(cls, parent, field, morphix);
+            mapper = FieldMapper.createFromField(mappingData, cls, parent, field, morphix);
         } else if (type instanceof ParameterizedType) {
             ParameterizedType param = (ParameterizedType) type;
             if (param.getRawType() instanceof Class) {
