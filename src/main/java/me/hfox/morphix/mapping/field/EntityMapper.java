@@ -240,9 +240,12 @@ public class EntityMapper<T> extends FieldMapper<T> {
             return id;
         }
 
-        BasicDBObject document = new BasicDBObject();
+        BasicDBObject document = mappingData.get(obj);
+        if (document != null) {
+            return document;
+        }
 
-
+        document = mappingData.put(obj);
         if (polymorphEnabled) {
             morphix.getPolymorhpismHelper().store(document, obj.getClass());
         }
