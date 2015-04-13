@@ -8,8 +8,8 @@ import java.lang.reflect.Field;
 
 public class EnumMapper<T> extends FieldMapper<T> {
 
-    public EnumMapper(MappingData mappingData, Class<T> type, Class<?> parent, Field field, Morphix morphix) {
-        super(mappingData, type, parent, field, morphix);
+    public EnumMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
+        super(type, parent, field, morphix);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class EnumMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public Object marshal(Object obj, boolean lifecycle) {
+    public Object marshal(MappingData mappingData, Object obj, boolean lifecycle) {
         if (obj == null) {
             return null;
         }

@@ -23,7 +23,7 @@ public class ObjectMapperImpl implements ObjectMapper {
     public <T> EntityMapper<T> getMapper(Class<T> cls) {
         EntityMapper<T> mapper = mappers.get(cls);
         if (mapper == null) {
-            mapper = new EntityMapper<>(new MappingData(), cls, null, null, morphix);
+            mapper = new EntityMapper<>(cls, null, null, morphix);
             mappers.put(cls, mapper);
         }
 
@@ -31,23 +31,23 @@ public class ObjectMapperImpl implements ObjectMapper {
     }
 
     @Override
-    public DBObject marshal(Object obj) {
-        return marshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    public DBObject marshal(MappingData mappingData, Object obj) {
+        return marshal(mappingData, obj, MorphixDefaults.DEFAULT_LIFECYCLE);
     }
 
     @Override
-    public DBObject marshal(Object obj, boolean lifecycle) {
-        return marshal(obj.getClass(), obj, lifecycle);
+    public DBObject marshal(MappingData mappingData, Object obj, boolean lifecycle) {
+        return marshal(mappingData, obj.getClass(), obj, lifecycle);
     }
 
     @Override
-    public DBObject marshal(Class<?> cls, Object object) {
-        return marshal(cls, object, MorphixDefaults.DEFAULT_LIFECYCLE);
+    public DBObject marshal(MappingData mappingData, Class<?> cls, Object object) {
+        return marshal(mappingData, cls, object, MorphixDefaults.DEFAULT_LIFECYCLE);
     }
 
     @Override
-    public DBObject marshal(Class<?> cls, Object object, boolean lifecycle) {
-        return (DBObject) getMapper(cls).marshal(object, lifecycle);
+    public DBObject marshal(MappingData mappingData, Class<?> cls, Object object, boolean lifecycle) {
+        return (DBObject) getMapper(cls).marshal(mappingData, object, lifecycle);
     }
 
     @Override

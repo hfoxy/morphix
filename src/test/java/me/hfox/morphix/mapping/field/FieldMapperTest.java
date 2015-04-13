@@ -49,10 +49,10 @@ public class FieldMapperTest extends TestCase {
 
     public void testArrayMapper() throws Exception {
         MappingData mappingData = new MappingData();
-        ArrayMapper<?> mapper = new ArrayMapper<>(mappingData, String[].class, FieldMapperTest.class, null, morphix);
+        ArrayMapper<?> mapper = new ArrayMapper<>(String[].class, FieldMapperTest.class, null, morphix);
         String[] strings = new String[]{"hello", "world"};
 
-        BasicDBList object = mapper.marshal(strings);
+        BasicDBList object = mapper.marshal(mappingData, strings);
         for (int i = 0; i < strings.length; i++) {
             String string = (String) object.get(i);
             assertEquals(strings[i], string);
@@ -63,10 +63,10 @@ public class FieldMapperTest extends TestCase {
             assertEquals(strings[i], result[i]);
         }
 
-        mapper = new ArrayMapper<>(mappingData, String[][].class, FieldMapperTest.class, null, morphix);
+        mapper = new ArrayMapper<>(String[][].class, FieldMapperTest.class, null, morphix);
         String[][] multidimensional = new String[][]{new String[]{"goodbye", "sun"}, new String[]{"hello", "moon"}};
 
-        object = mapper.marshal(multidimensional);
+        object = mapper.marshal(mappingData, multidimensional);
         for (int i = 0; i < multidimensional.length; i++) {
             BasicDBList dbList = (BasicDBList) object.get(i);
             String[] array = multidimensional[i];
@@ -89,9 +89,9 @@ public class FieldMapperTest extends TestCase {
     @SuppressWarnings("unchecked")
     public void testCollectionMapper() throws Exception {
         MappingData mappingData = new MappingData();
-        CollectionMapper mapper = new CollectionMapper(mappingData, FieldMapperTest.class, getClass().getDeclaredField("list"), morphix);
+        CollectionMapper mapper = new CollectionMapper(FieldMapperTest.class, getClass().getDeclaredField("list"), morphix);
 
-        BasicDBList object = mapper.marshal(list);
+        BasicDBList object = mapper.marshal(mappingData, list);
         for (int i = 0; i < list.size(); i++) {
             assertEquals(list.get(i), (String) object.get(i));
         }
@@ -101,9 +101,9 @@ public class FieldMapperTest extends TestCase {
             assertEquals(list.get(i), result.get(i));
         }
 
-        mapper = new CollectionMapper(mappingData, FieldMapperTest.class, getClass().getDeclaredField("multidimensionalList"), morphix);
+        mapper = new CollectionMapper(FieldMapperTest.class, getClass().getDeclaredField("multidimensionalList"), morphix);
 
-        object = mapper.marshal(multidimensionalList);
+        object = mapper.marshal(mappingData, multidimensionalList);
         for (int i = 0; i < multidimensionalList.size(); i++) {
             BasicDBList dbList = (BasicDBList) object.get(i);
             List<String> list = multidimensionalList.get(i);
@@ -125,9 +125,9 @@ public class FieldMapperTest extends TestCase {
 
     public void testEnumMapper() throws Exception {
         TestEnum value = TestEnum.SOME;
-        EnumMapper<TestEnum> mapper = new EnumMapper<>(new MappingData(), TestEnum.class, FieldMapperTest.class, null, morphix);
+        EnumMapper<TestEnum> mapper = new EnumMapper<>(TestEnum.class, FieldMapperTest.class, null, morphix);
 
-        Object enumObject = mapper.marshal(value);
+        Object enumObject = mapper.marshal(new MappingData(), value);
         assertEquals("SOME", enumObject);
 
         TestEnum result = mapper.unmarshal(enumObject);
@@ -146,18 +146,18 @@ public class FieldMapperTest extends TestCase {
     @SuppressWarnings("unchecked")
     public void testMapMapper() throws Exception {
         MappingData mapper = new MappingData();
-        MapMapper stringIntegerMapper = new MapMapper(mapper, getClass(), getClass().getDeclaredField("map"), morphix);
-        ObjectMapper<String> stringMapper = new ObjectMapper<>(mapper, String.class, getClass(), null, morphix);
-        ObjectMapper<Integer> integerMapper = new ObjectMapper<>(mapper, Integer.class, getClass(), null, morphix);
+        MapMapper stringIntegerMapper = new MapMapper(getClass(), getClass().getDeclaredField("map"), morphix);
+        ObjectMapper<String> stringMapper = new ObjectMapper<>(String.class, getClass(), null, morphix);
+        ObjectMapper<Integer> integerMapper = new ObjectMapper<>(Integer.class, getClass(), null, morphix);
 
-        BasicDBList stringIntegerObject = stringIntegerMapper.marshal(map);
+        BasicDBList stringIntegerObject = stringIntegerMapper.marshal(mapper, map);
         assertEquals(map.size(), stringIntegerObject.size());
 
         List<String> keys = new ArrayList<>(map.keySet());
         for (int i = 0; i < stringIntegerObject.size(); i++) {
             DBObject object = (DBObject) stringIntegerObject.get(i);
-            String key = stringMapper.marshal(object.get("key"));
-            int value = integerMapper.marshal(object.get("value"));
+            String key = stringMapper.marshal(mapper, object.get("key"));
+            int value = integerMapper.marshal(mapper, object.get("value"));
 
             String origKey = keys.get(i);
             int origValue = map.get(origKey);
@@ -181,15 +181,15 @@ public class FieldMapperTest extends TestCase {
             index++;
         }
 
-        MapMapper mapMapper = new MapMapper(mapper, getClass(), getClass().getDeclaredField("stringMapMap"), morphix);
+        MapMapper mapMapper = new MapMapper(getClass(), getClass().getDeclaredField("stringMapMap"), morphix);
 
-        BasicDBList dbList = mapMapper.marshal(stringMapMap);
+        BasicDBList dbList = mapMapper.marshal(mapper, stringMapMap);
         assertEquals(stringMapMap.size(), dbList.size());
 
         List<String> stringMapMapKeys = new ArrayList<>(stringMapMap.keySet());
         for (int i = 0; i < dbList.size(); i++) {
             DBObject fMapObject = (DBObject) dbList.get(i); // fMap = first map
-            String fMapKey = stringMapper.marshal(fMapObject.get("key"));
+            String fMapKey = stringMapper.marshal(mapper, fMapObject.get("key"));
             BasicDBList fMapValue = (BasicDBList) fMapObject.get("value");
             Map<String, List<Integer>> fMapValueMap = stringMapMap.get(fMapKey);
 
@@ -199,7 +199,7 @@ public class FieldMapperTest extends TestCase {
             List<String> stringListMapKeys = new ArrayList<>(fMapValueMap.keySet());
             for (int j = 0; j < fMapValue.size(); j++) {
                 DBObject sMapObject = (DBObject) fMapValue.get(j); // sMap = second map
-                String sMapKey = stringMapper.marshal(sMapObject.get("key"));
+                String sMapKey = stringMapper.marshal(mapper, sMapObject.get("key"));
                 BasicDBList sMapValue = (BasicDBList) sMapObject.get("value");
                 List<Integer> sMapValueList = fMapValueMap.get(sMapKey);
 
@@ -207,7 +207,7 @@ public class FieldMapperTest extends TestCase {
                 assertEquals(sMapOrigKey, sMapKey);
 
                 for (int k = 0; k < sMapValueList.size(); k++) {
-                    int value = integerMapper.marshal(sMapValue.get(k));
+                    int value = integerMapper.marshal(mapper, sMapValue.get(k));
                     assertEquals((int) sMapValueList.get(k), value);
                 }
             }
@@ -260,25 +260,25 @@ public class FieldMapperTest extends TestCase {
     }
 
     public <T> void testObject(Class<T> cls, T object) {
-        ObjectMapper<T> stringMapper = new ObjectMapper<>(new MappingData(), cls, FieldMapperTest.class, null, morphix);
-        T unmarshal = stringMapper.marshal(object);
+        ObjectMapper<T> stringMapper = new ObjectMapper<>(cls, FieldMapperTest.class, null, morphix);
+        T unmarshal = stringMapper.marshal(new MappingData(), object);
         assertEquals(object, unmarshal);
         Object marshal = stringMapper.unmarshal(unmarshal);
         assertEquals(object, marshal);
     }
 
     public <T extends Number> void testNumber(Class<T> cls, Number object, T expect) {
-        ObjectMapper<T> stringMapper = new ObjectMapper<>(new MappingData(), cls, FieldMapperTest.class, null, morphix);
-        T unmarshal = stringMapper.marshal(object);
+        ObjectMapper<T> stringMapper = new ObjectMapper<>(cls, FieldMapperTest.class, null, morphix);
+        T unmarshal = stringMapper.marshal(new MappingData(), object);
         assertEquals(expect, unmarshal);
         Object marshal = stringMapper.unmarshal(unmarshal);
         assertEquals(expect, marshal);
     }
 
     public void testEntityMapper() throws Exception {
-        EntityMapper<TestClass> mapper = new EntityMapper<>(new MappingData(), TestClass.class, getClass(), getClass().getDeclaredField("testClass"), morphix);
+        EntityMapper<TestClass> mapper = new EntityMapper<>(TestClass.class, getClass(), getClass().getDeclaredField("testClass"), morphix);
 
-        DBObject dbObject = (DBObject) mapper.marshal(testClass);
+        DBObject dbObject = (DBObject) mapper.marshal(new MappingData(), testClass);
         assertEquals(testClass.getTest(), (String) dbObject.get("test"));
 
         BasicDBList list = (BasicDBList) dbObject.get("strings");

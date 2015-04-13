@@ -21,18 +21,18 @@ public class CollectionMapper extends FieldMapper<Collection> {
     protected Type type;
     protected FieldMapper<?> mapper;
 
-    public CollectionMapper(MappingData mappingData, Class<?> parent, Field field, Morphix morphix) {
-        super(mappingData, Collection.class, parent, field, morphix);
+    public CollectionMapper(Class<?> parent, Field field, Morphix morphix) {
+        super(Collection.class, parent, field, morphix);
     }
 
     public CollectionMapper(CollectionMapper parent) {
-        super(parent.mappingData, Collection.class, parent.parent, parent.field, parent.morphix, false);
+        super(Collection.class, parent.parent, parent.field, parent.morphix, false);
         this.type = ((ParameterizedType) parent.type).getActualTypeArguments()[0];
         discover();
     }
 
     public CollectionMapper(MapMapper parent, ParameterizedType type) {
-        super(parent.mappingData, Collection.class, parent.parent, parent.field, parent.morphix, false);
+        super(Collection.class, parent.parent, parent.field, parent.morphix, false);
         this.type = type.getActualTypeArguments()[0];
         discover();
     }
@@ -58,7 +58,7 @@ public class CollectionMapper extends FieldMapper<Collection> {
     private boolean find(Type type) {
         if (type instanceof Class) {
             Class<?> cls = (Class) type;
-            mapper = FieldMapper.createFromField(mappingData, cls, parent, field, morphix);
+            mapper = FieldMapper.createFromField(cls, parent, field, morphix);
             return true;
         } else if (type instanceof ParameterizedType) {
             ParameterizedType param = (ParameterizedType) type;
@@ -150,18 +150,18 @@ public class CollectionMapper extends FieldMapper<Collection> {
     }
 
     @Override
-    public BasicDBList marshal(Object obj) {
-        return marshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    public BasicDBList marshal(MappingData mappingData, Object obj) {
+        return marshal(mappingData, obj, MorphixDefaults.DEFAULT_LIFECYCLE);
     }
 
     @Override
-    public BasicDBList marshal(Object obj, boolean lifecycle) {
+    public BasicDBList marshal(MappingData mappingData, Object obj, boolean lifecycle) {
         BasicDBList list = new BasicDBList();
 
         if (obj instanceof Collection) {
             Collection collection = (Collection) obj;
             for (Object object : collection) {
-                list.add(mapper.marshal(object, lifecycle));
+                list.add(mapper.marshal(mappingData, object, lifecycle));
             }
         }
 

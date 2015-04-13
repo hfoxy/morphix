@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.WriteResult;
 import me.hfox.morphix.annotation.entity.Cache;
 import me.hfox.morphix.annotation.lifecycle.PostCreate;
 import me.hfox.morphix.annotation.lifecycle.PostSave;
@@ -21,6 +22,7 @@ import me.hfox.morphix.helper.polymorphism.DefaultPolymorhpismHelper;
 import me.hfox.morphix.helper.polymorphism.PolymorhpismHelper;
 import me.hfox.morphix.helper.remap.DefaultRemapHelper;
 import me.hfox.morphix.helper.remap.RemapHelper;
+import me.hfox.morphix.mapping.MappingData;
 import me.hfox.morphix.mapping.ObjectMapper;
 import me.hfox.morphix.mapping.ObjectMapperImpl;
 import me.hfox.morphix.query.Query;
@@ -214,9 +216,10 @@ public class Morphix {
             throw new MorphixException("Can't store object in a null collection");
         }
 
-        DBObject dbObject = getMapper().marshal(object);
+        DBObject dbObject = getMapper().marshal(new MappingData(), object);
         if (dbObject.get("_id") == null) {
             database.getCollection(collection).insert(dbObject);
+            // System.out.println("Inserted " + object + " (" + dbObject + ") into '" + getDatabase().getName() + "." + collection + "'");
 
             ObjectId id = (ObjectId) dbObject.get("_id");
             getEntityHelper().setObjectId(object, id);
@@ -231,7 +234,8 @@ public class Morphix {
             update.removeField("_id");
 
             getLifecycleHelper().call(PreSave.class, object);
-            database.getCollection(collection).update(new BasicDBObject("_id", id), update);
+            WriteResult result = database.getCollection(collection).update(new BasicDBObject("_id", id), update);
+            // System.out.println("Updated " + result.getN() + " documents (" + dbObject + ") inside '" + getDatabase().getName() + "." + collection + "'");
             getLifecycleHelper().call(PostSave.class, object);
         }
     }

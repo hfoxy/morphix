@@ -8,8 +8,8 @@ import java.lang.reflect.Field;
 
 public class ObjectMapper<T> extends FieldMapper<T> {
 
-    public ObjectMapper(MappingData mappingData, Class<T> type, Class<?> parent, Field field, Morphix morphix) {
-        super(mappingData, type, parent, field, morphix);
+    public ObjectMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
+        super(type, parent, field, morphix);
     }
 
     @Override
@@ -24,13 +24,13 @@ public class ObjectMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public T marshal(Object obj) {
-        return marshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    public T marshal(MappingData mappingData, Object obj) {
+        return marshal(mappingData, obj, MorphixDefaults.DEFAULT_LIFECYCLE);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public T marshal(Object obj, boolean lifecycle) {
+    public T marshal(MappingData mappingData, Object obj, boolean lifecycle) {
         return (T) convert(obj);
     }
 

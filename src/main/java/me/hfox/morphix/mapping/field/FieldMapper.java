@@ -18,8 +18,6 @@ public abstract class FieldMapper<T> {
 
     private static FieldMappers mappers = new FieldMappers();
 
-    protected MappingData mappingData;
-
     protected FieldData data;
     protected Class<?> type;
     protected Class<?> parent;
@@ -27,12 +25,11 @@ public abstract class FieldMapper<T> {
     protected String fieldName;
     protected Morphix morphix;
 
-    public FieldMapper(MappingData mappingData, Class<T> type, Class<?> parent, Field field, Morphix morphix) {
-        this(mappingData, type, parent, field, morphix, true);
+    public FieldMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
+        this(type, parent, field, morphix, true);
     }
 
-    public FieldMapper(MappingData mappingData, Class<T> type, Class<?> parent, Field field, Morphix morphix, boolean discover) {
-        this.mappingData = mappingData;
+    public FieldMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix, boolean discover) {
         this.data = new FieldData(type, parent, field, morphix);
         this.type = type;
         this.parent = parent;
@@ -90,11 +87,11 @@ public abstract class FieldMapper<T> {
     }
     */
 
-    public Object marshal(Object obj) {
-        return marshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    public Object marshal(MappingData mappingData, Object obj) {
+        return marshal(mappingData, obj, MorphixDefaults.DEFAULT_LIFECYCLE);
     }
 
-    public abstract Object marshal(Object obj, boolean lifecycle);
+    public abstract Object marshal(MappingData mappingData, Object obj, boolean lifecycle);
 
     private static String getName(Field field) {
         field.setAccessible(true);
@@ -117,24 +114,24 @@ public abstract class FieldMapper<T> {
         return name;
     }
 
-    public static FieldMapper createFromName(MappingData mappingData, Class<?> parent, Class<?> type, String fieldName, Morphix morphix) {
+    public static FieldMapper createFromName(Class<?> parent, Class<?> type, String fieldName, Morphix morphix) {
         List<Field> fields = morphix.getEntityHelper().getFields(parent);
         for (Field field : fields) {
             String name = getName(field);
             if (name.equals(fieldName)) {
-                return createFromField(mappingData, type, parent, field, morphix);
+                return createFromField(type, parent, field, morphix);
             }
         }
 
-        return createFromField(mappingData, type, parent, null, morphix);
+        return createFromField(type, parent, null, morphix);
     }
 
-    public static FieldMapper createFromField(MappingData mappingData, Class<?> parent, Field field, Morphix morphix) {
-        return createFromField(mappingData, field == null ? parent : field.getType(), parent, field, morphix);
+    public static FieldMapper createFromField(Class<?> parent, Field field, Morphix morphix) {
+        return createFromField(field == null ? parent : field.getType(), parent, field, morphix);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> FieldMapper<T> createFromField(MappingData mappingData, Class<T> type, Class<?> parent, Field field, Morphix morphix) {
+    public static <T> FieldMapper<T> createFromField(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
         if (field != null && field.getAnnotation(Transient.class) != null) {
             return null;
         }
@@ -145,17 +142,17 @@ public abstract class FieldMapper<T> {
         }
 
         if (type.isEnum()) {
-            return new EnumMapper<>(mappingData, type, parent, field, morphix);
+            return new EnumMapper<>(type, parent, field, morphix);
         } else if (Map.class.isAssignableFrom(type)) {
-            return (FieldMapper<T>) new MapMapper(mappingData, parent, field, morphix);
+            return (FieldMapper<T>) new MapMapper(parent, field, morphix);
         } else if (Collection.class.isAssignableFrom(type)) {
-            return (FieldMapper<T>) new CollectionMapper(mappingData, parent, field, morphix);
+            return (FieldMapper<T>) new CollectionMapper(parent, field, morphix);
         } else if (type.isArray()) {
-            return new ArrayMapper<>(mappingData, type, parent, field, morphix);
+            return new ArrayMapper<>(type, parent, field, morphix);
         } else if (AnnotationUtils.getHierarchicalAnnotation(type, Entity.class) != null) {
-            return new EntityMapper<>(mappingData, type, parent, field, morphix);
+            return new EntityMapper<>(type, parent, field, morphix);
         } else {
-            return new ObjectMapper<>(mappingData, type, parent, field, morphix);
+            return new ObjectMapper<>(type, parent, field, morphix);
         }
     }
 

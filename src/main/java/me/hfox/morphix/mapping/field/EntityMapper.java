@@ -42,8 +42,8 @@ public class EntityMapper<T> extends FieldMapper<T> {
 
     private Map<Field, FieldMapper> fields;
 
-    public EntityMapper(MappingData mappingData, Class<T> type, Class<?> parent, Field field, Morphix morphix) {
-        super(mappingData, type, parent, field, morphix);
+    public EntityMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
+        super(type, parent, field, morphix);
         this.cls = type;
     }
 
@@ -221,7 +221,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public Object marshal(Object obj, boolean lifecycle) {
+    public Object marshal(MappingData mappingData, Object obj, boolean lifecycle) {
         if (obj == null) {
             return null;
         }
@@ -242,10 +242,12 @@ public class EntityMapper<T> extends FieldMapper<T> {
 
         BasicDBObject document = mappingData.get(obj);
         if (document != null) {
+            // System.out.println("Using existing document in MappingData (" + document + ")");
             return document;
         }
 
         document = mappingData.put(obj);
+        // System.out.println("Created document for " + obj + " (" + document + ")");
         if (polymorphEnabled) {
             morphix.getPolymorhpismHelper().store(document, obj.getClass());
         }
@@ -282,7 +284,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
                 }
             }
 
-            Object store = mapper.marshal(value);
+            Object store = mapper.marshal(mappingData, value);
             document.put(mapper.fieldName, store);
         }
 
@@ -296,7 +298,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
 
         Map<Field, FieldMapper> fields = new HashMap<>();
         for (Field field : morphix.getEntityHelper().getFields(cls)) {
-            FieldMapper mapper = createFromField(mappingData, cls, field, morphix);
+            FieldMapper mapper = createFromField(cls, field, morphix);
             if (mapper != null) {
                 fields.put(field, mapper);
             }

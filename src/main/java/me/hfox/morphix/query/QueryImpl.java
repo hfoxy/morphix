@@ -276,6 +276,7 @@ public class QueryImpl<T> implements Query<T> {
             result.put("$where", where);
         }
 
+        MappingData mappingData = new MappingData();
         for (String name : fields.keySet()) {
             List<FieldQueryImpl<T>> queries = fields.get(name);
             for (FieldQueryImpl<T> field : queries) {
@@ -287,7 +288,7 @@ public class QueryImpl<T> implements Query<T> {
 
                     Object store = field.getObject();
                     if (store != null) {
-                        store = FieldMapper.createFromName(new MappingData(), getQueryType(), store.getClass(), name, morphix).marshal(store);
+                        store = FieldMapper.createFromName(getQueryType(), store.getClass(), name, morphix).marshal(mappingData, store);
                         // System.out.println("Storing " + store + " instead of " + field.getObject());
                     }
 
@@ -299,7 +300,7 @@ public class QueryImpl<T> implements Query<T> {
 
                     Object store = field.getObject();
                     if (store != null) {
-                        store = FieldMapper.createFromName(new MappingData(), getQueryType(), store.getClass(), name, morphix).marshal(store);
+                        store = FieldMapper.createFromName(getQueryType(), store.getClass(), name, morphix).marshal(mappingData, store);
                         // System.out.println("Storing " + store + " instead of " + field.getObject());
                     }
 

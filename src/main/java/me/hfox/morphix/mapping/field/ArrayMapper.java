@@ -14,12 +14,12 @@ public class ArrayMapper<T> extends FieldMapper<T> {
     private int dimensions;
     private FieldMapper<?> mapper;
 
-    public ArrayMapper(MappingData mappingData, Class<T> type, Class<?> parent, Field field, Morphix morphix) {
-        super(mappingData, type, parent, field, morphix);
+    public ArrayMapper(Class<T> type, Class<?> parent, Field field, Morphix morphix) {
+        super(type, parent, field, morphix);
     }
 
-    public ArrayMapper(MappingData mappingData, Class<T> type, ArrayMapper parent) {
-        super(mappingData, type, parent.parent, parent.field, parent.morphix);
+    public ArrayMapper(Class<T> type, ArrayMapper parent) {
+        super(type, parent.parent, parent.field, parent.morphix);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ArrayMapper<T> extends FieldMapper<T> {
 
         arrayType = cls;
         Class<?> component = type.getComponentType();
-        mapper = component.isArray() ? new ArrayMapper<>(mappingData, component, this) : FieldMapper.createFromField(mappingData, component, parent, field, morphix);
+        mapper = component.isArray() ? new ArrayMapper<>(component, this) : FieldMapper.createFromField(component, parent, field, morphix);
     }
 
     @Override
@@ -78,12 +78,12 @@ public class ArrayMapper<T> extends FieldMapper<T> {
     }
 
     @Override
-    public BasicDBList marshal(Object obj) {
-        return marshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    public BasicDBList marshal(MappingData mappingData, Object obj) {
+        return marshal(mappingData, obj, MorphixDefaults.DEFAULT_LIFECYCLE);
     }
 
     @Override
-    public BasicDBList marshal(Object obj, boolean lifecycle) {
+    public BasicDBList marshal(MappingData mappingData, Object obj, boolean lifecycle) {
         if (obj == null || !obj.getClass().isArray()) {
             return null;
         }
@@ -93,7 +93,7 @@ public class ArrayMapper<T> extends FieldMapper<T> {
         int length = Array.getLength(obj);
         for (int i = 0; i < length; i++) {
             Object value = Array.get(obj, i);
-            Object result = mapper.marshal(value);
+            Object result = mapper.marshal(mappingData, value);
             list.add(result);
         }
 

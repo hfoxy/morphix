@@ -24,18 +24,18 @@ public class MapMapper extends FieldMapper<Map> {
     protected Type[] types;
     protected FieldMapper[] mappers;
 
-    public MapMapper(MappingData mappingData, Class<?> parent, Field field, Morphix morphix) {
-        super(mappingData, Map.class, parent, field, morphix);
+    public MapMapper(Class<?> parent, Field field, Morphix morphix) {
+        super(Map.class, parent, field, morphix);
     }
 
     public MapMapper(MapMapper parent, ParameterizedType type) {
-        super(parent.mappingData, Map.class, parent.parent, parent.field, parent.morphix, false);
+        super(Map.class, parent.parent, parent.field, parent.morphix, false);
         types = type.getActualTypeArguments();
         discover();
     }
 
     public MapMapper(CollectionMapper parent) {
-        super(parent.mappingData, Map.class, parent.parent, parent.field, parent.morphix, false);
+        super(Map.class, parent.parent, parent.field, parent.morphix, false);
         types = ((ParameterizedType) parent.type).getActualTypeArguments();
         discover();
     }
@@ -79,12 +79,12 @@ public class MapMapper extends FieldMapper<Map> {
     }
 
     @Override
-    public BasicDBList marshal(Object obj) {
-        return marshal(obj, MorphixDefaults.DEFAULT_LIFECYCLE);
+    public BasicDBList marshal(MappingData mappingData, Object obj) {
+        return marshal(mappingData, obj, MorphixDefaults.DEFAULT_LIFECYCLE);
     }
 
     @Override
-    public BasicDBList marshal(Object obj, boolean lifecycle) {
+    public BasicDBList marshal(MappingData mappingData, Object obj, boolean lifecycle) {
         BasicDBList list = new BasicDBList();
 
         if (obj instanceof Map) {
@@ -93,8 +93,8 @@ public class MapMapper extends FieldMapper<Map> {
                 if (obj2 instanceof Entry) {
                     Entry entry = (Entry) obj2;
                     BasicDBObject dbObject = new BasicDBObject();
-                    dbObject.put("key", mappers[0].marshal(entry.getKey()));
-                    dbObject.put("value", mappers[1].marshal(entry.getValue()));
+                    dbObject.put("key", mappers[0].marshal(mappingData, entry.getKey()));
+                    dbObject.put("value", mappers[1].marshal(mappingData, entry.getValue()));
                     list.add(dbObject);
                 }
             }
@@ -107,7 +107,7 @@ public class MapMapper extends FieldMapper<Map> {
         FieldMapper mapper = null;
         if (type instanceof Class) {
             Class<?> cls = (Class) type;
-            mapper = FieldMapper.createFromField(mappingData, cls, parent, field, morphix);
+            mapper = FieldMapper.createFromField(cls, parent, field, morphix);
         } else if (type instanceof ParameterizedType) {
             ParameterizedType param = (ParameterizedType) type;
             if (param.getRawType() instanceof Class) {

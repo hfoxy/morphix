@@ -4,13 +4,13 @@ import com.mongodb.DBObject;
 
 public interface ObjectMapper {
 
-    public DBObject marshal(Object obj);
+    public DBObject marshal(MappingData mappingData, Object obj);
 
-    public DBObject marshal(Object obj, boolean lifecycle);
+    public DBObject marshal(MappingData mappingData, Object obj, boolean lifecycle);
 
-    public DBObject marshal(Class<?> cls, Object object);
+    public DBObject marshal(MappingData mappingData, Class<?> cls, Object object);
 
-    public DBObject marshal(Class<?> cls, Object object, boolean lifecycle);
+    public DBObject marshal(MappingData mappingData, Class<?> cls, Object object, boolean lifecycle);
 
     public Object unmarshal(DBObject object);
 
