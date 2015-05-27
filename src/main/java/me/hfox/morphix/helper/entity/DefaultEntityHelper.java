@@ -141,7 +141,7 @@ public class DefaultEntityHelper implements EntityHelper {
     }
 
     private boolean cont(Class<?> cls) {
-        if (cls == Object.class) {
+        if (cls == Object.class || cls == null) {
             return false;
         }
 
