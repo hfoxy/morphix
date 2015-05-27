@@ -160,7 +160,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
     }
 
     public <O extends T> O update(DBObject object, O result) {
-        Map<Field, FieldMapper> fields = getFields(cls);
+        Map<Field, FieldMapper> fields = getFields(result.getClass());
         for (Entry<Field, FieldMapper> entry : fields.entrySet()) {
             Field field = entry.getKey();
             if (field != null && field.getAnnotation(Id.class) != null) {
