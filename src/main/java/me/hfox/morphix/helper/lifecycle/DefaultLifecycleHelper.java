@@ -2,7 +2,6 @@ package me.hfox.morphix.helper.lifecycle;
 
 import me.hfox.morphix.Morphix;
 import me.hfox.morphix.annotation.lifecycle.Lifecycle;
-import me.hfox.morphix.annotation.lifecycle.PostUpdate;
 import me.hfox.morphix.exception.MorphixException;
 import me.hfox.morphix.util.AnnotationUtils;
 
@@ -72,6 +71,10 @@ public class DefaultLifecycleHelper implements LifecycleHelper {
     public int call(Class<? extends Annotation> cls, Object object) {
         int count = 0;
         List<Method> methods = getMethods(object.getClass(), cls);
+        if (methods == null) {
+            System.out.println("Found null methods response for " + cls.getSimpleName() + " in " + object.getClass());
+        }
+
         for (Method method : methods) {
             try {
                 method.invoke(object);
