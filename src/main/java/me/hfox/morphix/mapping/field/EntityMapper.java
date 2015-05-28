@@ -13,7 +13,9 @@ import me.hfox.morphix.annotation.entity.Polymorph;
 import me.hfox.morphix.annotation.entity.StoreEmpty;
 import me.hfox.morphix.annotation.entity.StoreNull;
 import me.hfox.morphix.annotation.lifecycle.PostLoad;
+import me.hfox.morphix.annotation.lifecycle.PostMarshal;
 import me.hfox.morphix.annotation.lifecycle.PreLoad;
+import me.hfox.morphix.annotation.lifecycle.PreMarshal;
 import me.hfox.morphix.exception.MorphixException;
 import me.hfox.morphix.mapping.MappingData;
 import me.hfox.morphix.util.AnnotationUtils;
@@ -240,6 +242,10 @@ public class EntityMapper<T> extends FieldMapper<T> {
             return id;
         }
 
+        if (lifecycle) {
+            morphix.getLifecycleHelper().call(PreMarshal.class, obj);
+        }
+
         BasicDBObject document = mappingData.get(obj);
         if (document != null) {
             // System.out.println("Using existing document in MappingData (" + document + ")");
@@ -286,6 +292,10 @@ public class EntityMapper<T> extends FieldMapper<T> {
 
             Object store = mapper.marshal(mappingData, value);
             document.put(mapper.fieldName, store);
+        }
+
+        if (lifecycle) {
+            morphix.getLifecycleHelper().call(PostMarshal.class, obj);
         }
 
         return document;
