@@ -216,7 +216,7 @@ public class Morphix {
             throw new MorphixException("Can't store object in a null collection");
         }
 
-        DBObject dbObject = getMapper().marshal(new MappingData(), object);
+        DBObject dbObject = getMapper().marshal(new MappingData(), object, true);
         if (dbObject.get("_id") == null) {
             database.getCollection(collection).insert(dbObject);
             // System.out.println("Inserted " + object + " (" + dbObject + ") into '" + getDatabase().getName() + "." + collection + "'");
