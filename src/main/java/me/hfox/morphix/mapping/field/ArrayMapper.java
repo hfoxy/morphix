@@ -50,7 +50,7 @@ public class ArrayMapper<T> extends FieldMapper<T> {
         Object array = Array.newInstance(arrayType, sizes);
         for (int i = 0; i < list.size(); i++) {
             Object value = list.get(i);
-            Object result = mapper.unmarshal(value);
+            Object result = mapper.unmarshal(value, lifecycle);
             Array.set(array, i, result);
         }
 

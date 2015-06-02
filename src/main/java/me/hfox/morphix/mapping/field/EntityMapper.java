@@ -152,7 +152,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
             morphix.getLifecycleHelper().call(PreLoad.class, result);
         }
 
-        result = update(object, (T) result);
+        result = update(object, (T) result, lifecycle);
 
         if (lifecycle) {
             morphix.getLifecycleHelper().call(PostLoad.class, result);
@@ -161,12 +161,12 @@ public class EntityMapper<T> extends FieldMapper<T> {
         return (T) result;
     }
 
-    public <O extends T> O update(DBObject object, O result) {
+    public <O extends T> O update(DBObject object, O result, boolean lifecycle) {
         Map<Field, FieldMapper> fields = getFields(result.getClass());
         for (Entry<Field, FieldMapper> entry : fields.entrySet()) {
             Field field = entry.getKey();
             if (field != null && field.getAnnotation(Id.class) != null) {
-                update(object, result, entry);
+                update(object, result, entry, lifecycle);
                 morphix.getCache(cls).put(result);
             }
         }
@@ -177,15 +177,14 @@ public class EntityMapper<T> extends FieldMapper<T> {
                 continue;
             }
 
-            update(object, result, entry);
+            update(object, result, entry, lifecycle);
         }
 
         return result;
     }
 
-    public <O extends T> O update(DBObject object, O result, Entry<Field, FieldMapper> entry) {
+    public <O extends T> O update(DBObject object, O result, Entry<Field, FieldMapper> entry, boolean lifecycle) {
         Field field = entry.getKey();
-        // System.out.println("Attempting to pull " + field);
 
         field.setAccessible(true);
 
@@ -197,7 +196,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
         //     continue;
         // }
 
-        Object value = mapper.unmarshal(dbResult);
+        Object value = mapper.unmarshal(dbResult, lifecycle);
         // System.out.println("Mapped: " + value);
         if (storeEmpty == null || !storeEmpty.value()) {
             if (value instanceof Collection) {

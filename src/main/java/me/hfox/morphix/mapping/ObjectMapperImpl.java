@@ -79,8 +79,14 @@ public class ObjectMapperImpl implements ObjectMapper {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T update(T object, DBObject dbObject) {
+        return update(object, dbObject, MorphixDefaults.DEFAULT_LIFECYCLE);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T update(T object, DBObject dbObject, boolean lifecycle) {
         EntityMapper<T> mapper = getMapper((Class<T>) object.getClass());
-        return mapper.update(dbObject, object);
+        return mapper.update(dbObject, object, lifecycle);
     }
 
 }

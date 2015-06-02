@@ -5,7 +5,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import me.hfox.morphix.Morphix;
 import me.hfox.morphix.MorphixDefaults;
-import me.hfox.morphix.exception.MorphixException;
 import me.hfox.morphix.mapping.MappingData;
 
 import java.lang.reflect.Field;
@@ -68,8 +67,8 @@ public class MapMapper extends FieldMapper<Map> {
             for (Object object : list) {
                 if (object instanceof DBObject) {
                     DBObject dbObject = (DBObject) object;
-                    Object key = mappers[0].unmarshal(dbObject.get("key"));
-                    Object value = mappers[1].unmarshal(dbObject.get("value"));
+                    Object key = mappers[0].unmarshal(dbObject.get("key"), lifecycle);
+                    Object value = mappers[1].unmarshal(dbObject.get("value"), lifecycle);
                     map.put(key, value);
                 }
             }

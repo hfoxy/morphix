@@ -22,4 +22,6 @@ public interface ObjectMapper {
 
     public <T> T update(T object, DBObject dbObject);
 
+    public <T> T update(T object, DBObject dbObject, boolean lifecycle);
+
 }
