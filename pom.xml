@@ -6,16 +6,16 @@
 
     <groupId>me.hfox</groupId>
     <artifactId>morphix</artifactId>
-    <version>1.4.6</version>
+    <version>1.6-SNAPSHOT</version>
 
     <distributionManagement>
         <repository>
             <id>komp-releases</id>
-            <url>http://repo.kompking.info/nexus/content/repositories/releases</url>
+            <url>http://pomhub.uk/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
             <id>komp-snapshots</id>
-            <url>http://repo.kompking.info/nexus/content/repositories/snapshots</url>
+            <url>http://pomhub.uk/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>2.12.3</version>
+            <version>2.13.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

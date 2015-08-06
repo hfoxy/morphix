@@ -13,4 +13,6 @@ public @interface Polymorph {
 
     public boolean value() default true;
 
+    public boolean storeAnnotatedClass() default true;
+
 }
