@@ -12,7 +12,6 @@ import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -158,6 +157,7 @@ public class MapMapper extends FieldMapper<Map> {
         return mapper;
     }
 
+    /*
     private void display(TypeVariable variable) {
         display("", variable);
     }
@@ -172,5 +172,6 @@ public class MapMapper extends FieldMapper<Map> {
         GenericDeclaration declaration = variable.getGenericDeclaration();
         System.out.println(prefix + "TypeVariable: Generic Declaration: Type Parameters: " + Arrays.asList(declaration.getTypeParameters()));
     }
+    */
 
 }
