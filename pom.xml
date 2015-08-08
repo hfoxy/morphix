@@ -6,7 +6,7 @@
 
     <groupId>me.hfox</groupId>
     <artifactId>morphix</artifactId>
-    <version>1.6-SNAPSHOT</version>
+    <version>1.6</version>
 
     <distributionManagement>
         <repository>

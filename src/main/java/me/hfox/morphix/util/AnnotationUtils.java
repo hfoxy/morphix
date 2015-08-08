@@ -68,11 +68,11 @@ public final class AnnotationUtils {
 
             Class<?>[] interfaces = cls.getInterfaces();
             for (Class<?> face : interfaces) {
-                T result = getHierarchicalAnnotation(face, annoCls);
+                Entry<Class<?>, T> result = getHighestClassAnnotation(face, annoCls);
                 if (result != null) {
-                    anno = result;
-                    end = result;
-                    endCls = cls;
+                    anno = result.getValue();
+                    end = anno;
+                    endCls = result.getKey();
                 }
             }
 
