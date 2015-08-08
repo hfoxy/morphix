@@ -10,10 +10,10 @@ public class FieldMappers {
 
     private Map<FieldData, FieldMapper> mappers = new HashMap<>();
 
-    public void put(FieldData key, FieldMapper value) {
+    public synchronized void put(FieldData key, FieldMapper value) {
         List<FieldData> update = new ArrayList<>();
 
-        for (Entry<FieldData, FieldMapper> entry: mappers.entrySet()) {
+        for (Entry<FieldData, FieldMapper> entry : mappers.entrySet()) {
             FieldData data = entry.getKey();
             if (data.equals(key)) {
                 update.add(data);
@@ -26,8 +26,8 @@ public class FieldMappers {
         }
     }
 
-    public FieldMapper get(FieldData key) {
-        for (Entry<FieldData, FieldMapper> entry: mappers.entrySet()) {
+    public synchronized FieldMapper get(FieldData key) {
+        for (Entry<FieldData, FieldMapper> entry : mappers.entrySet()) {
             FieldData data = entry.getKey();
             if (data.equals(key)) {
                 return entry.getValue();

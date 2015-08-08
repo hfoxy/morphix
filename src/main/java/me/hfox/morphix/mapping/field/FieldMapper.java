@@ -16,6 +16,7 @@ import java.util.Map;
 
 public abstract class FieldMapper<T> {
 
+    private static final Object lock = new Object();
     private static FieldMappers mappers = new FieldMappers();
 
     protected FieldData data;
@@ -136,23 +137,25 @@ public abstract class FieldMapper<T> {
             return null;
         }
 
-        FieldMapper<T> mapper = mappers.get(new FieldData(type, parent, field, morphix));
-        if (mapper != null) {
-            return mapper;
-        }
+        synchronized (lock) {
+            FieldMapper<T> mapper = mappers.get(new FieldData(type, parent, field, morphix));
+            if (mapper != null) {
+                return mapper;
+            }
 
-        if (type.isEnum()) {
-            return new EnumMapper<>(type, parent, field, morphix);
-        } else if (Map.class.isAssignableFrom(type)) {
-            return (FieldMapper<T>) new MapMapper(parent, field, morphix);
-        } else if (Collection.class.isAssignableFrom(type)) {
-            return (FieldMapper<T>) new CollectionMapper(parent, field, morphix);
-        } else if (type.isArray()) {
-            return new ArrayMapper<>(type, parent, field, morphix);
-        } else if (AnnotationUtils.getHierarchicalAnnotation(type, Entity.class) != null) {
-            return new EntityMapper<>(type, parent, field, morphix);
-        } else {
-            return new ObjectMapper<>(type, parent, field, morphix);
+            if (type.isEnum()) {
+                return new EnumMapper<>(type, parent, field, morphix);
+            } else if (Map.class.isAssignableFrom(type)) {
+                return (FieldMapper<T>) new MapMapper(parent, field, morphix);
+            } else if (Collection.class.isAssignableFrom(type)) {
+                return (FieldMapper<T>) new CollectionMapper(parent, field, morphix);
+            } else if (type.isArray()) {
+                return new ArrayMapper<>(type, parent, field, morphix);
+            } else if (AnnotationUtils.getHierarchicalAnnotation(type, Entity.class) != null) {
+                return new EntityMapper<>(type, parent, field, morphix);
+            } else {
+                return new ObjectMapper<>(type, parent, field, morphix);
+            }
         }
     }
 
