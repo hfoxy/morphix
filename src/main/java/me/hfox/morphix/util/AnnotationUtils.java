@@ -26,20 +26,31 @@ public final class AnnotationUtils {
 
     public static <T extends Annotation> Entry<Class<?>, T> getClassAnnotation(Class<?> cls, Class<T> annoCls) {
         T anno = null;
+        // if (Entity.class.isAssignableFrom(annoCls)) System.out.println("START! Annotation (" + (cls == null ? "unknown" : cls.getName()) + "): " + (anno == null ? "none" : anno));
+        boolean broke = false;
         while (true) {
             anno = cls.getAnnotation(annoCls);
+            // if (Entity.class.isAssignableFrom(annoCls)) System.out.println("Annotation (" + cls.getName() + "): " + (anno == null ? "none" : anno));
             if (anno != null) {
+                // if (Entity.class.isAssignableFrom(annoCls)) System.out.println("Breaking loop with " + anno + " from " + cls.getName());
+                broke = true;
                 break;
             }
 
+            boolean done = false;
             Class<?>[] interfaces = cls.getInterfaces();
             for (Class<?> face : interfaces) {
-                T result = getHierarchicalAnnotation(face, annoCls);
+                // if (Entity.class.isAssignableFrom(annoCls)) System.out.println("Testing " + face.getName() + " for " + cls.getSimpleName());
+                Entry<Class<?>, T> result = getClassAnnotation(face, annoCls);
                 if (result != null) {
-                    anno = result;
+                    anno = result.getValue();
+                    cls = result.getKey();
+                    done = true;
                     break;
                 }
             }
+
+            if (done) break;
 
             cls = cls.getSuperclass();
             if (cls == null || cls == Object.class) {
@@ -48,9 +59,11 @@ public final class AnnotationUtils {
         }
 
         if (anno == null) {
+            // if (Entity.class.isAssignableFrom(annoCls)) System.out.println("Broke? " + broke);
             return null;
         }
 
+        // if (Entity.class.isAssignableFrom(annoCls)) System.out.println("RESULT! Annotation (" + (cls == null ? "unknown" : cls.getName()) + "): " + (anno == null ? "none" : anno));
         return new SimpleEntry<Class<?>, T>(cls, anno);
     }
 
