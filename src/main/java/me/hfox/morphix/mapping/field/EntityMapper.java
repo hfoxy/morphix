@@ -241,6 +241,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
             return id;
         }
 
+        // System.out.println("I want to call PreMarshal for " + obj + (lifecycle ? " so I will!" : " but I can't .-."));
         if (lifecycle) {
             morphix.getLifecycleHelper().call(PreMarshal.class, obj);
         }

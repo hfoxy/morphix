@@ -24,6 +24,10 @@ public class DefaultLifecycleHelper implements LifecycleHelper {
     }
 
     public List<Method> getMethods(Class<?> clazz, Class<? extends Annotation> anno) {
+        return getMethods(clazz, anno, false);
+    }
+
+    public List<Method> getMethods(Class<?> clazz, Class<? extends Annotation> anno, boolean debug) {
         Map<Class<? extends Annotation>, List<Method>> annotations = methods.get(clazz);
         if (annotations == null) {
             annotations = new HashMap<>();
@@ -40,24 +44,43 @@ public class DefaultLifecycleHelper implements LifecycleHelper {
 
             if (enabled) {
                 List<Method> classMethods = morphix.getEntityHelper().getMethods(clazz);
+                if (debug) {
+                    System.out.println("Methods for " + clazz.getSimpleName() + ":");
+                    for (Method method : classMethods) {
+                        System.out.println("  " + method.getDeclaringClass().getSimpleName() + "#" + method.getName());
+                        System.out.println("    Annotations:");
+
+                        Annotation[] annos = method.getAnnotations();
+                        for (Annotation annotation : annos) {
+                            System.out.println("      " + annotation);
+                        }
+                    }
+                }
+
                 for (Method method : classMethods) {
                     method.setAccessible(true);
                     if (method.getParameterTypes().length > 0) {
                         continue;
                     }
 
+                    if (debug) System.out.println("Started looping for annotations");
                     for (Class<? extends Annotation> annotation : morphix.getEntityHelper().getLifecycleAnnotations()) {
                         Annotation result = method.getAnnotation(annotation);
+                        if (debug) System.out.println("Checking " + method.getDeclaringClass().getSimpleName()
+                                + "#" + method.getName() + " for " + annotation.getSimpleName() + " (" + (result != null) + ")");
                         if (result != null) {
                             List<Method> annoMethods = annotations.get(annotation);
                             if (annoMethods == null) {
+                                if (debug) System.out.println("Creating a new list of methods for " + annotation.getSimpleName());
                                 annoMethods = new ArrayList<>();
                                 annotations.put(annotation, annoMethods);
                             }
 
+                            if (debug) System.out.println("Adding " + method + " to " + annoMethods);
                             annoMethods.add(method);
                         }
                     }
+                    if (debug) System.out.println("Finished looping for annotations");
                 }
             }
 
@@ -69,10 +92,28 @@ public class DefaultLifecycleHelper implements LifecycleHelper {
 
     @Override
     public int call(Class<? extends Annotation> cls, Object object) {
+        boolean debug = false;
+
+        /*
+        Class<?> type = null;
+
+        try {
+            type = Class.forName("net.forthwind.plugin.entity.ForthEntity");
+            debug = type.isInstance(object);
+        } catch (ClassNotFoundException ex) {
+            // ignore
+        }
+        */
+
         int count = 0;
-        List<Method> methods = getMethods(object.getClass(), cls);
+        List<Method> methods = getMethods(object.getClass(), cls, debug);
         if (methods == null) {
             System.out.println("Found null methods response for " + cls.getSimpleName() + " in " + object.getClass());
+            return -1;
+        }
+
+        if (debug) {
+            System.out.println("Methods for " + object + " (" + cls.getSimpleName() + "): " + methods);
         }
 
         for (Method method : methods) {

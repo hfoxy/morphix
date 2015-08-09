@@ -9,6 +9,6 @@ public final class MorphixDefaults {
     public static final String DEFAULT_FIELD_NAME = ".";
     public static final Class<? extends NameHelper> DEFAULT_NAME_HELPER = DefaultNameHelper.class;
     public static final String DEFAULT_CACHE_NAME = "default";
-    public static final boolean DEFAULT_LIFECYCLE = false;
+    public static final boolean DEFAULT_LIFECYCLE = true;
 
 }

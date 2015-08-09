@@ -25,14 +25,26 @@ public final class AnnotationUtils {
     }
 
     public static <T extends Annotation> Entry<Class<?>, T> getClassAnnotation(Class<?> cls, Class<T> annoCls) {
+        boolean debug = false;
+        /*
+        Class<?> type = null;
+
+        try {
+            type = Class.forName("net.forthwind.plugin.inventory.BaseInventory");
+            debug = type.isAssignableFrom(cls) && Entity.class.equals(annoCls);
+        } catch (ClassNotFoundException ex) {
+            // ignore
+        }
+        */
+
         T anno = null;
-        // if (Entity.class.isAssignableFrom(annoCls)) System.out.println("START! Annotation (" + (cls == null ? "unknown" : cls.getName()) + "): " + (anno == null ? "none" : anno));
+        if (debug) System.out.println("START! Annotation (" + (cls == null ? "unknown" : cls.getName()) + "): " + (anno == null ? "none" : anno));
         boolean broke = false;
         while (true) {
             anno = cls.getAnnotation(annoCls);
-            // if (Entity.class.isAssignableFrom(annoCls)) System.out.println("Annotation (" + cls.getName() + "): " + (anno == null ? "none" : anno));
+            if (debug) System.out.println("Annotation (" + cls.getName() + "): " + (anno == null ? "none" : anno));
             if (anno != null) {
-                // if (Entity.class.isAssignableFrom(annoCls)) System.out.println("Breaking loop with " + anno + " from " + cls.getName());
+                if (debug) System.out.println("Breaking loop with " + anno + " from " + cls.getName());
                 broke = true;
                 break;
             }
@@ -40,7 +52,7 @@ public final class AnnotationUtils {
             boolean done = false;
             Class<?>[] interfaces = cls.getInterfaces();
             for (Class<?> face : interfaces) {
-                // if (Entity.class.isAssignableFrom(annoCls)) System.out.println("Testing " + face.getName() + " for " + cls.getSimpleName());
+                if (debug) System.out.println("Testing " + face.getName() + " for " + cls.getSimpleName());
                 Entry<Class<?>, T> result = getClassAnnotation(face, annoCls);
                 if (result != null) {
                     anno = result.getValue();
@@ -59,11 +71,11 @@ public final class AnnotationUtils {
         }
 
         if (anno == null) {
-            // if (Entity.class.isAssignableFrom(annoCls)) System.out.println("Broke? " + broke);
+            if (debug) System.out.println("Broke? " + broke);
             return null;
         }
 
-        // if (Entity.class.isAssignableFrom(annoCls)) System.out.println("RESULT! Annotation (" + (cls == null ? "unknown" : cls.getName()) + "): " + (anno == null ? "none" : anno));
+        if (debug) System.out.println("RESULT! Annotation (" + (cls == null ? "unknown" : cls.getName()) + "): " + (anno == null ? "none" : anno));
         return new SimpleEntry<Class<?>, T>(cls, anno);
     }
 
