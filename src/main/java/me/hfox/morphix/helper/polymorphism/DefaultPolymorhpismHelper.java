@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import static me.hfox.morphix.helper.polymorphism.PolymorphSelector.defaultAnnotatedField;
-import static me.hfox.morphix.helper.polymorphism.PolymorphSelector.defaultField;
 
 public class DefaultPolymorhpismHelper implements PolymorhpismHelper {
 
@@ -81,20 +80,22 @@ public class DefaultPolymorhpismHelper implements PolymorhpismHelper {
 
     @Override
     public void store(DBObject document, Class<?> type) {
-        document.put(defaultField, type.getName());
-
         Entry<Class<?>, Polymorph> entry = AnnotationUtils.getHighestClassAnnotation(type, Polymorph.class);
         if (entry == null) {
             return;
         }
 
+        PolymorphSelector<?> selector;
         Class<?> cls = entry.getKey();
         Polymorph polymorph = entry.getValue();
-        if (polymorph == null) {
-            return;
+        if (polymorph == null || selectors.get(polymorph) == null) {
+            selector = defaultSelector;
+        } else {
+            selector = selectors.get(polymorph);
         }
 
-        if (polymorph.storeAnnotatedClass()) {
+        selector.store(document, type);
+        if (polymorph != null && polymorph.storeAnnotatedClass()) {
             document.put(defaultAnnotatedField, cls.getName());
         }
     }
