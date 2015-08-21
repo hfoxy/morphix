@@ -204,15 +204,15 @@ public class Morphix {
         return new QueryImpl<>(this, getRemapHelper().remap(cls), collection);
     }
 
-    public void store(Object object) {
-        store(object, getEntityHelper().getCollectionName(object.getClass()));
+    public WriteResult store(Object object) {
+        return store(object, getEntityHelper().getCollectionName(object.getClass()));
     }
 
-    public void store(Object object, String collection) {
-        store(object, collection, connection.getWriteConcern());
+    public WriteResult store(Object object, String collection) {
+        return store(object, collection, connection.getWriteConcern());
     }
 
-    public void store(Object object, String collection, WriteConcern concern) {
+    public WriteResult store(Object object, String collection, WriteConcern concern) {
         if (object == null) {
             throw new MorphixException("Can't store null object in collection");
         }
@@ -225,9 +225,10 @@ public class Morphix {
             throw new MorphixException("Can't store object with a null write concern");
         }
 
+        WriteResult result;
         DBObject dbObject = getMapper().marshal(new MappingData(), object, true);
         if (dbObject.get("_id") == null) {
-            database.getCollection(collection).insert(dbObject, concern);
+            result = database.getCollection(collection).insert(dbObject, concern);
             // System.out.println("Inserted " + object + " (" + dbObject + ") into '" + getDatabase().getName() + "." + collection + "'");
 
             ObjectId id = (ObjectId) dbObject.get("_id");
@@ -243,10 +244,12 @@ public class Morphix {
             update.removeField("_id");
 
             getLifecycleHelper().call(PreSave.class, object);
-            WriteResult result = database.getCollection(collection).update(new BasicDBObject("_id", id), update, false,  false, concern);
+            result = database.getCollection(collection).update(new BasicDBObject("_id", id), update, false, false, concern);
             // System.out.println("Updated " + result.getN() + " documents (" + dbObject + ") inside '" + getDatabase().getName() + "." + collection + "'");
             getLifecycleHelper().call(PostSave.class, object);
         }
+
+        return result;
     }
 
 }
