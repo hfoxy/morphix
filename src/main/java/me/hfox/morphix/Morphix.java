@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import me.hfox.morphix.annotation.entity.Cache;
 import me.hfox.morphix.annotation.lifecycle.PostCreate;
@@ -208,6 +209,10 @@ public class Morphix {
     }
 
     public void store(Object object, String collection) {
+        store(object, collection, connection.getWriteConcern());
+    }
+
+    public void store(Object object, String collection, WriteConcern concern) {
         if (object == null) {
             throw new MorphixException("Can't store null object in collection");
         }
@@ -216,9 +221,13 @@ public class Morphix {
             throw new MorphixException("Can't store object in a null collection");
         }
 
+        if (concern == null) {
+            throw new MorphixException("Can't store object with a null write concern");
+        }
+
         DBObject dbObject = getMapper().marshal(new MappingData(), object, true);
         if (dbObject.get("_id") == null) {
-            database.getCollection(collection).insert(dbObject);
+            database.getCollection(collection).insert(dbObject, concern);
             // System.out.println("Inserted " + object + " (" + dbObject + ") into '" + getDatabase().getName() + "." + collection + "'");
 
             ObjectId id = (ObjectId) dbObject.get("_id");
@@ -234,7 +243,7 @@ public class Morphix {
             update.removeField("_id");
 
             getLifecycleHelper().call(PreSave.class, object);
-            WriteResult result = database.getCollection(collection).update(new BasicDBObject("_id", id), update);
+            WriteResult result = database.getCollection(collection).update(new BasicDBObject("_id", id), update, false,  false, concern);
             // System.out.println("Updated " + result.getN() + " documents (" + dbObject + ") inside '" + getDatabase().getName() + "." + collection + "'");
             getLifecycleHelper().call(PostSave.class, object);
         }
