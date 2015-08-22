@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface EntityHelper {
 
-    public List<Class<? extends Annotation>> getLifecycleAnnotations();
+    public List<Class<? extends Annotation>> getLifecycleMethodAnnotations();
+
+    public List<Class<? extends Annotation>> getLifecycleFieldAnnotations();
 
     public String getCollectionName(Class<?> clazz);
 

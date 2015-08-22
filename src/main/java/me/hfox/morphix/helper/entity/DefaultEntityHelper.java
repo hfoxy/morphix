@@ -18,30 +18,42 @@ import java.util.List;
 public class DefaultEntityHelper implements EntityHelper {
 
     private Morphix morphix;
-    private List<Class<? extends Annotation>> annotations;
+    private List<Class<? extends Annotation>> methodAnnotations;
+    private List<Class<? extends Annotation>> fieldAnnotations;
 
     public DefaultEntityHelper(Morphix morphix) {
         this.morphix = morphix;
 
-        this.annotations = new ArrayList<>();
-        annotations.add(PreCreate.class);
-        annotations.add(PreDelete.class);
-        annotations.add(PreLoad.class);
-        annotations.add(PreSave.class);
-        annotations.add(PreUpdate.class);
-        annotations.add(PreMarshal.class);
+        this.methodAnnotations = new ArrayList<>();
+        methodAnnotations.add(PreCreate.class);
+        methodAnnotations.add(PreDelete.class);
+        methodAnnotations.add(PreLoad.class);
+        methodAnnotations.add(PreSave.class);
+        methodAnnotations.add(PreUpdate.class);
+        methodAnnotations.add(PreMarshal.class);
 
-        annotations.add(PostCreate.class);
-        annotations.add(PostDelete.class);
-        annotations.add(PostLoad.class);
-        annotations.add(PostSave.class);
-        annotations.add(PostUpdate.class);
-        annotations.add(PostMarshal.class);
+        methodAnnotations.add(PostCreate.class);
+        methodAnnotations.add(PostDelete.class);
+        methodAnnotations.add(PostLoad.class);
+        methodAnnotations.add(PostSave.class);
+        methodAnnotations.add(PostUpdate.class);
+        methodAnnotations.add(PostMarshal.class);
+
+
+        this.fieldAnnotations = new ArrayList<>();
+        fieldAnnotations.add(CreatedAt.class);
+        fieldAnnotations.add(UpdatedAt.class);
+        fieldAnnotations.add(AccessedAt.class);
     }
 
     @Override
-    public List<Class<? extends Annotation>> getLifecycleAnnotations() {
-        return annotations;
+    public List<Class<? extends Annotation>> getLifecycleMethodAnnotations() {
+        return methodAnnotations;
+    }
+
+    @Override
+    public List<Class<? extends Annotation>> getLifecycleFieldAnnotations() {
+        return fieldAnnotations;
     }
 
     @Override

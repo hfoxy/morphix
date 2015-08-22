@@ -31,73 +31,6 @@ public class DefaultLifecycleHelper implements LifecycleHelper {
         this.fields = new HashMap<>();
     }
 
-    public List<Method> getMethods(Class<?> clazz, Class<? extends Annotation> anno) {
-        return getMethods(clazz, anno, false);
-    }
-
-    public List<Method> getMethods(Class<?> clazz, Class<? extends Annotation> anno, boolean debug) {
-        Map<Class<? extends Annotation>, List<Method>> annotations = methods.get(clazz);
-        if (annotations == null) {
-            annotations = new HashMap<>();
-
-            boolean enabled = false;
-            Lifecycle lifecycle = AnnotationUtils.getHierarchicalAnnotation(clazz, Lifecycle.class);
-            if (lifecycle != null) {
-                enabled = lifecycle.value();
-            }
-
-            for (Class<? extends Annotation> annotation : morphix.getEntityHelper().getLifecycleAnnotations()) {
-                annotations.put(annotation, new ArrayList<Method>());
-            }
-
-            if (enabled) {
-                List<Method> classMethods = morphix.getEntityHelper().getMethods(clazz);
-                if (debug) {
-                    System.out.println("Methods for " + clazz.getSimpleName() + ":");
-                    for (Method method : classMethods) {
-                        System.out.println("  " + method.getDeclaringClass().getSimpleName() + "#" + method.getName());
-                        System.out.println("    Annotations:");
-
-                        Annotation[] annos = method.getAnnotations();
-                        for (Annotation annotation : annos) {
-                            System.out.println("      " + annotation);
-                        }
-                    }
-                }
-
-                for (Method method : classMethods) {
-                    method.setAccessible(true);
-                    if (method.getParameterTypes().length > 0) {
-                        continue;
-                    }
-
-                    if (debug) System.out.println("Started looping for annotations");
-                    for (Class<? extends Annotation> annotation : morphix.getEntityHelper().getLifecycleAnnotations()) {
-                        Annotation result = method.getAnnotation(annotation);
-                        if (debug) System.out.println("Checking " + method.getDeclaringClass().getSimpleName()
-                                + "#" + method.getName() + " for " + annotation.getSimpleName() + " (" + (result != null) + ")");
-                        if (result != null) {
-                            List<Method> annoMethods = annotations.get(annotation);
-                            if (annoMethods == null) {
-                                if (debug) System.out.println("Creating a new list of methods for " + annotation.getSimpleName());
-                                annoMethods = new ArrayList<>();
-                                annotations.put(annotation, annoMethods);
-                            }
-
-                            if (debug) System.out.println("Adding " + method + " to " + annoMethods);
-                            annoMethods.add(method);
-                        }
-                    }
-                    if (debug) System.out.println("Finished looping for annotations");
-                }
-            }
-
-            methods.put(clazz, annotations);
-        }
-
-        return annotations.get(anno);
-    }
-
     @Override
     public int callField(Class<? extends Annotation> cls, Object object) {
         return callField(cls, object, false);
@@ -111,7 +44,7 @@ public class DefaultLifecycleHelper implements LifecycleHelper {
         Class<?> type = null;
 
         try {
-            type = Class.forName("net.forthwind.plugin.entity.ForthEntity");
+            type = Class.forName("me.hfox.morphix.entities.Address");
             debug = type.isInstance(object);
         } catch (ClassNotFoundException ex) {
             // ignore
@@ -132,9 +65,17 @@ public class DefaultLifecycleHelper implements LifecycleHelper {
         for (Field field : fields) {
             TimeLibrary library = TimeLibrary.DEFAULT;
             Annotation anno = field.getAnnotation(cls);
+            if (debug) {
+                System.out.println("Annotation: " + anno);
+            }
+
             if (anno instanceof AccessedAt) {
                 library = ((AccessedAt) anno).value();
                 if (((AccessedAt) anno).onlyUpdateOnLoad() && update) {
+                    if (debug) {
+                        System.out.println("Ignoring " + field + " because it was defined to only update on load, and this is an update operation");
+                    }
+
                     continue;
                 }
             } else if (anno instanceof CreatedAt) {
@@ -151,6 +92,10 @@ public class DefaultLifecycleHelper implements LifecycleHelper {
                 case JODA:
                     time = DateTime.now();
                     break;
+            }
+
+            if (debug) {
+                System.out.println("Setting field (" + field + ") to " + time + " (" + library.name() + ")");
             }
 
             try {
@@ -182,7 +127,7 @@ public class DefaultLifecycleHelper implements LifecycleHelper {
             }
             */
 
-            for (Class<? extends Annotation> annotation : morphix.getEntityHelper().getLifecycleAnnotations()) {
+            for (Class<? extends Annotation> annotation : morphix.getEntityHelper().getLifecycleFieldAnnotations()) {
                 annotations.put(annotation, new ArrayList<Field>());
             }
 
@@ -204,7 +149,7 @@ public class DefaultLifecycleHelper implements LifecycleHelper {
                 for (Field field : classFields) {
                     field.setAccessible(true);
                     if (debug) System.out.println("Started looping for annotations");
-                    for (Class<? extends Annotation> annotation : morphix.getEntityHelper().getLifecycleAnnotations()) {
+                    for (Class<? extends Annotation> annotation : morphix.getEntityHelper().getLifecycleFieldAnnotations()) {
                         Annotation result = field.getAnnotation(annotation);
                         if (debug) System.out.println("Checking " + field.getDeclaringClass().getSimpleName()
                                 + "#" + field.getName() + " for " + annotation.getSimpleName() + " (" + (result != null) + ")");
@@ -266,6 +211,73 @@ public class DefaultLifecycleHelper implements LifecycleHelper {
         }
 
         return count;
+    }
+
+    public List<Method> getMethods(Class<?> clazz, Class<? extends Annotation> anno) {
+        return getMethods(clazz, anno, false);
+    }
+
+    public List<Method> getMethods(Class<?> clazz, Class<? extends Annotation> anno, boolean debug) {
+        Map<Class<? extends Annotation>, List<Method>> annotations = methods.get(clazz);
+        if (annotations == null) {
+            annotations = new HashMap<>();
+
+            boolean enabled = false;
+            Lifecycle lifecycle = AnnotationUtils.getHierarchicalAnnotation(clazz, Lifecycle.class);
+            if (lifecycle != null) {
+                enabled = lifecycle.value();
+            }
+
+            for (Class<? extends Annotation> annotation : morphix.getEntityHelper().getLifecycleMethodAnnotations()) {
+                annotations.put(annotation, new ArrayList<Method>());
+            }
+
+            if (enabled) {
+                List<Method> classMethods = morphix.getEntityHelper().getMethods(clazz);
+                if (debug) {
+                    System.out.println("Methods for " + clazz.getSimpleName() + ":");
+                    for (Method method : classMethods) {
+                        System.out.println("  " + method.getDeclaringClass().getSimpleName() + "#" + method.getName());
+                        System.out.println("    Annotations:");
+
+                        Annotation[] annos = method.getAnnotations();
+                        for (Annotation annotation : annos) {
+                            System.out.println("      " + annotation);
+                        }
+                    }
+                }
+
+                for (Method method : classMethods) {
+                    method.setAccessible(true);
+                    if (method.getParameterTypes().length > 0) {
+                        continue;
+                    }
+
+                    if (debug) System.out.println("Started looping for annotations");
+                    for (Class<? extends Annotation> annotation : morphix.getEntityHelper().getLifecycleMethodAnnotations()) {
+                        Annotation result = method.getAnnotation(annotation);
+                        if (debug) System.out.println("Checking " + method.getDeclaringClass().getSimpleName()
+                                + "#" + method.getName() + " for " + annotation.getSimpleName() + " (" + (result != null) + ")");
+                        if (result != null) {
+                            List<Method> annoMethods = annotations.get(annotation);
+                            if (annoMethods == null) {
+                                if (debug) System.out.println("Creating a new list of methods for " + annotation.getSimpleName());
+                                annoMethods = new ArrayList<>();
+                                annotations.put(annotation, annoMethods);
+                            }
+
+                            if (debug) System.out.println("Adding " + method + " to " + annoMethods);
+                            annoMethods.add(method);
+                        }
+                    }
+                    if (debug) System.out.println("Finished looping for annotations");
+                }
+            }
+
+            methods.put(clazz, annotations);
+        }
+
+        return annotations.get(anno);
     }
 
 }

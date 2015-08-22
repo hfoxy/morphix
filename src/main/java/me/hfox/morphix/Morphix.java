@@ -230,23 +230,26 @@ public class Morphix {
         WriteResult result;
         DBObject dbObject = getMapper().marshal(new MappingData(), object, true);
         if (dbObject.get("_id") == null) {
+            getLifecycleHelper().callField(CreatedAt.class, object);
+            dbObject = getMapper().marshal(new MappingData(), object, true);
             result = database.getCollection(collection).insert(dbObject, concern);
             // System.out.println("Inserted " + object + " (" + dbObject + ") into '" + getDatabase().getName() + "." + collection + "'");
 
             ObjectId id = (ObjectId) dbObject.get("_id");
             getEntityHelper().setObjectId(object, id);
 
-            getLifecycleHelper().callField(CreatedAt.class, object);
             getLifecycleHelper().callMethod(PreCreate.class, object);
             getCache(object.getClass()).put(object);
             getLifecycleHelper().callMethod(PostCreate.class, object);
         } else {
+            getLifecycleHelper().callField(UpdatedAt.class, object);
+            getLifecycleHelper().callField(CreatedAt.class, object);
+            dbObject = getMapper().marshal(new MappingData(), object, true);
             ObjectId id = (ObjectId) dbObject.get("_id");
 
             DBObject update = new BasicDBObject(dbObject.toMap());
             update.removeField("_id");
 
-            getLifecycleHelper().callField(UpdatedAt.class, object);
             getLifecycleHelper().callMethod(PreSave.class, object);
             result = database.getCollection(collection).update(new BasicDBObject("_id", id), update, false, false, concern);
             // System.out.println("Updated " + result.getN() + " documents (" + dbObject + ") inside '" + getDatabase().getName() + "." + collection + "'");

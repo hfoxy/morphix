@@ -4,6 +4,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
+import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import me.hfox.morphix.entities.Address;
 import me.hfox.morphix.entities.User;
@@ -24,7 +25,7 @@ public class MorphixConnectionTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        MongoClient client = new MongoClient(new ServerAddress("127.0.0.1", 27017), MongoClientOptions.builder().connectTimeout(2500).build());
+        MongoClient client = new MongoClient(new ServerAddress("127.0.0.1", 27017), MongoClientOptions.builder().connectTimeout(2500).writeConcern(WriteConcern.ACKNOWLEDGED).build());
         morphix = new Morphix(client, "morphix_testing");
 
         try {
@@ -37,19 +38,28 @@ public class MorphixConnectionTest {
 
     @Test
     public void testUser() throws Exception {
+        // System.out.println("Starting User test");
         Address address = new Address(Arrays.asList("some", "cool", "address"), "post code");
         WriteResult result = morphix.store(address);
-        assumeTrue("Inserted document count was now greater than 0", result.getN() > 0);
+        // System.out.println("Inserted Address");
+        assertNotNull("Created at was not updated", address.getCreatedAt());
+        // System.out.println("Address CreatedAt: " + address.getCreatedAt());
 
         User user = new User("email", "username", "password", address);
         morphix.store(user); // create
+        // System.out.println(user.getId());
+        // System.out.println("User CreatedAt: " + user.getCreatedAt());
+        // System.out.println("Inserted User");
         assertNotNull("Created at was not updated", user.getCreatedAt());
 
         Date time = new Date();
         user.setUsername("testing");
         morphix.store(user); // save
-        assertTrue("Updated at was not updated", user.getUpdatedAt().after(time));
         // System.out.println(user.getId());
+        // System.out.println("User UpdatedAt: " + user.getUpdatedAt());
+        // System.out.println("Updated User");
+        // System.out.println("Checking to see if " + user.getUpdatedAt() + " is after or equal to " + time + " (" + user.getUpdatedAt().getTime() + " >= " + time.getTime() + ")");
+        assertTrue("Updated at was not updated", user.getUpdatedAt().getTime() >= time.getTime());
 
         Query<User> query = morphix.createQuery(User.class).field("_id").equal(user.getId());
         User queried = query.get();
@@ -71,10 +81,13 @@ public class MorphixConnectionTest {
         queried = query.get();
         // System.out.println(queried.getId());
 
-        for (Address addr : user.getAddresses()) {
+        for (Address addr : queried.getAddresses()) {
             assertNotNull("Created at was not updated", addr.getCreatedAt());
-            assertNotNull("Accessed at was not updated", addr.getCreatedAt());
-            assertTrue("Accessed at was not updated", addr.getAccessedAt().after(time));
+            // System.out.println("Address CreatedAt: " + addr.getCreatedAt());
+            // System.out.println("Address AccessedAt: " + addr.getAccessedAt());
+            assertNotNull("Accessed at was not updated", addr.getAccessedAt());
+            assertTrue("Accessed at was not updated", addr.getAccessedAt().getTime() >= time.getTime());
+            morphix.store(addr);
         }
 
         query = morphix.createQuery(User.class).field("_id").equal(user.getId());
