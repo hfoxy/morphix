@@ -1,16 +1,20 @@
 package me.hfox.morphix.entities;
 
 import me.hfox.morphix.annotation.Id;
+import me.hfox.morphix.annotation.Property;
 import me.hfox.morphix.annotation.Reference;
 import me.hfox.morphix.annotation.entity.Entity;
 import me.hfox.morphix.annotation.entity.StoreEmpty;
 import me.hfox.morphix.annotation.entity.StoreNull;
+import me.hfox.morphix.annotation.lifecycle.CreatedAt;
 import me.hfox.morphix.annotation.lifecycle.Lifecycle;
 import me.hfox.morphix.annotation.lifecycle.PostDelete;
+import me.hfox.morphix.annotation.lifecycle.UpdatedAt;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @StoreNull
@@ -28,6 +32,14 @@ public class User {
 
     @Reference
     private List<Address> addresses;
+
+    @CreatedAt
+    @Property("created_at")
+    private Date createdAt;
+
+    @UpdatedAt
+    @Property("updated_at")
+    private Date updatedAt;
 
     private Settings settings;
 
@@ -70,6 +82,14 @@ public class User {
 
     public Settings getSettings() {
         return settings;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
     @PostDelete

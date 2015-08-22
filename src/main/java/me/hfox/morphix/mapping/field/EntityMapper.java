@@ -149,13 +149,13 @@ public class EntityMapper<T> extends FieldMapper<T> {
         }
 
         if (lifecycle) {
-            morphix.getLifecycleHelper().call(PreLoad.class, result);
+            morphix.getLifecycleHelper().callMethod(PreLoad.class, result);
         }
 
         result = update(object, (T) result, lifecycle);
 
         if (lifecycle) {
-            morphix.getLifecycleHelper().call(PostLoad.class, result);
+            morphix.getLifecycleHelper().callMethod(PostLoad.class, result);
         }
 
         return (T) result;
@@ -243,7 +243,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
 
         // System.out.println("I want to call PreMarshal for " + obj + (lifecycle ? " so I will!" : " but I can't .-."));
         if (lifecycle) {
-            morphix.getLifecycleHelper().call(PreMarshal.class, obj);
+            morphix.getLifecycleHelper().callMethod(PreMarshal.class, obj);
         }
 
         BasicDBObject document = mappingData.get(obj);
@@ -295,7 +295,7 @@ public class EntityMapper<T> extends FieldMapper<T> {
         }
 
         if (lifecycle) {
-            morphix.getLifecycleHelper().call(PostMarshal.class, obj);
+            morphix.getLifecycleHelper().callMethod(PostMarshal.class, obj);
         }
 
         return document;

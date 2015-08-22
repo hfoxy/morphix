@@ -3,8 +3,11 @@ package me.hfox.morphix.entities;
 import me.hfox.morphix.annotation.Id;
 import me.hfox.morphix.annotation.Property;
 import me.hfox.morphix.annotation.entity.Entity;
+import me.hfox.morphix.annotation.lifecycle.AccessedAt;
+import me.hfox.morphix.annotation.lifecycle.CreatedAt;
 import org.bson.types.ObjectId;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity("addresses")
@@ -16,6 +19,14 @@ public class Address {
 
     @Property("post_code")
     private String postCode;
+
+    @CreatedAt
+    @Property("created_at")
+    private Date createdAt;
+
+    @AccessedAt
+    @Property("accessed_at")
+    private Date accessedAt;
 
     public Address(List<String> address, String postCode) {
         this.address = address;
@@ -32,6 +43,14 @@ public class Address {
 
     public String getPostCode() {
         return postCode;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public Date getAccessedAt() {
+        return accessedAt;
     }
 
     @Override

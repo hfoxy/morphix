@@ -4,6 +4,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
+import com.mongodb.WriteResult;
 import me.hfox.morphix.entities.Address;
 import me.hfox.morphix.entities.User;
 import me.hfox.morphix.query.Query;
@@ -11,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -36,14 +38,17 @@ public class MorphixConnectionTest {
     @Test
     public void testUser() throws Exception {
         Address address = new Address(Arrays.asList("some", "cool", "address"), "post code");
-        morphix.store(address);
-        assumeTrue(true);
+        WriteResult result = morphix.store(address);
+        assumeTrue("Inserted document count was now greater than 0", result.getN() > 0);
 
         User user = new User("email", "username", "password", address);
         morphix.store(user); // create
+        assertNotNull("Created at was not updated", user.getCreatedAt());
 
+        Date time = new Date();
         user.setUsername("testing");
         morphix.store(user); // save
+        assertTrue("Updated at was not updated", user.getUpdatedAt().after(time));
         // System.out.println(user.getId());
 
         Query<User> query = morphix.createQuery(User.class).field("_id").equal(user.getId());
@@ -58,6 +63,19 @@ public class MorphixConnectionTest {
         // System.out.println(queried.getId());
 
         assertEquals(user, queried);
+
+        time = new Date();
+        morphix.getCache().remove(user);
+        morphix.getCache().remove(address);
+
+        queried = query.get();
+        // System.out.println(queried.getId());
+
+        for (Address addr : user.getAddresses()) {
+            assertNotNull("Created at was not updated", addr.getCreatedAt());
+            assertNotNull("Accessed at was not updated", addr.getCreatedAt());
+            assertTrue("Accessed at was not updated", addr.getAccessedAt().after(time));
+        }
 
         query = morphix.createQuery(User.class).field("_id").equal(user.getId());
         query.delete();

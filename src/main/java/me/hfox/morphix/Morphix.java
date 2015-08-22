@@ -7,10 +7,12 @@ import com.mongodb.MongoClient;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import me.hfox.morphix.annotation.entity.Cache;
+import me.hfox.morphix.annotation.lifecycle.CreatedAt;
 import me.hfox.morphix.annotation.lifecycle.PostCreate;
 import me.hfox.morphix.annotation.lifecycle.PostSave;
 import me.hfox.morphix.annotation.lifecycle.PreCreate;
 import me.hfox.morphix.annotation.lifecycle.PreSave;
+import me.hfox.morphix.annotation.lifecycle.UpdatedAt;
 import me.hfox.morphix.cache.EntityCache;
 import me.hfox.morphix.cache.EntityCacheImpl;
 import me.hfox.morphix.exception.MorphixException;
@@ -234,19 +236,21 @@ public class Morphix {
             ObjectId id = (ObjectId) dbObject.get("_id");
             getEntityHelper().setObjectId(object, id);
 
-            getLifecycleHelper().call(PreCreate.class, object);
+            getLifecycleHelper().callField(CreatedAt.class, object);
+            getLifecycleHelper().callMethod(PreCreate.class, object);
             getCache(object.getClass()).put(object);
-            getLifecycleHelper().call(PostCreate.class, object);
+            getLifecycleHelper().callMethod(PostCreate.class, object);
         } else {
             ObjectId id = (ObjectId) dbObject.get("_id");
 
             DBObject update = new BasicDBObject(dbObject.toMap());
             update.removeField("_id");
 
-            getLifecycleHelper().call(PreSave.class, object);
+            getLifecycleHelper().callField(UpdatedAt.class, object);
+            getLifecycleHelper().callMethod(PreSave.class, object);
             result = database.getCollection(collection).update(new BasicDBObject("_id", id), update, false, false, concern);
             // System.out.println("Updated " + result.getN() + " documents (" + dbObject + ") inside '" + getDatabase().getName() + "." + collection + "'");
-            getLifecycleHelper().call(PostSave.class, object);
+            getLifecycleHelper().callMethod(PostSave.class, object);
         }
 
         return result;

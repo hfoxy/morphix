@@ -6,6 +6,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import me.hfox.morphix.Morphix;
 import me.hfox.morphix.annotation.entity.Entity;
+import me.hfox.morphix.annotation.lifecycle.AccessedAt;
 import me.hfox.morphix.annotation.lifecycle.PostDelete;
 import me.hfox.morphix.annotation.lifecycle.PostUpdate;
 import me.hfox.morphix.annotation.lifecycle.PreDelete;
@@ -140,14 +141,14 @@ public class QueryImpl<T> implements Query<T> {
         }
 
         for (T object : objects) {
-            morphix.getLifecycleHelper().call(PreDelete.class, object);
+            morphix.getLifecycleHelper().callMethod(PreDelete.class, object);
         }
 
         morphix.getDatabase().getCollection(collection).remove(query);
 
         for (T object : objects) {
             morphix.getCache(cls).remove(object);
-            morphix.getLifecycleHelper().call(PostDelete.class, object);
+            morphix.getLifecycleHelper().callMethod(PostDelete.class, object);
         }
     }
 
@@ -165,9 +166,10 @@ public class QueryImpl<T> implements Query<T> {
                 continue;
             }
 
-            morphix.getLifecycleHelper().call(PreUpdate.class, cached);
+            morphix.getLifecycleHelper().callField(AccessedAt.class, cached, true);
+            morphix.getLifecycleHelper().callMethod(PreUpdate.class, cached);
             morphix.getMapper().update(cached, object, true);
-            morphix.getLifecycleHelper().call(PostUpdate.class, cached);
+            morphix.getLifecycleHelper().callMethod(PostUpdate.class, cached);
         }
     }
 
@@ -367,7 +369,12 @@ public class QueryImpl<T> implements Query<T> {
         }
 
         Class<T> cls = morphix.getRemapHelper().remap(this.cls);
-        return !cacheOnly ? morphix.getMapper().unmarshal(cls, dbObject, true) : null;
+        if (!cacheOnly) {
+            entity = morphix.getMapper().unmarshal(cls, dbObject, true);
+            morphix.getLifecycleHelper().callField(AccessedAt.class, entity, false);
+        }
+
+        return entity;
     }
 
     @Override
