@@ -1,4 +1,4 @@
-package me.hfox.morphix.mongo;
+package me.hfox.morphix.connector;
 
 /**
  * Created by Harry on 27/11/2017.
