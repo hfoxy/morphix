@@ -4,10 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.hfox</groupId>
-    <artifactId>morphix</artifactId>
+    <groupId>me.hfox.morphix</groupId>
+    <artifactId>morphix-parent</artifactId>
+    <packaging>pom</packaging>
     <version>2.0-SNAPSHOT</version>
     <url>https://github.com/ParaPenguin/Morphix</url>
+    <modules>
+        <module>morphix-mongo</module>
+    </modules>
 
     <dependencies>
         <dependency>
