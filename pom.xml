@@ -41,8 +41,18 @@
     </properties>
 
     <modules>
-        <module>morphix-mongo</module>
         <module>morphix</module>
+        <module>morphix-mongo</module>
         <module>morphix-postgresql</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.0-M1</version>
+            </plugin>
+        </plugins>
+    </build>
 </project>

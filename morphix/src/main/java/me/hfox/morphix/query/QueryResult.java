@@ -11,7 +11,7 @@ import java.util.List;
 public interface QueryResult<T> extends Iterator<T> {
 
     /**
-     * Alias of
+     * Alias of first();
      * @see me.hfox.morphix.query.QueryResult#first();
      * @return The first result returned by the query
      */
