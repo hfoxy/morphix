@@ -15,7 +15,7 @@ public interface QueryResult<T> extends Iterator<T> {
      * @see me.hfox.morphix.query.QueryResult#first();
      * @return The first result returned by the query
      */
-    T get();
+    T one();
 
     /**
      * Get the first result from the query
@@ -33,6 +33,6 @@ public interface QueryResult<T> extends Iterator<T> {
      * Get the results given by the query as a List
      * @return An unmodifiable list of results
      */
-    List<T> asList();
+    List<T> all();
 
 }
