@@ -1,6 +1,6 @@
 package me.hfox.morphix.annotation.lifecycle;
 
-import me.hfox.morphix.mongo.helper.lifecycle.TimeLibrary;
+import me.hfox.morphix.helper.lifecycle.TimeLibrary;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UpdatedAt {
 
-    public TimeLibrary value() default TimeLibrary.DEFAULT;
+    TimeLibrary value() default TimeLibrary.DEFAULT;
 
 }

@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Lifecycle {
 
-    public boolean value() default true;
+    boolean value() default true;
 
 }

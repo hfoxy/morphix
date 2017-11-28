@@ -1,6 +1,7 @@
-package me.hfox.morphix.mongo.helper.lifecycle;
+package me.hfox.morphix.helper.lifecycle;
 
-import me.hfox.morphix.mongo.exception.MorphixException;
+import me.hfox.morphix.exception.MorphixException;
+import me.hfox.morphix.exception.support.InvalidTimeLibraryException;
 
 public enum TimeLibrary {
 
@@ -14,7 +15,7 @@ public enum TimeLibrary {
         this.testClass = testClass;
     }
 
-    public void test() {
+    public void test() throws MorphixException {
         if (tested) {
             return;
         }
@@ -24,7 +25,7 @@ public enum TimeLibrary {
             // System.out.println("Loaded " + name());
             tested = true;
         } catch (ClassNotFoundException ex) {
-            throw new MorphixException("Could not load the '" + name() + "' time library", ex);
+            throw new InvalidTimeLibraryException(this, "Could not load the '" + name() + "' time library", ex);
         }
     }
 

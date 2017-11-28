@@ -1,6 +1,6 @@
 package me.hfox.morphix.mongo.annotation.lifecycle;
 
-import me.hfox.morphix.mongo.helper.lifecycle.TimeLibrary;
+import me.hfox.morphix.helper.lifecycle.TimeLibrary;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

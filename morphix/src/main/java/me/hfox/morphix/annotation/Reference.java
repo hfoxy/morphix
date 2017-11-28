@@ -9,6 +9,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Reference {
 
-    public boolean dbRef() default false;
+    /*
+     * TODO: Decide on implementation of annotation-handled features
+     * boolean dbRef() default false;
+     */
 
 }

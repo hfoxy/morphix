@@ -1,9 +1,5 @@
 package me.hfox.morphix.annotation.entity;
 
-import me.hfox.morphix.mongo.MorphixDefaults;
-import me.hfox.morphix.mongo.helper.name.DefaultNameHelper;
-import me.hfox.morphix.mongo.helper.name.NameHelper;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -13,12 +9,18 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Entity {
 
-    public String value() default MorphixDefaults.DEFAULT_COLLECTION_NAME;
+    /*
+     * TODO: Setup default collection/table name
+     * String value() default MorphixDefaults.DEFAULT_COLLECTION_NAME;
+     */
 
-    public boolean createOnDelete() default false;
+    boolean createOnDelete() default false;
 
-    public boolean inheritParentFields() default true;
+    boolean inheritParentFields() default true;
 
-    public Class<? extends NameHelper> nameHelper() default DefaultNameHelper.class;
+    /*
+     * TODO: Setup helpers for entity annotation
+     * Class<? extends NameHelper> nameHelper() default DefaultNameHelper.class;
+     */
 
 }

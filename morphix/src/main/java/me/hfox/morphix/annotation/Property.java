@@ -1,7 +1,5 @@
 package me.hfox.morphix.annotation;
 
-import me.hfox.morphix.mongo.MorphixDefaults;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -11,6 +9,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Property {
 
-    public String value() default MorphixDefaults.DEFAULT_FIELD_NAME;
+    /*
+     * TODO: Setup default field names
+     * String value() default MorphixDefaults.DEFAULT_FIELD_NAME;
+     */
 
 }
