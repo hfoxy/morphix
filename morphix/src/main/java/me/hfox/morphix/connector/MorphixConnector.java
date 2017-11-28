@@ -1,5 +1,7 @@
 package me.hfox.morphix.connector;
 
+import me.hfox.morphix.query.Query;
+
 /**
  * Created by Harry on 27/11/2017.
  *
@@ -7,8 +9,12 @@ package me.hfox.morphix.connector;
  */
 public interface MorphixConnector {
 
-    // TODO: connect & disconnect methods
+    void connect();
 
-    // TODO: create query
+    void disconnect();
+
+    <T> Query<T> createQuery(Class<T> cls);
+
+    <T> Query<T> createQuery(Class<T> cls, String collection);
 
 }
