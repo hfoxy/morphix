@@ -10,7 +10,9 @@
         <version>2.0-SNAPSHOT</version>
     </parent>
 
+    <name>Morphix API</name>
     <artifactId>morphix</artifactId>
+    <description>Morphix API structure inherited by database libraries</description>
 
     <dependencies>
         <dependency>

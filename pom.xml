@@ -9,8 +9,8 @@
     <version>2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Morphix</name>
-    <description>Database entry to object mapper</description>
+    <name>Morphix Parent</name>
+    <description>Parent project containing Morphix libraries</description>
     <url>https://github.com/hfoxy/Morphix</url>
 
     <licenses>
@@ -43,5 +43,6 @@
     <modules>
         <module>morphix-mongo</module>
         <module>morphix</module>
+        <module>morphix-postgresql</module>
     </modules>
 </project>
