@@ -5,6 +5,8 @@ import me.hfox.morphix.mongo.Morphix;
 import me.hfox.morphix.mongo.mapping.MappingData;
 import me.hfox.morphix.mongo.mapping.field.FieldMapper;
 
+import java.util.Collections;
+
 public class FieldQueryImpl<T> implements FieldQuery<T> {
 
     private Query<T> query;
