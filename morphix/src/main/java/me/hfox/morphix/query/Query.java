@@ -12,23 +12,13 @@ public interface Query<T> extends Iterator<T> {
 
     Class<T> getQueryType();
 
-    Query<T> where(String where);
-
-    FieldQuery<T> field(String name);
+    FieldQuery<T> where(String field);
 
     Query<T> order(String... fields);
-
-    Query<T> or(Query<T>... expressions);
-
-    Query<T> nor(Query<T>... expressions);
-
-    Query<T> and(Query<T>... expressions);
 
     void delete();
 
     void delete(boolean justOne);
-
-    void update();
 
     T get();
 
