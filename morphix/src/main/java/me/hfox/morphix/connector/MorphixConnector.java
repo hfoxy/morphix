@@ -7,6 +7,8 @@ package me.hfox.morphix.connector;
  */
 public interface MorphixConnector {
 
+    // TODO: connect & disconnect methods
 
+    // TODO: create query
 
 }
