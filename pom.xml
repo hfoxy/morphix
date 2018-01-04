@@ -11,12 +11,12 @@
 
     <distributionManagement>
         <repository>
-            <id>komp-releases</id>
-            <url>http://pomhub.uk/content/repositories/releases</url>
+            <id>hfox-releases</id>
+            <url>https://nexus.hfox.uk/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>komp-snapshots</id>
-            <url>http://pomhub.uk/content/repositories/snapshots</url>
+            <id>hfox-snapshots</id>
+            <url>https://nexus.hfox.uk/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
