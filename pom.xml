@@ -21,6 +21,17 @@
         </license>
     </licenses>
 
+    <distributionManagement>
+        <repository>
+            <id>hfox-releases</id>
+            <url>https://nexus.hfox.uk/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>hfox-snapshots</id>
+            <url>https://nexus.hfox.uk/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <scm>
         <url>https://github.com/hfoxy/Morphix</url>
         <connection>scm:git:git://github.com/hfoxy/Morphix.git</connection>
