@@ -6,37 +6,23 @@
 
     <parent>
         <artifactId>morphix-parent</artifactId>
-        <groupId>me.hfox.morphix</groupId>
+        <groupId>uk.hfox.morphix</groupId>
         <version>2.0-SNAPSHOT</version>
     </parent>
 
     <name>Morphix API</name>
-    <artifactId>morphix</artifactId>
+    <artifactId>morphix-api</artifactId>
     <description>Morphix API structure inherited by database libraries</description>
-
-    <dependencies>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>

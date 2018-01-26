@@ -6,7 +6,7 @@
 
     <parent>
         <artifactId>morphix-parent</artifactId>
-        <groupId>me.hfox.morphix</groupId>
+        <groupId>uk.hfox.morphix</groupId>
         <version>2.0-SNAPSHOT</version>
     </parent>
 
@@ -16,21 +16,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>me.hfox.morphix</groupId>
-            <artifactId>morphix</artifactId>
+            <groupId>uk.hfox.morphix</groupId>
+            <artifactId>morphix-api</artifactId>
             <version>2.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -39,9 +27,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -57,7 +46,7 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>me.hfox.morphix:morphix</include>
+                                    <include>uk.hfox.morphix:morphix-api</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
