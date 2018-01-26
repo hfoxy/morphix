@@ -16,31 +16,41 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package me.hfox.morphix.exception.query;
+package uk.hfox.morphix.query;
 
-import me.hfox.morphix.exception.MorphixException;
-import me.hfox.morphix.query.Query;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by Harry on 28/11/2017.
  *
- * Thrown when a query has valid parameters
+ * An iterable set of results returned by a query object
  */
-public class InvalidQueryException extends MorphixException {
-
-    private Query<?> query;
-
-    public InvalidQueryException(Query<?> query, String reason) {
-        super(reason);
-        this.query = query;
-    }
+public interface QueryResult<T> extends Iterator<T> {
 
     /**
-     * Get the query which caused this exception
-     * @return The faulting query
+     * Alias of first();
+     * @see QueryResult#first();
+     * @return The first result returned by the query
      */
-    public Query<?> getQuery() {
-        return query;
-    }
+    T one();
+
+    /**
+     * Get the first result from the query
+     * @return The first result returned by the query
+     */
+    T first();
+
+    /**
+     * Get the last result from the query
+     * @return The last result returned by the query
+     */
+    T last();
+
+    /**
+     * Get the results given by the query as a List
+     * @return An unmodifiable list of results
+     */
+    List<T> all();
 
 }

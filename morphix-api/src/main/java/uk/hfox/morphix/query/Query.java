@@ -16,41 +16,49 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package me.hfox.morphix.query;
-
-import java.util.Iterator;
-import java.util.List;
+package uk.hfox.morphix.query;
 
 /**
  * Created by Harry on 28/11/2017.
  *
- * An iterable set of results returned by a query object
+ * Interface used to build connector-specific queries
  */
-public interface QueryResult<T> extends Iterator<T> {
+public interface Query<T> {
 
     /**
-     * Alias of first();
-     * @see me.hfox.morphix.query.QueryResult#first();
-     * @return The first result returned by the query
+     * Gets the class output expected by this query
+     * @return The generic class
      */
-    T one();
+    Class<T> getQueryType();
 
     /**
-     * Get the first result from the query
-     * @return The first result returned by the query
+     * Create a field query for the specified field
+     * @param field The field to check
+     * @return The FieldQuery representing the specified field
      */
-    T first();
+    FieldQuery<T> where(String field);
+
+    /*
+     * Method not added until I can find a standard way between Mongo/MySQL to perform this
+     * TODO: Design standard sorting method
+     */
+    // Query<T> order(String... fields);
 
     /**
-     * Get the last result from the query
-     * @return The last result returned by the query
+     * Delete the resulting object(s) from the database
      */
-    T last();
+    void delete();
 
     /**
-     * Get the results given by the query as a List
-     * @return An unmodifiable list of results
+     * Delete the resulting object(s) from the database, with the option of deleting just 1
+     * @param justOne true if only 1 object should be deleted, false otherwise
      */
-    List<T> all();
+    void delete(boolean justOne);
+
+    /**
+     * Get an iterable copy of the results given by the query
+     * @return An iterable set of results
+     */
+    QueryResult<T> result();
 
 }

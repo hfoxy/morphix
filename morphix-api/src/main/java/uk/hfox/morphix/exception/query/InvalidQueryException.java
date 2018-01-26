@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix PostgreSQL
+ * Morphix API
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,38 +16,31 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package me.hfox.morphix.postgre;
+package uk.hfox.morphix.exception.query;
 
-import me.hfox.morphix.connector.MorphixConnector;
-import me.hfox.morphix.query.Query;
+import uk.hfox.morphix.exception.MorphixException;
+import uk.hfox.morphix.query.Query;
 
 /**
  * Created by Harry on 28/11/2017.
  *
- * PostgreSQL implementation of the Morphix connector
+ * Thrown when a query has valid parameters
  */
-public class MorphixPostgreConnector implements MorphixConnector {
+public class InvalidQueryException extends MorphixException {
 
-    @Override
-    public void connect() {
-        // TODO: connect to database
+    private Query<?> query;
+
+    public InvalidQueryException(Query<?> query, String reason) {
+        super(reason);
+        this.query = query;
     }
 
-    @Override
-    public void disconnect() {
-        // TODO: disconnect from database
-    }
-
-    @Override
-    public <T> Query<T> createQuery(Class<T> cls) {
-        // TODO: create query
-        return null;
-    }
-
-    @Override
-    public <T> Query<T> createQuery(Class<T> cls, String collection) {
-        // TODO: create query
-        return null;
+    /**
+     * Get the query which caused this exception
+     * @return The faulting query
+     */
+    public Query<?> getQuery() {
+        return query;
     }
 
 }

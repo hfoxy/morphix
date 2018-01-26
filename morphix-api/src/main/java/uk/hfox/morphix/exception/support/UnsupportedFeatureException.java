@@ -16,29 +16,31 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package me.hfox.morphix.exception;
+package uk.hfox.morphix.exception.support;
+
+import uk.hfox.morphix.connector.MorphixConnector;
+import uk.hfox.morphix.exception.MorphixException;
 
 /**
  * Created by Harry on 28/11/2017.
  *
- * Parent class for all Morphix-related exceptions.
+ * Thrown by implementing libraries when a database does not support a feature
  */
-public class MorphixException extends Exception {
+public class UnsupportedFeatureException extends MorphixException {
 
-    public MorphixException() {
-        // empty
-    }
+    private final MorphixConnector connector;
 
-    public MorphixException(String message) {
+    public UnsupportedFeatureException(MorphixConnector connector, String message) {
         super(message);
+        this.connector = connector;
     }
 
-    public MorphixException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public MorphixException(Throwable cause) {
-        super(cause);
+    /**
+     * Get the connector which does not support the feature
+     * @return The connector which lacks feature support
+     */
+    public MorphixConnector getConnector() {
+        return connector;
     }
 
 }

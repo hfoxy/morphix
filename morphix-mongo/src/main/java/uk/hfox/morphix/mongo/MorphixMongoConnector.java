@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix API
+ * Morphix Mongo
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,29 +16,38 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package me.hfox.morphix;
+package uk.hfox.morphix.mongo;
 
-import me.hfox.morphix.connector.MorphixConnector;
+import uk.hfox.morphix.connector.MorphixConnector;
+import uk.hfox.morphix.query.Query;
 
 /**
  * Created by Harry on 27/11/2017.
  *
- * Global Morphix handler for all databases
+ * MongoDB implementation of the Morphix connector
  */
-public class Morphix {
+public class MorphixMongoConnector implements MorphixConnector {
 
-    private final MorphixConnector connector;
-
-    public Morphix(MorphixConnector connector) {
-        this.connector = connector;
+    @Override
+    public void connect() {
+        // TODO: connect to database
     }
 
-    /**
-     * Gets the connector used by this Morphix instance
-     * @return The connector used by this Morphix instance
-     */
-    public MorphixConnector getConnector() {
-        return connector;
+    @Override
+    public void disconnect() {
+        // TODO: disconnect from database
+    }
+
+    @Override
+    public <T> Query<T> createQuery(Class<T> cls) {
+        // TODO: create query
+        return null;
+    }
+
+    @Override
+    public <T> Query<T> createQuery(Class<T> cls, String collection) {
+        // TODO: create query
+        return null;
     }
 
 }

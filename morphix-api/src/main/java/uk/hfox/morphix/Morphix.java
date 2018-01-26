@@ -16,42 +16,29 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package me.hfox.morphix.connector;
+package uk.hfox.morphix;
 
-import me.hfox.morphix.query.Query;
+import uk.hfox.morphix.connector.MorphixConnector;
 
 /**
  * Created by Harry on 27/11/2017.
  *
- * Connector interface used by the API to perform queries on the database
+ * Global Morphix handler for all databases
  */
-public interface MorphixConnector {
+public class Morphix {
+
+    private final MorphixConnector connector;
+
+    public Morphix(MorphixConnector connector) {
+        this.connector = connector;
+    }
 
     /**
-     * Connect to the database
+     * Gets the connector used by this Morphix instance
+     * @return The connector used by this Morphix instance
      */
-    void connect();
-
-    /**
-     * Disconnect from the database
-     */
-    void disconnect();
-
-    /**
-     * Query the database using the specified class as a collection and result reference
-     * @param cls The expected resulting class, also used to find the collection
-     * @param <T> The expected resulting type
-     * @return A query based on the given class
-     */
-    <T> Query<T> createQuery(Class<T> cls);
-
-    /**
-     * Query the given collection with the specified class as an expected result
-     * @param cls The expected resulting class
-     * @param collection The collection to query
-     * @param <T> The expected resulting type
-     * @return A query based on the given class
-     */
-    <T> Query<T> createQuery(Class<T> cls, String collection);
+    public MorphixConnector getConnector() {
+        return connector;
+    }
 
 }

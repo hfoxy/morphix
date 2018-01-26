@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix API
+ * Morphix PostgreSQL
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,49 +16,38 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package me.hfox.morphix.query;
+package uk.hfox.morphix.postgre;
+
+import uk.hfox.morphix.connector.MorphixConnector;
+import uk.hfox.morphix.query.Query;
 
 /**
  * Created by Harry on 28/11/2017.
  *
- * Interface used to build connector-specific queries
+ * PostgreSQL implementation of the Morphix connector
  */
-public interface Query<T> {
+public class MorphixPostgreConnector implements MorphixConnector {
 
-    /**
-     * Gets the class output expected by this query
-     * @return The generic class
-     */
-    Class<T> getQueryType();
+    @Override
+    public void connect() {
+        // TODO: connect to database
+    }
 
-    /**
-     * Create a field query for the specified field
-     * @param field The field to check
-     * @return The FieldQuery representing the specified field
-     */
-    FieldQuery<T> where(String field);
+    @Override
+    public void disconnect() {
+        // TODO: disconnect from database
+    }
 
-    /*
-     * Method not added until I can find a standard way between Mongo/MySQL to perform this
-     * TODO: Design standard sorting method
-     */
-    // Query<T> order(String... fields);
+    @Override
+    public <T> Query<T> createQuery(Class<T> cls) {
+        // TODO: create query
+        return null;
+    }
 
-    /**
-     * Delete the resulting object(s) from the database
-     */
-    void delete();
-
-    /**
-     * Delete the resulting object(s) from the database, with the option of deleting just 1
-     * @param justOne true if only 1 object should be deleted, false otherwise
-     */
-    void delete(boolean justOne);
-
-    /**
-     * Get an iterable copy of the results given by the query
-     * @return An iterable set of results
-     */
-    QueryResult<T> result();
+    @Override
+    public <T> Query<T> createQuery(Class<T> cls, String collection) {
+        // TODO: create query
+        return null;
+    }
 
 }

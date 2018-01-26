@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix Mongo
+ * Morphix API
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,38 +16,42 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package me.hfox.morphix.mongo;
+package uk.hfox.morphix.connector;
 
-import me.hfox.morphix.connector.MorphixConnector;
-import me.hfox.morphix.query.Query;
+import uk.hfox.morphix.query.Query;
 
 /**
  * Created by Harry on 27/11/2017.
  *
- * MongoDB implementation of the Morphix connector
+ * Connector interface used by the API to perform queries on the database
  */
-public class MorphixMongoConnector implements MorphixConnector {
+public interface MorphixConnector {
 
-    @Override
-    public void connect() {
-        // TODO: connect to database
-    }
+    /**
+     * Connect to the database
+     */
+    void connect();
 
-    @Override
-    public void disconnect() {
-        // TODO: disconnect from database
-    }
+    /**
+     * Disconnect from the database
+     */
+    void disconnect();
 
-    @Override
-    public <T> Query<T> createQuery(Class<T> cls) {
-        // TODO: create query
-        return null;
-    }
+    /**
+     * Query the database using the specified class as a collection and result reference
+     * @param cls The expected resulting class, also used to find the collection
+     * @param <T> The expected resulting type
+     * @return A query based on the given class
+     */
+    <T> Query<T> createQuery(Class<T> cls);
 
-    @Override
-    public <T> Query<T> createQuery(Class<T> cls, String collection) {
-        // TODO: create query
-        return null;
-    }
+    /**
+     * Query the given collection with the specified class as an expected result
+     * @param cls The expected resulting class
+     * @param collection The collection to query
+     * @param <T> The expected resulting type
+     * @return A query based on the given class
+     */
+    <T> Query<T> createQuery(Class<T> cls, String collection);
 
 }
