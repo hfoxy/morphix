@@ -19,28 +19,30 @@
 package uk.hfox.morphix.exception.query;
 
 import uk.hfox.morphix.exception.MorphixException;
-import uk.hfox.morphix.query.Query;
+import uk.hfox.morphix.query.QueryBuilder;
 
 /**
  * Created by Harry on 28/11/2017.
  *
- * Thrown when a query has valid parameters
+ * Thrown when a queryBuilder has valid parameters
  */
 public class InvalidQueryException extends MorphixException {
 
-    private Query<?> query;
+    private static final long serialVersionUID = -931105201681822472L;
 
-    public InvalidQueryException(Query<?> query, String reason) {
+    private final QueryBuilder queryBuilder;
+
+    public InvalidQueryException(QueryBuilder queryBuilder, String reason) {
         super(reason);
-        this.query = query;
+        this.queryBuilder = queryBuilder;
     }
 
     /**
-     * Get the query which caused this exception
-     * @return The faulting query
+     * Get the queryBuilder which caused this exception
+     * @return The faulting queryBuilder
      */
-    public Query<?> getQuery() {
-        return query;
+    public QueryBuilder getQueryBuilder() {
+        return queryBuilder;
     }
 
 }

@@ -18,12 +18,14 @@
  */
 package uk.hfox.morphix.query;
 
+import java.io.Serializable;
+
 /**
  * Created by Harry on 28/11/2017.
  *
  * Interface used to build connector-specific queries
  */
-public interface Query<T> {
+public interface QueryBuilder<T> extends Serializable {
 
     /**
      * Gets the class output expected by this query
@@ -34,15 +36,17 @@ public interface Query<T> {
     /**
      * Create a field query for the specified field
      * @param field The field to check
-     * @return The FieldQuery representing the specified field
+     * @return The FieldQueryBuilder representing the specified field
      */
-    FieldQuery<T> where(String field);
+    FieldQueryBuilder<T> where(String field);
 
-    /*
-     * Method not added until I can find a standard way between Mongo/MySQL to perform this
-     * TODO: Design standard sorting method
+    /**
+     * Creates a sort objective for the database you are using.
+     * This will allow you to set DB specific mechanisms
+     *
+     * @return The empty sort objective
      */
-    // Query<T> order(String... fields);
+    QuerySortBuilder<T> sort();
 
     /**
      * Delete the resulting object(s) from the database

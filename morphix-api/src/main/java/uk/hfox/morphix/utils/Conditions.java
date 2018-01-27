@@ -16,29 +16,24 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix;
+package uk.hfox.morphix.utils;
 
-import uk.hfox.morphix.connector.MorphixConnector;
-import uk.hfox.morphix.utils.Conditions;
+public final class Conditions {
 
-/**
- * Global Morphix handler for all databases
- */
-public class Morphix {
-
-    private final MorphixConnector connector;
-
-    public Morphix(MorphixConnector connector) {
-        Conditions.notNull(connector, "connector");
-        this.connector = connector;
+    Conditions() {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Gets the connector used by this Morphix instance
-     * @return The connector used by this Morphix instance
-     */
-    public MorphixConnector getConnector() {
-        return connector;
+    public static boolean notNull(Object value) {
+        return notNull(value, "argument");
+    }
+
+    public static boolean notNull(Object value, String name) {
+        if (value == null) {
+            throw new IllegalArgumentException(name + " cannot be null");
+        }
+
+        return true;
     }
 
 }

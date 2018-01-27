@@ -16,29 +16,25 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix;
+package uk.hfox.morphix.query;
 
-import uk.hfox.morphix.connector.MorphixConnector;
-import uk.hfox.morphix.utils.Conditions;
+import java.io.Serializable;
 
-/**
- * Global Morphix handler for all databases
- */
-public class Morphix {
-
-    private final MorphixConnector connector;
-
-    public Morphix(MorphixConnector connector) {
-        Conditions.notNull(connector, "connector");
-        this.connector = connector;
-    }
+public interface QuerySortBuilder<T> extends Serializable {
 
     /**
-     * Gets the connector used by this Morphix instance
-     * @return The connector used by this Morphix instance
+     * Gets the query that this sort is part of. This method does <b>not</b> apply the sort to the query.
+     * You should use this if you decide to cancel applying this sort to your query.
+     *
+     * @return The query parent
      */
-    public MorphixConnector getConnector() {
-        return connector;
-    }
+    QueryBuilder<T> cancel();
+
+    /**
+     * Applies the sort to your query, use this method once you are done setting any sort parameters
+     *
+     * @return The query parent
+     */
+    QueryBuilder<T> done();
 
 }

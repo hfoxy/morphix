@@ -18,14 +18,16 @@
  */
 package uk.hfox.morphix.connector;
 
-import uk.hfox.morphix.query.Query;
+import uk.hfox.morphix.query.QueryBuilder;
+
+import java.io.Serializable;
 
 /**
  * Created by Harry on 27/11/2017.
  *
  * Connector interface used by the API to perform queries on the database
  */
-public interface MorphixConnector {
+public interface MorphixConnector extends Serializable {
 
     /**
      * Connect to the database
@@ -38,20 +40,20 @@ public interface MorphixConnector {
     void disconnect();
 
     /**
-     * Query the database using the specified class as a collection and result reference
+     * QueryBuilder the database using the specified class as a collection and result reference
      * @param cls The expected resulting class, also used to find the collection
      * @param <T> The expected resulting type
      * @return A query based on the given class
      */
-    <T> Query<T> createQuery(Class<T> cls);
+    <T> QueryBuilder<T> createQuery(Class<T> cls);
 
     /**
-     * Query the given collection with the specified class as an expected result
+     * QueryBuilder the given collection with the specified class as an expected result
      * @param cls The expected resulting class
      * @param collection The collection to query
      * @param <T> The expected resulting type
      * @return A query based on the given class
      */
-    <T> Query<T> createQuery(Class<T> cls, String collection);
+    <T> QueryBuilder<T> createQuery(Class<T> cls, String collection);
 
 }

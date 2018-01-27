@@ -19,7 +19,7 @@
 package uk.hfox.morphix.postgre;
 
 import uk.hfox.morphix.connector.MorphixConnector;
-import uk.hfox.morphix.query.Query;
+import uk.hfox.morphix.query.QueryBuilder;
 
 /**
  * Created by Harry on 28/11/2017.
@@ -39,13 +39,13 @@ public class MorphixPostgreConnector implements MorphixConnector {
     }
 
     @Override
-    public <T> Query<T> createQuery(Class<T> cls) {
+    public <T> QueryBuilder<T> createQuery(Class<T> cls) {
         // TODO: create query
         return null;
     }
 
     @Override
-    public <T> Query<T> createQuery(Class<T> cls, String collection) {
+    public <T> QueryBuilder<T> createQuery(Class<T> cls, String collection) {
         // TODO: create query
         return null;
     }
