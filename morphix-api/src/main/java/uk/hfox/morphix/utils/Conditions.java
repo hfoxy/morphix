@@ -24,6 +24,10 @@ public final class Conditions {
         throw new UnsupportedOperationException();
     }
 
+    public static UnsupportedOperationException unimplemented() {
+        return new UnsupportedOperationException("This feature is not currently implemented");
+    }
+
     public static boolean notNull(Object value) {
         return notNull(value, "argument");
     }

@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix PostgreSQL
+ * Morphix MongoDB
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,40 +16,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.postgre;
+package uk.hfox.morphix.mongo.query;
 
-import uk.hfox.morphix.connector.MorphixConnector;
-import uk.hfox.morphix.query.QueryBuilder;
-import uk.hfox.morphix.utils.Conditions;
-
-/**
- * PostgreSQL implementation of the Morphix connector
- */
-public class MorphixPostgreConnector implements MorphixConnector {
-
-    @Override
-    public void connect() {
-        throw Conditions.unimplemented();
-    }
-
-    @Override
-    public void disconnect() {
-        throw Conditions.unimplemented();
-    }
-
-    @Override
-    public boolean isConnected() {
-        throw Conditions.unimplemented();
-    }
-
-    @Override
-    public <T> QueryBuilder<T> createQuery(Class<T> cls) {
-        throw Conditions.unimplemented();
-    }
-
-    @Override
-    public <T> QueryBuilder<T> createQuery(Class<T> cls, String collection) {
-        throw Conditions.unimplemented();
-    }
-
+public class MongoQueryBuilder {
 }

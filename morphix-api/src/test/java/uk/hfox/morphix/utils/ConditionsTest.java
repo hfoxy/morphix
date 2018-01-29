@@ -26,6 +26,13 @@ class ConditionsTest {
     }
 
     @Test
+    void unimplemented() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            throw Conditions.unimplemented();
+        });
+    }
+
+    @Test
     void notNull() {
         assertThrows(IllegalArgumentException.class, () -> Conditions.notNull(null));
         assertThrows(IllegalArgumentException.class, () -> Conditions.notNull(null, "arg"));

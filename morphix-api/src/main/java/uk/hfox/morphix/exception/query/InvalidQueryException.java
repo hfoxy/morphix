@@ -22,11 +22,9 @@ import uk.hfox.morphix.exception.MorphixException;
 import uk.hfox.morphix.query.QueryBuilder;
 
 /**
- * Created by Harry on 28/11/2017.
- *
- * Thrown when a queryBuilder has valid parameters
+ * Thrown when a query builder has valid parameters
  */
-public class InvalidQueryException extends MorphixException {
+public class InvalidQueryException extends Exception implements MorphixException {
 
     private static final long serialVersionUID = -931105201681822472L;
 

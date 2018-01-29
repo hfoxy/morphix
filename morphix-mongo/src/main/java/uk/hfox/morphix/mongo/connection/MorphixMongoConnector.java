@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix PostgreSQL
+ * Morphix Mongo
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,40 +16,85 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.postgre;
+package uk.hfox.morphix.mongo.connection;
 
+import com.mongodb.MongoClient;
 import uk.hfox.morphix.connector.MorphixConnector;
+import uk.hfox.morphix.mongo.connection.MongoConnector;
 import uk.hfox.morphix.query.QueryBuilder;
-import uk.hfox.morphix.utils.Conditions;
 
 /**
- * PostgreSQL implementation of the Morphix connector
+ * MongoDB implementation of the Morphix connector
  */
-public class MorphixPostgreConnector implements MorphixConnector {
+public class MorphixMongoConnector implements MorphixConnector {
+
+    private static final long serialVersionUID = -3349895475330867986L;
+
+    private final MongoConnector builder;
+
+    private MongoClient client;
+
+    MorphixMongoConnector(MongoConnector builder) {
+        this.builder = builder;
+    }
+
+    /**
+     * Gets the client used by this Morphix connector
+     *
+     * @return The client used by this connector
+     */
+    public MongoClient getClient() {
+        return client;
+    }
 
     @Override
     public void connect() {
-        throw Conditions.unimplemented();
+        if (this.client != null) {
+            if (isConnected()) {
+                throw new IllegalStateException("Client is already connected");
+            } else {
+                this.client = null;
+            }
+        }
+
+        this.client = this.builder.getClient();
     }
 
     @Override
     public void disconnect() {
-        throw Conditions.unimplemented();
+        if (this.client == null || !isConnected()) {
+            throw new IllegalStateException("Client is not connected");
+        }
+
+        this.client.close();
     }
 
     @Override
     public boolean isConnected() {
-        throw Conditions.unimplemented();
+        if (this.client == null) {
+            return false;
+        }
+
+        try {
+            this.client.getAddress();
+        } catch (Exception ex) {
+            this.client.close();
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public <T> QueryBuilder<T> createQuery(Class<T> cls) {
-        throw Conditions.unimplemented();
+        // TODO: create query
+        return null;
     }
 
     @Override
     public <T> QueryBuilder<T> createQuery(Class<T> cls, String collection) {
-        throw Conditions.unimplemented();
+        // TODO: create query
+        return null;
     }
 
 }

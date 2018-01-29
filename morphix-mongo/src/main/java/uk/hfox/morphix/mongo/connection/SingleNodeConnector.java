@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix Mongo
+ * Morphix MongoDB
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,38 +16,24 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.mongo;
+package uk.hfox.morphix.mongo.connection;
 
-import uk.hfox.morphix.connector.MorphixConnector;
-import uk.hfox.morphix.query.QueryBuilder;
+import com.mongodb.MongoClient;
+import uk.hfox.morphix.exception.connection.InvalidConfigurationException;
 
-/**
- * Created by Harry on 27/11/2017.
- *
- * MongoDB implementation of the Morphix connector
- */
-public class MorphixMongoConnector implements MorphixConnector {
+public class SingleNodeConnector extends MongoConnector {
 
-    @Override
-    public void connect() {
-        // TODO: connect to database
+    public SingleNodeConnector(Builder builder) {
+        super(builder);
     }
 
     @Override
-    public void disconnect() {
-        // TODO: disconnect from database
-    }
+    public MongoClient getClient() {
+        if (super.addresses.size() != 1) {
+            throw new InvalidConfigurationException("found " + super.addresses.size() + " addresses, expected 1");
+        }
 
-    @Override
-    public <T> QueryBuilder<T> createQuery(Class<T> cls) {
-        // TODO: create query
-        return null;
-    }
-
-    @Override
-    public <T> QueryBuilder<T> createQuery(Class<T> cls, String collection) {
-        // TODO: create query
-        return null;
+        return new MongoClient(super.addresses.get(0), super.options());
     }
 
 }

@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix PostgreSQL
+ * Morphix API
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,40 +16,20 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.postgre;
+package uk.hfox.morphix.exception.connection;
 
-import uk.hfox.morphix.connector.MorphixConnector;
-import uk.hfox.morphix.query.QueryBuilder;
-import uk.hfox.morphix.utils.Conditions;
+import uk.hfox.morphix.exception.MorphixException;
 
-/**
- * PostgreSQL implementation of the Morphix connector
- */
-public class MorphixPostgreConnector implements MorphixConnector {
+public class InvalidConfigurationException extends RuntimeException implements MorphixException {
 
-    @Override
-    public void connect() {
-        throw Conditions.unimplemented();
+    private static final long serialVersionUID = -4419932698024755078L;
+
+    public InvalidConfigurationException(String message) {
+        super(message);
     }
 
-    @Override
-    public void disconnect() {
-        throw Conditions.unimplemented();
-    }
-
-    @Override
-    public boolean isConnected() {
-        throw Conditions.unimplemented();
-    }
-
-    @Override
-    public <T> QueryBuilder<T> createQuery(Class<T> cls) {
-        throw Conditions.unimplemented();
-    }
-
-    @Override
-    public <T> QueryBuilder<T> createQuery(Class<T> cls, String collection) {
-        throw Conditions.unimplemented();
+    public InvalidConfigurationException(String message, Throwable cause) {
+        super(message, cause);
     }
 
 }

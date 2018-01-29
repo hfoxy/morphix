@@ -40,6 +40,13 @@ public interface MorphixConnector extends Serializable {
     void disconnect();
 
     /**
+     * Checks if the connector is currently connected
+     *
+     * @return true if it is connected, otherwise false
+     */
+    boolean isConnected();
+
+    /**
      * QueryBuilder the database using the specified class as a collection and result reference
      * @param cls The expected resulting class, also used to find the collection
      * @param <T> The expected resulting type

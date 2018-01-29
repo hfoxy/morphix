@@ -26,7 +26,7 @@ import uk.hfox.morphix.exception.MorphixException;
  *
  * Thrown by implementing libraries when a database does not support a feature
  */
-public class UnsupportedFeatureException extends MorphixException {
+public class UnsupportedFeatureException extends Exception implements MorphixException {
 
     private final MorphixConnector connector;
 
