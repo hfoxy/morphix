@@ -1,9 +1,6 @@
 package uk.hfox.morphix.mongo.connection;
 
-import com.mongodb.MongoClient;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class SingleNodeConnectorTest {
 

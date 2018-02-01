@@ -1,9 +1,6 @@
 package uk.hfox.morphix.exception.connection;
 
 import org.junit.jupiter.api.Test;
-import uk.hfox.morphix.exception.query.InvalidQueryException;
-import uk.hfox.morphix.query.QueryBuilder;
-import uk.hfox.morphix.query.TestQueryBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

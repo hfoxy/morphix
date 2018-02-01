@@ -1,14 +1,15 @@
 package uk.hfox.morphix.mongo;
 
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import uk.hfox.morphix.mongo.connection.MongoConnector;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(PER_CLASS)

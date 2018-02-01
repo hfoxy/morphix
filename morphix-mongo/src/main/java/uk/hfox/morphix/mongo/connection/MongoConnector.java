@@ -5,14 +5,14 @@
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
  * This file is part of Morphix, licensed under the MIT License (MIT).
- * 
+ *
  * Copyright 2018 Harry Fox <https://hfox.uk/>
  * Copyright 2018 contributors
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
@@ -74,6 +74,7 @@ public abstract class MongoConnector implements ConnectorBuilder<MorphixMongoCon
          *
          * @param host The host to connect to
          * @param port The port on the host
+         *
          * @return This builder instance
          */
         public Builder address(String host, int port) {
@@ -85,6 +86,7 @@ public abstract class MongoConnector implements ConnectorBuilder<MorphixMongoCon
          * This method will clear the address pool before adding the supplied address
          *
          * @param address The address to connect to
+         *
          * @return This builder instance
          */
         public Builder address(ServerAddress address) {
@@ -99,6 +101,7 @@ public abstract class MongoConnector implements ConnectorBuilder<MorphixMongoCon
          * This method will clear the current address pool before adding the supplied addresses
          *
          * @param addresses The pool of address to add to the address pool
+         *
          * @return This builder instance
          */
         public Builder pool(List<ServerAddress> addresses) {
@@ -112,6 +115,7 @@ public abstract class MongoConnector implements ConnectorBuilder<MorphixMongoCon
          * Sets the connection timeout to the supplied value. This value is in ms, eg; 30000 would be 30 seconds
          *
          * @param timeout The timeout in ms
+         *
          * @return This builder instance
          */
         public Builder timeout(int timeout) {
