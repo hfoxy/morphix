@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix API
+ * Morphix MongoDB
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,41 +16,19 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.query;
+package uk.hfox.morphix.mongo.query.raw;
 
-import java.util.Iterator;
-import java.util.List;
+import org.bson.BSON;
+import uk.hfox.morphix.query.raw.QueryInput;
 
-/**
- * Created by Harry on 28/11/2017.
- *
- * An iterable set of results returned by a query object
- */
-public interface QueryResult<T> extends Iterator<T> {
+public class MongoQueryInput implements QueryInput {
 
-    /**
-     * Alias of first();
-     * @see QueryResult#first();
-     * @return The first result returned by the query
-     */
-    T one();
+    private BSON filters;
+    private BSON update;
 
-    /**
-     * Get the first result from the query
-     * @return The first result returned by the query
-     */
-    T first();
-
-    /**
-     * Get the last result from the query
-     * @return The last result returned by the query
-     */
-    T last();
-
-    /**
-     * Get the results given by the query as a List
-     * @return An unmodifiable list of results
-     */
-    List<T> all();
+    @Override
+    public void performQuery() {
+        // not yet
+    }
 
 }

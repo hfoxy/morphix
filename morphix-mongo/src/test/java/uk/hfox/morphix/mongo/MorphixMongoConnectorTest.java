@@ -1,5 +1,8 @@
 package uk.hfox.morphix.mongo;
 
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.junit.jupiter.api.*;
 import uk.hfox.morphix.mongo.connection.MongoConnector;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;

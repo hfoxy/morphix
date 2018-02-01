@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix MongoDB
+ * Morphix API
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,60 +16,41 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.mongo.query;
+package uk.hfox.morphix.query.result;
 
-import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
-import uk.hfox.morphix.query.FieldQueryBuilder;
-import uk.hfox.morphix.query.QueryBuilder;
-import uk.hfox.morphix.query.result.QueryResult;
-import uk.hfox.morphix.query.QuerySortBuilder;
+import java.util.Iterator;
+import java.util.List;
 
-public class MongoQueryBuilder<R> implements QueryBuilder<R> {
+/**
+ * Created by Harry on 28/11/2017.
+ *
+ * An iterable set of results returned by a query object
+ */
+public interface QueryResult<T> extends Iterator<T> {
 
-    private final Class<R> clazz;
+    /**
+     * Alias of first();
+     * @see QueryResult#first();
+     * @return The first result returned by the query
+     */
+    T one();
 
-    private final String collection;
-    private final MorphixMongoConnector connector;
+    /**
+     * Get the first result from the query
+     * @return The first result returned by the query
+     */
+    T first();
 
-    public MongoQueryBuilder(Class<R> clazz, String collection, MorphixMongoConnector connector) {
-        this.clazz = clazz;
-        this.collection = collection;
-        this.connector = connector;
-    }
+    /**
+     * Get the last result from the query
+     * @return The last result returned by the query
+     */
+    T last();
 
-    @Override
-    public MorphixMongoConnector getConnector() {
-        return connector;
-    }
-
-    @Override
-    public Class<R> getQueryType() {
-        return clazz;
-    }
-
-    @Override
-    public FieldQueryBuilder<R> where(String field) {
-        return null;
-    }
-
-    @Override
-    public QuerySortBuilder<R> sort() {
-        return null;
-    }
-
-    @Override
-    public void delete() {
-
-    }
-
-    @Override
-    public void delete(boolean justOne) {
-
-    }
-
-    @Override
-    public QueryResult<R> result() {
-        return null;
-    }
+    /**
+     * Get the results given by the query as a List
+     * @return An unmodifiable list of results
+     */
+    List<T> all();
 
 }

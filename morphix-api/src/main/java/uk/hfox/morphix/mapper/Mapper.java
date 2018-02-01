@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix MongoDB
+ * Morphix API
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,60 +16,56 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.mongo.query;
+package uk.hfox.morphix.mapper;
 
-import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
-import uk.hfox.morphix.query.FieldQueryBuilder;
-import uk.hfox.morphix.query.QueryBuilder;
-import uk.hfox.morphix.query.result.QueryResult;
-import uk.hfox.morphix.query.QuerySortBuilder;
+import uk.hfox.morphix.query.raw.QueryInput;
+import uk.hfox.morphix.query.raw.QueryOutput;
 
-public class MongoQueryBuilder<R> implements QueryBuilder<R> {
+/**
+ * Maps a given type to/from a raw query
+ *
+ * @param <T> The type of Object to map
+ * @param <O> The type of QueryOutput
+ * @param <I> The type of QueryInput
+ */
+public interface Mapper<T, O extends QueryOutput, I extends QueryInput> {
 
-    private final Class<R> clazz;
+    /**
+     * Gets the type class that this mapper maps
+     * @return The class of the generic type
+     */
+    Class<T> getType();
 
-    private final String collection;
-    private final MorphixMongoConnector connector;
+    /**
+     * Gets the output class that this mapper uses.
+     * This value is set per-database. eg; MongoQueryOutput, PostgreQueryOutput
+     *
+     * @return The class of the generic type
+     */
+    Class<O> getRawOutputType();
 
-    public MongoQueryBuilder(Class<R> clazz, String collection, MorphixMongoConnector connector) {
-        this.clazz = clazz;
-        this.collection = collection;
-        this.connector = connector;
-    }
+    /**
+     * Gets the input class that this mapper uses.
+     * This value is set per-database. eg; MongoQueryInput, PostgreQueryInput
+     *
+     * @return The class of the generic type
+     */
+    Class<I> getRawInputType();
 
-    @Override
-    public MorphixMongoConnector getConnector() {
-        return connector;
-    }
+    /**
+     * Converts the supplied query output into an Object
+     *
+     * @param output The output of the query
+     * @return The mapped version of the output
+     */
+    T fromQuery(O output);
 
-    @Override
-    public Class<R> getQueryType() {
-        return clazz;
-    }
-
-    @Override
-    public FieldQueryBuilder<R> where(String field) {
-        return null;
-    }
-
-    @Override
-    public QuerySortBuilder<R> sort() {
-        return null;
-    }
-
-    @Override
-    public void delete() {
-
-    }
-
-    @Override
-    public void delete(boolean justOne) {
-
-    }
-
-    @Override
-    public QueryResult<R> result() {
-        return null;
-    }
+    /**
+     * Converts the supplied Object into a query input
+     *
+     * @param object The Object to convert to a query
+     * @return The input query to run
+     */
+    I toQuery(T object);
 
 }

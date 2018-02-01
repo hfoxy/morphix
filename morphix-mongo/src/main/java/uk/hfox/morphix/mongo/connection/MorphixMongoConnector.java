@@ -19,8 +19,10 @@
 package uk.hfox.morphix.mongo.connection;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.model.UpdateOptions;
 import uk.hfox.morphix.connector.MorphixConnector;
 import uk.hfox.morphix.mongo.connection.MongoConnector;
+import uk.hfox.morphix.mongo.query.MongoQueryBuilder;
 import uk.hfox.morphix.query.QueryBuilder;
 
 /**
@@ -87,14 +89,13 @@ public class MorphixMongoConnector implements MorphixConnector {
 
     @Override
     public <T> QueryBuilder<T> createQuery(Class<T> cls) {
-        // TODO: create query
-        return null;
+        // TODO: find collection name
+        return createQuery(cls, "");
     }
 
     @Override
     public <T> QueryBuilder<T> createQuery(Class<T> cls, String collection) {
-        // TODO: create query
-        return null;
+        return new MongoQueryBuilder<>(cls, collection, this);
     }
 
 }

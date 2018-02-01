@@ -16,60 +16,21 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.mongo.query;
+package uk.hfox.morphix.mongo.query.raw;
 
-import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
-import uk.hfox.morphix.query.FieldQueryBuilder;
-import uk.hfox.morphix.query.QueryBuilder;
-import uk.hfox.morphix.query.result.QueryResult;
-import uk.hfox.morphix.query.QuerySortBuilder;
+import org.bson.BSON;
+import uk.hfox.morphix.query.raw.QueryOutput;
 
-public class MongoQueryBuilder<R> implements QueryBuilder<R> {
+public class MongoQueryOutput implements QueryOutput {
 
-    private final Class<R> clazz;
+    private BSON bson;
 
-    private final String collection;
-    private final MorphixMongoConnector connector;
-
-    public MongoQueryBuilder(Class<R> clazz, String collection, MorphixMongoConnector connector) {
-        this.clazz = clazz;
-        this.collection = collection;
-        this.connector = connector;
+    public MongoQueryOutput(BSON bson) {
+        this.bson = bson;
     }
 
-    @Override
-    public MorphixMongoConnector getConnector() {
-        return connector;
-    }
-
-    @Override
-    public Class<R> getQueryType() {
-        return clazz;
-    }
-
-    @Override
-    public FieldQueryBuilder<R> where(String field) {
-        return null;
-    }
-
-    @Override
-    public QuerySortBuilder<R> sort() {
-        return null;
-    }
-
-    @Override
-    public void delete() {
-
-    }
-
-    @Override
-    public void delete(boolean justOne) {
-
-    }
-
-    @Override
-    public QueryResult<R> result() {
-        return null;
+    public BSON getBSON() {
+        return bson;
     }
 
 }

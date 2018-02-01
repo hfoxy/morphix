@@ -19,6 +19,7 @@
 package uk.hfox.morphix.query;
 
 import uk.hfox.morphix.connector.MorphixConnector;
+import uk.hfox.morphix.query.result.QueryResult;
 
 import java.io.Serializable;
 
