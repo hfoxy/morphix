@@ -29,10 +29,6 @@ public class SingleNodeConnector extends MongoConnector {
 
     @Override
     public MongoClient getClient() {
-        if (super.addresses.size() != 1) {
-            throw new InvalidConfigurationException("found " + super.addresses.size() + " addresses, expected 1");
-        }
-
         return new MongoClient(super.addresses.get(0), super.options());
     }
 

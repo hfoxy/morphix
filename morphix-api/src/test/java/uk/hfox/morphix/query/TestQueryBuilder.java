@@ -1,8 +1,14 @@
 package uk.hfox.morphix.query;
 
+import uk.hfox.morphix.connector.MorphixConnector;
 import uk.hfox.morphix.utils.Testing;
 
 public class TestQueryBuilder<T> implements QueryBuilder<T> {
+
+    @Override
+    public MorphixConnector getConnector() {
+        throw Testing.unsupported();
+    }
 
     @Override
     public Class<T> getQueryType() {

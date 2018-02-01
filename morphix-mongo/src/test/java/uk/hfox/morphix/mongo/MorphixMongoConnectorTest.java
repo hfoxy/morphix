@@ -18,6 +18,8 @@ class MorphixMongoConnectorTest {
         this.connector = MongoConnector.builder().timeout(5000).build().build();
         this.connector.connect();
         assumeTrue(this.connector.isConnected(), "Database not provided");
+
+        assertThrows(IllegalStateException.class, this.connector::connect);
     }
 
     @Test

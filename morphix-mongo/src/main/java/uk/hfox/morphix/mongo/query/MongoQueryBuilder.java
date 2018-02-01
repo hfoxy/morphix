@@ -18,5 +18,56 @@
  */
 package uk.hfox.morphix.mongo.query;
 
-public class MongoQueryBuilder {
+import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
+import uk.hfox.morphix.query.FieldQueryBuilder;
+import uk.hfox.morphix.query.QueryBuilder;
+import uk.hfox.morphix.query.QueryResult;
+import uk.hfox.morphix.query.QuerySortBuilder;
+
+public class MongoQueryBuilder<R> implements QueryBuilder<R> {
+
+    private final Class<R> clazz;
+
+    private final MorphixMongoConnector connector;
+
+    public MongoQueryBuilder(Class<R> clazz, MorphixMongoConnector connector) {
+        this.clazz = clazz;
+        this.connector = connector;
+    }
+
+    @Override
+    public MorphixMongoConnector getConnector() {
+        return connector;
+    }
+
+    @Override
+    public Class<R> getQueryType() {
+        return clazz;
+    }
+
+    @Override
+    public FieldQueryBuilder<R> where(String field) {
+        return null;
+    }
+
+    @Override
+    public QuerySortBuilder<R> sort() {
+        return null;
+    }
+
+    @Override
+    public void delete() {
+
+    }
+
+    @Override
+    public void delete(boolean justOne) {
+
+    }
+
+    @Override
+    public QueryResult<R> result() {
+        return null;
+    }
+
 }

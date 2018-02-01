@@ -18,6 +18,8 @@
  */
 package uk.hfox.morphix.query;
 
+import uk.hfox.morphix.connector.MorphixConnector;
+
 import java.io.Serializable;
 
 /**
@@ -26,6 +28,13 @@ import java.io.Serializable;
  * Interface used to build connector-specific queries
  */
 public interface QueryBuilder<T> extends Serializable {
+
+    /**
+     * Gets the connector used to query the database
+     *
+     * @return The connector used to query the database
+     */
+    MorphixConnector getConnector();
 
     /**
      * Gets the class output expected by this query
