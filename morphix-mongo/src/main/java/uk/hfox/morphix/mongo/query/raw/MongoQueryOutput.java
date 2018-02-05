@@ -18,18 +18,18 @@
  */
 package uk.hfox.morphix.mongo.query.raw;
 
-import org.bson.BSON;
+import org.bson.conversions.Bson;
 import uk.hfox.morphix.query.raw.QueryOutput;
 
 public class MongoQueryOutput implements QueryOutput {
 
-    private BSON bson;
+    private Bson bson;
 
-    public MongoQueryOutput(BSON bson) {
+    public MongoQueryOutput(Bson bson) {
         this.bson = bson;
     }
 
-    public BSON getBSON() {
+    public Bson getBSON() {
         return bson;
     }
 

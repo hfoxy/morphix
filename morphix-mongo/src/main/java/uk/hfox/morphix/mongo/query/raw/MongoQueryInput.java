@@ -18,16 +18,26 @@
  */
 package uk.hfox.morphix.mongo.query.raw;
 
-import org.bson.BSON;
+import org.bson.conversions.Bson;
+import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.query.raw.QueryInput;
 
 public class MongoQueryInput implements QueryInput {
 
-    private BSON filters;
-    private BSON update;
+    private final MorphixMongoConnector connector;
+
+    private final Bson filters;
+    private final Bson update;
+
+    public MongoQueryInput(MorphixMongoConnector connector, Bson filters, Bson update) {
+        this.connector = connector;
+        this.filters = filters;
+        this.update = update;
+    }
 
     @Override
     public void performQuery() {
+        connector.getClient().getDatabase("").getCollection("").updateOne(filters, update);
         // not yet
     }
 
