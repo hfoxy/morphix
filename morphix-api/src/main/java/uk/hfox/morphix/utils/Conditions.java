@@ -18,6 +18,8 @@
  */
 package uk.hfox.morphix.utils;
 
+import java.util.List;
+
 public final class Conditions {
 
     Conditions() {
@@ -38,6 +40,28 @@ public final class Conditions {
         }
 
         return true;
+    }
+
+    public static boolean notEmptyOrNullFilled(List value) {
+        return notEmptyOrNullFilled(value, "argument");
+    }
+
+    public static boolean notEmptyOrNullFilled(List value, String name) {
+        if (value == null) {
+            throw new IllegalArgumentException(name + " cannot be null");
+        }
+
+        if (value.size() <= 0) {
+            throw new IllegalArgumentException(name + " cannot be empty");
+        }
+
+        for (Object item : value) {
+            if (item != null) {
+                return true;
+            }
+        }
+
+        throw new IllegalArgumentException(name + " cannot be full of null objects");
     }
 
 }
