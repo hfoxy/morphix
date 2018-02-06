@@ -30,9 +30,9 @@ public class MorphixMongoConnector implements MorphixConnector {
 
     private static final long serialVersionUID = -3349895475330867986L;
 
-    private final MongoConnector builder;
+    private final transient MongoConnector builder;
 
-    private MongoClient client;
+    private transient MongoClient client;
 
     MorphixMongoConnector(MongoConnector builder) {
         this.builder = builder;

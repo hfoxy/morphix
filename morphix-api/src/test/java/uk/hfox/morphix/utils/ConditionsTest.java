@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,6 +41,31 @@ class ConditionsTest {
 
         assertTrue(Conditions.notNull("string"));
         assertTrue(Conditions.notNull("string", "mystring"));
+    }
+
+    @Test
+    void notEmptyOrNullFilled() {
+        assertThrows(IllegalArgumentException.class, () -> Conditions.notEmptyOrNullFilled(null));
+        assertThrows(IllegalArgumentException.class, () -> Conditions.notEmptyOrNullFilled(null, "arg"));
+
+        assertThrows(IllegalArgumentException.class, () -> Conditions.notEmptyOrNullFilled(new ArrayList()));
+        assertThrows(IllegalArgumentException.class, () -> Conditions.notEmptyOrNullFilled(new ArrayList(), "arg"));
+
+        List<Object> nullList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            nullList.add(null);
+        }
+
+        assertThrows(IllegalArgumentException.class, () -> Conditions.notEmptyOrNullFilled(nullList));
+        assertThrows(IllegalArgumentException.class, () -> Conditions.notEmptyOrNullFilled(nullList, "arg"));
+
+        List<Object> filledList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            filledList.add(new Object());
+        }
+
+        assertTrue(Conditions.notEmptyOrNullFilled(filledList));
+        assertTrue(Conditions.notEmptyOrNullFilled(filledList, "mystring"));
     }
 
 }

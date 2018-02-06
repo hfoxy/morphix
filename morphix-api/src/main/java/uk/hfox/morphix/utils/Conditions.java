@@ -51,7 +51,7 @@ public final class Conditions {
             throw new IllegalArgumentException(name + " cannot be null");
         }
 
-        if (value.size() <= 0) {
+        if (value.isEmpty()) {
             throw new IllegalArgumentException(name + " cannot be empty");
         }
 

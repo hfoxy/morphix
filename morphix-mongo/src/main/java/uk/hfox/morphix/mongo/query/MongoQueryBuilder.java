@@ -23,6 +23,7 @@ import uk.hfox.morphix.query.FieldQueryBuilder;
 import uk.hfox.morphix.query.QueryBuilder;
 import uk.hfox.morphix.query.QuerySortBuilder;
 import uk.hfox.morphix.query.result.QueryResult;
+import uk.hfox.morphix.utils.Conditions;
 
 public class MongoQueryBuilder<R> implements QueryBuilder<R> {
 
@@ -49,27 +50,27 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
 
     @Override
     public FieldQueryBuilder<R> where(String field) {
-        return null;
+        throw Conditions.unimplemented();
     }
 
     @Override
     public QuerySortBuilder<R> sort() {
-        return null;
+        throw Conditions.unimplemented();
     }
 
     @Override
     public void delete() {
-
+        throw Conditions.unimplemented();
     }
 
     @Override
     public void delete(boolean justOne) {
-
+        throw Conditions.unimplemented();
     }
 
     @Override
     public QueryResult<R> result() {
-        return null;
+        throw Conditions.unimplemented();
     }
 
 }
