@@ -26,14 +26,37 @@ public final class Conditions {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Returns an UnsupportedOperationException stating that this feature is not currently implemented.
+     * Used in various places around the project to reduce duplicates
+     *
+     * @return A new UnsupportedOperationException
+     */
     public static UnsupportedOperationException unimplemented() {
         return new UnsupportedOperationException("This feature is not currently implemented");
     }
 
+    /**
+     * Checks if the supplied value is not null.
+     *
+     * @param value The value to check
+     *
+     * @return true if the value is not null
+     *
+     * @throws IllegalArgumentException if the argument is null
+     */
     public static boolean notNull(Object value) {
         return notNull(value, "argument");
     }
 
+    /**
+     * Checks if the supplied value is not null. Includes the name in the error message
+     *
+     * @param value The value to check
+     * @param name The name to include
+     * @return true if the value is not null
+     * @throws IllegalArgumentException if the argument is null
+     */
     public static boolean notNull(Object value, String name) {
         if (value == null) {
             throw new IllegalArgumentException(name + " cannot be null");
@@ -42,10 +65,26 @@ public final class Conditions {
         return true;
     }
 
+    /**
+     * Checks if the supplied list is empty or filled with null objects
+     *
+     * @param value The list to check
+     * @return true if the list is not null, not empty and not filled with null objects
+     * @throws IllegalArgumentException if the argument is null, empty or filled with null objects
+     */
     public static boolean notEmptyOrNullFilled(List value) {
         return notEmptyOrNullFilled(value, "argument");
     }
 
+    /**
+     * Checks if the supplied list is empty or filled with null objects.
+     * Includes name in the error message
+     *
+     * @param value The list to check
+     * @param name The name to include
+     * @return true if the list is not null, not empty and not filled with null objects
+     * @throws IllegalArgumentException if the argument is null, empty or filled with null objects
+     */
     public static boolean notEmptyOrNullFilled(List value, String name) {
         if (value == null) {
             throw new IllegalArgumentException(name + " cannot be null");

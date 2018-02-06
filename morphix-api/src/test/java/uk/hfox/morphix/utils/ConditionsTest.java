@@ -16,7 +16,7 @@ class ConditionsTest {
     void constructor() {
         Class<Conditions> clazz = Conditions.class;
 
-        assertTrue(Modifier.isFinal(Conditions.class.getModifiers()));
+        assertTrue(Modifier.isFinal(clazz.getModifiers()));
 
         for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
             assertFalse(constructor.isAccessible());

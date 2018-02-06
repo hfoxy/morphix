@@ -22,7 +22,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ServerAddress;
 import uk.hfox.morphix.connector.ConnectorBuilder;
-import uk.hfox.morphix.utils.Conditions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,12 +122,26 @@ public abstract class MongoConnector implements ConnectorBuilder<MorphixMongoCon
             return this;
         }
 
+        /**
+         * Returns whether or not this builder currently represents a single or multi-node MongoDB connector
+         *
+         * @return true if this is a single node, false otherwise
+         */
+        public boolean single() {
+            return single;
+        }
+
+        /**
+         * Builds the connector
+         *
+         * @return The new connector
+         */
         public MongoConnector build() {
             if (single) {
                 return new SingleNodeConnector(this);
+            } else {
+                return new PoolConnector(this);
             }
-
-            throw Conditions.unimplemented();
         }
 
     }

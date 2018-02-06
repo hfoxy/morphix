@@ -67,6 +67,7 @@ public class MorphixMongoConnector implements MorphixConnector {
         }
 
         this.client.close();
+        this.client = null;
     }
 
     @Override

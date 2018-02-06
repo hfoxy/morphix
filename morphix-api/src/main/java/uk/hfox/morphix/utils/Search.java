@@ -16,21 +16,40 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.annotations;
+package uk.hfox.morphix.utils;
 
-import uk.hfox.morphix.connector.MorphixConnector;
+import java.lang.annotation.Annotation;
 
+public final class Search {
 
-public @interface Entity {
+    Search() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
-     * Defines the list of Morphix connector types that this entity can be used on.
-     * Example: {MorphixMongoConnector.class, MorphixPostgreConnector.class}
-     * <p>
-     * An empty array represents "no filter", allowing all connectors.
+     * Follows the class inheritance tree until the annotation can be found.
+     * If the annotation is not available in the tree, null is returned.
      *
-     * @return The list of Morphix connector types
+     * @param clazz      The base class to check for the annotation
+     * @param annotation The class of annotation to search for
+     * @param <T>        The generic type of the annotation
+     *
+     * @return The first annotation in the reverse lookup, null if no annotation is found
      */
-    Class<? extends MorphixConnector>[] value() default {};
+    public static <T extends Annotation> T getInheritedAnnotation(Class<?> clazz, Class<T> annotation) {
+        Conditions.notNull(clazz, "clazz");
+        Conditions.notNull(annotation, "annotation");
+
+        if (clazz.isAssignableFrom(Object.class)) {
+            return null;
+        }
+
+        T anno = clazz.getAnnotation(annotation);
+        if (anno == null) {
+            return getInheritedAnnotation(clazz.getSuperclass(), annotation);
+        }
+
+        return anno;
+    }
 
 }
