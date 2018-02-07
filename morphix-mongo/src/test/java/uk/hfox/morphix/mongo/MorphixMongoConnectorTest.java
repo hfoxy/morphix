@@ -79,7 +79,7 @@ class MorphixMongoConnectorTest {
 
     @Test
     void createQuery() {
-
+        // some query
     }
 
 }
