@@ -21,14 +21,12 @@ package uk.hfox.morphix.query;
 import uk.hfox.morphix.connector.MorphixConnector;
 import uk.hfox.morphix.query.result.QueryResult;
 
-import java.io.Serializable;
-
 /**
  * Created by Harry on 28/11/2017.
  * <p>
  * Interface used to build connector-specific queries
  */
-public interface QueryBuilder<T> extends Serializable {
+public interface QueryBuilder<T> {
 
     /**
      * Gets the connector used to query the database

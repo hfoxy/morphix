@@ -32,8 +32,6 @@ import java.util.Map;
 
 public class MongoQueryBuilder<R> implements QueryBuilder<R> {
 
-    private static final long serialVersionUID = 3694217693981668549L;
-
     private final Class<R> clazz;
 
     private final MongoCollection<Document> collection;
