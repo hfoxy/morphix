@@ -37,11 +37,15 @@ public class MongoFieldQueryBuilder<T> implements FieldQueryBuilder<T> {
         this.builder = builder;
     }
 
-    @Override
-    public QueryBuilder<T> matches(Object object) {
+    private void checkLock() {
         if (this.locked) {
             throw new IllegalStateException("field query is locked");
         }
+    }
+
+    @Override
+    public QueryBuilder<T> matches(Object object) {
+        checkLock();
 
         this.locked = true;
         setResult("eq", object);
@@ -62,9 +66,7 @@ public class MongoFieldQueryBuilder<T> implements FieldQueryBuilder<T> {
 
     @Override
     public QueryBuilder<T> notEqual(Object object) {
-        if (this.locked) {
-            throw new IllegalStateException("field query is locked");
-        }
+        checkLock();
 
         this.locked = true;
         setResult("ne", object);
@@ -74,9 +76,7 @@ public class MongoFieldQueryBuilder<T> implements FieldQueryBuilder<T> {
 
     @Override
     public QueryBuilder<T> greaterThan(Object object) {
-        if (this.locked) {
-            throw new IllegalStateException("field query is locked");
-        }
+        checkLock();
 
         this.locked = true;
         setResult("gt", object);
@@ -86,9 +86,7 @@ public class MongoFieldQueryBuilder<T> implements FieldQueryBuilder<T> {
 
     @Override
     public QueryBuilder<T> greaterThanOrEqual(Object object) {
-        if (this.locked) {
-            throw new IllegalStateException("field query is locked");
-        }
+        checkLock();
 
         this.locked = true;
         setResult("gte", object);
@@ -98,9 +96,7 @@ public class MongoFieldQueryBuilder<T> implements FieldQueryBuilder<T> {
 
     @Override
     public QueryBuilder<T> lessThan(Object object) {
-        if (this.locked) {
-            throw new IllegalStateException("field query is locked");
-        }
+        checkLock();
 
         this.locked = true;
         setResult("lt", object);
@@ -110,9 +106,7 @@ public class MongoFieldQueryBuilder<T> implements FieldQueryBuilder<T> {
 
     @Override
     public QueryBuilder<T> lessThanOrEqual(Object object) {
-        if (this.locked) {
-            throw new IllegalStateException("field query is locked");
-        }
+        checkLock();
 
         this.locked = true;
         setResult("lte", object);
