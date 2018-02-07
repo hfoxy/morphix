@@ -48,6 +48,30 @@ class MongoQueryBuilderTest {
     }
 
     @Test
+    void deleteOne() {
+        MongoCollection<Document> collection = populate("delete_one_test");
+        MongoQueryBuilder<Object> query = new MongoQueryBuilder<>(Object.class, collection, this.connector);
+        query.where("type").matches(1);
+        query.delete(true);
+        assertEquals(99, collection.count());
+
+        collection.deleteMany(new BsonDocument());
+        assertEquals(0, collection.count());
+    }
+
+    @Test
+    void deleteMany() {
+        MongoCollection<Document> collection = populate("delete_many_test");
+        MongoQueryBuilder<Object> query = new MongoQueryBuilder<>(Object.class, collection, this.connector);
+        query.where("type").matches(1);
+        query.delete();
+        assertEquals(75, collection.count());
+
+        collection.deleteMany(new BsonDocument());
+        assertEquals(0, collection.count());
+    }
+
+    @Test
     void whereLT() {
         MongoCollection<Document> collection = populate("lt_test");
         MongoQueryBuilder<Object> query = new MongoQueryBuilder<>(Object.class, collection, this.connector);

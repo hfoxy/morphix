@@ -21,6 +21,7 @@ package uk.hfox.morphix.mongo.query;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
+import uk.hfox.morphix.mongo.query.raw.input.MongoDeleteQuery;
 import uk.hfox.morphix.mongo.query.raw.output.MongoFindQuery;
 import uk.hfox.morphix.query.QueryBuilder;
 import uk.hfox.morphix.query.QuerySortBuilder;
@@ -72,12 +73,13 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
 
     @Override
     public void delete() {
-        throw Conditions.unimplemented();
+        delete(false);
     }
 
     @Override
     public void delete(boolean justOne) {
-        throw Conditions.unimplemented();
+        MongoDeleteQuery query = new MongoDeleteQuery(collection, getFilter(), !justOne, null);
+        query.performQuery();
     }
 
     @Override
@@ -85,14 +87,18 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
         throw Conditions.unimplemented();
     }
 
-    public MongoFindQuery find() {
+    private Document getFilter() {
         Document document = new Document();
         for (Map.Entry<String, MongoFieldQueryBuilder<R>> entry : this.fields.entrySet()) {
             MongoFieldQueryBuilder<R> field = entry.getValue();
             document.put(entry.getKey(), field.getBson());
         }
 
-        MongoFindQuery query = new MongoFindQuery(collection, document);
+        return document;
+    }
+
+    public MongoFindQuery find() {
+        MongoFindQuery query = new MongoFindQuery(collection, getFilter());
         query.performQuery();
         return query;
     }
