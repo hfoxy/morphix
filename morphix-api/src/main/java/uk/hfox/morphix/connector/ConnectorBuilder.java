@@ -18,6 +18,11 @@
  */
 package uk.hfox.morphix.connector;
 
+/**
+ * Represents a builder of MorphixConnectors
+ *
+ * @param <R> The output type of connector
+ */
 public interface ConnectorBuilder<R extends MorphixConnector> {
 
     /**

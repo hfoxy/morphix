@@ -58,6 +58,9 @@ public class MorphixMongoConnector implements MorphixConnector {
         return database;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void connect() {
         if (this.client != null) {
@@ -73,6 +76,9 @@ public class MorphixMongoConnector implements MorphixConnector {
         this.database = this.client.getDatabase(this.builder.getDatabase());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void disconnect() {
         if (this.client == null || !isConnected()) {
@@ -84,6 +90,9 @@ public class MorphixMongoConnector implements MorphixConnector {
         this.database = null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isConnected() {
         if (this.client == null) {
@@ -100,12 +109,18 @@ public class MorphixMongoConnector implements MorphixConnector {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> QueryBuilder<T> createQuery(Class<T> cls) {
         // TODO: find collection name
         return createQuery(cls, "");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> QueryBuilder<T> createQuery(Class<T> cls, String collection) {
         return new MongoQueryBuilder<>(cls, collection, this);

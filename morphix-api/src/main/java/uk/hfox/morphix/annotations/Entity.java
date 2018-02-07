@@ -20,7 +20,17 @@ package uk.hfox.morphix.annotations;
 
 import uk.hfox.morphix.connector.MorphixConnector;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
+/**
+ * Defines the annotated class as a database entity.
+ * This annotation is used at runtime to determine if a class is a database entity or not.
+ */
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Entity {
 
     /**

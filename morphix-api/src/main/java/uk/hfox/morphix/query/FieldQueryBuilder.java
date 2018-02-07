@@ -38,7 +38,7 @@ public interface FieldQueryBuilder<T> extends Serializable {
 
     /**
      * Flip if this field is an inverse query
-     * For example !(x >= 2)
+     * For example !(x &gt;= 2)
      *
      * @return The current query with the not flipped
      */

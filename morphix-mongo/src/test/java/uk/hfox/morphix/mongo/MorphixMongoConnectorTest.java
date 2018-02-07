@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import uk.hfox.morphix.exception.connection.InvalidConfigurationException;
 import uk.hfox.morphix.mongo.connection.MongoConnector;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.connection.PoolConnector;
@@ -25,7 +26,7 @@ class MorphixMongoConnectorTest {
 
     @BeforeAll
     void connectFail() {
-        assertThrows(IllegalArgumentException.class, () -> MongoConnector.builder().timeout(5000).build());
+        assertThrows(InvalidConfigurationException.class, () -> MongoConnector.builder().timeout(5000).build());
     }
 
     @BeforeAll

@@ -27,26 +27,41 @@ import uk.hfox.morphix.utils.Conditions;
  */
 public class MorphixPostgreConnector implements MorphixConnector {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void connect() {
         throw Conditions.unimplemented();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void disconnect() {
         throw Conditions.unimplemented();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isConnected() {
         throw Conditions.unimplemented();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> QueryBuilder<T> createQuery(Class<T> cls) {
         throw Conditions.unimplemented();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> QueryBuilder<T> createQuery(Class<T> cls, String collection) {
         throw Conditions.unimplemented();

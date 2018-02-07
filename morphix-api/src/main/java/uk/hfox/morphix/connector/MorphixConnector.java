@@ -23,8 +23,6 @@ import uk.hfox.morphix.query.QueryBuilder;
 import java.io.Serializable;
 
 /**
- * Created by Harry on 27/11/2017.
- * <p>
  * Connector interface used by the API to perform queries on the database
  */
 public interface MorphixConnector extends Serializable {
@@ -50,7 +48,6 @@ public interface MorphixConnector extends Serializable {
      * QueryBuilder the database using the specified class as a collection and result reference
      *
      * @param cls The expected resulting class, also used to find the collection
-     * @param <T> The expected resulting type
      *
      * @return A query based on the given class
      */
@@ -61,7 +58,6 @@ public interface MorphixConnector extends Serializable {
      *
      * @param cls        The expected resulting class
      * @param collection The collection to query
-     * @param <T>        The expected resulting type
      *
      * @return A query based on the given class
      */

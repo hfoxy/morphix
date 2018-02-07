@@ -33,7 +33,7 @@ public interface QueryResult<T> extends Iterator<T> {
      *
      * @return The first result returned by the query
      *
-     * @see QueryResult#first();
+     * @see QueryResult#first()
      */
     T one();
 

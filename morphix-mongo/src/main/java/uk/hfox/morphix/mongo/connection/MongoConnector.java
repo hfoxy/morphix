@@ -22,7 +22,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ServerAddress;
 import uk.hfox.morphix.connector.ConnectorBuilder;
-import uk.hfox.morphix.utils.Conditions;
+import uk.hfox.morphix.exception.connection.InvalidConfigurationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -175,7 +175,9 @@ public abstract class MongoConnector implements ConnectorBuilder<MorphixMongoCon
          * @return The new connector
          */
         public MongoConnector build() {
-            Conditions.notNull(this.database, "database");
+            if (this.database == null) {
+                throw new InvalidConfigurationException("database cannot be null");
+            }
 
             if (single) {
                 return new SingleNodeConnector(this);

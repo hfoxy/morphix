@@ -20,14 +20,28 @@ package uk.hfox.morphix.exception.connection;
 
 import uk.hfox.morphix.exception.MorphixException;
 
+/**
+ * Thrown when the configuration of a Morphix module is invalid
+ */
 public class InvalidConfigurationException extends RuntimeException implements MorphixException {
 
     private static final long serialVersionUID = -4419932698024755078L;
 
+    /**
+     * Creates a new exception with the supplied message
+     *
+     * @param message The message to supply
+     */
     public InvalidConfigurationException(String message) {
         super(message);
     }
 
+    /**
+     * Creates a new exception with the supplied message, caused by the supplied throwable
+     *
+     * @param message The message to supply
+     * @param cause   The cause of the exception
+     */
     public InvalidConfigurationException(String message, Throwable cause) {
         super(message, cause);
     }

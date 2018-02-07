@@ -146,4 +146,49 @@
             </plugin>
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.0</version>
+                <reportSets>
+                    <reportSet>
+                        <!-- Exports JavaDocs to regular HTML files -->
+                        <id>javadoc-html</id>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </reportSet>
+
+                    <reportSet>
+                        <!-- Generates the JavaDoc coverage report -->
+                        <id>javadoc-coverage</id>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                        <configuration>
+                            <name>JavaDoc Coverage</name>
+                            <description>Percentage of the code coverage by JavaDoc documentation.</description>
+                            <encoding>UTF-8</encoding>
+                            <doclet>com.manoelcampos.javadoc.coverage.CoverageDoclet</doclet>
+                            <docletArtifact>
+                                <groupId>com.manoelcampos</groupId>
+                                <artifactId>javadoc-coverage</artifactId>
+                                <version>1.1.0</version>
+                            </docletArtifact>
+                            <destDir>javadoc-coverage</destDir>
+                            <!-- You can also use -o instead of -outputName to define
+                            the name of the generated report. -->
+                            <additionalparam>-outputName "index.html"</additionalparam>
+                        </configuration>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
