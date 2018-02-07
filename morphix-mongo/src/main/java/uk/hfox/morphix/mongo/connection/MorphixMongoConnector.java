@@ -123,7 +123,7 @@ public class MorphixMongoConnector implements MorphixConnector {
      */
     @Override
     public <T> QueryBuilder<T> createQuery(Class<T> cls, String collection) {
-        return new MongoQueryBuilder<>(cls, collection, this);
+        return new MongoQueryBuilder<>(cls, this.database.getCollection(collection), this);
     }
 
 }

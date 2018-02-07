@@ -18,6 +18,8 @@
  */
 package uk.hfox.morphix.mongo.query;
 
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.query.FieldQueryBuilder;
 import uk.hfox.morphix.query.QueryBuilder;
@@ -31,10 +33,10 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
 
     private final Class<R> clazz;
 
-    private final String collection;
+    private final MongoCollection<Document> collection;
     private final MorphixMongoConnector connector;
 
-    public MongoQueryBuilder(Class<R> clazz, String collection, MorphixMongoConnector connector) {
+    public MongoQueryBuilder(Class<R> clazz, MongoCollection<Document> collection, MorphixMongoConnector connector) {
         this.clazz = clazz;
         this.collection = collection;
         this.connector = connector;
