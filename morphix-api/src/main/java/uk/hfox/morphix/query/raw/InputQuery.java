@@ -23,6 +23,9 @@ package uk.hfox.morphix.query.raw;
  */
 public interface InputQuery {
 
+    /**
+     * Performs the query defined by this class
+     */
     void performQuery();
 
 }

@@ -22,4 +22,10 @@ package uk.hfox.morphix.query.raw;
  * Represents the raw data response sent by a database
  */
 public interface OutputQuery {
+
+    /**
+     * Performs the query defined by this class
+     */
+    void performQuery();
+
 }

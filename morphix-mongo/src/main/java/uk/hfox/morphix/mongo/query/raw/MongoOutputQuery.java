@@ -18,19 +18,48 @@
  */
 package uk.hfox.morphix.mongo.query.raw;
 
-import org.bson.conversions.Bson;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 import uk.hfox.morphix.query.raw.OutputQuery;
 
-public class MongoOutputQuery implements OutputQuery {
+public abstract class MongoOutputQuery<T> implements OutputQuery {
 
-    private Bson bson;
+    protected final MongoCollection<Document> collection;
 
-    public MongoOutputQuery(Bson bson) {
-        this.bson = bson;
+    protected boolean queried = false;
+    protected T output;
+
+    protected MongoOutputQuery(MongoCollection<Document> collection) {
+        this.collection = collection;
     }
 
-    public Bson getBSON() {
-        return bson;
+    public boolean hasQueried() {
+        return queried;
     }
+
+    /**
+     * Gets the Object result from this query.
+     * The result can be null, best to check hasQueried first
+     *
+     * @return The output from this query
+     */
+    public T getOutput() {
+        return output;
+    }
+
+    @Override
+    public void performQuery() {
+        if (this.queried) {
+            return;
+        }
+
+        runQuery();
+        this.queried = true;
+    }
+
+    /**
+     * Runs the query defined by this class
+     */
+    protected abstract void runQuery();
 
 }
