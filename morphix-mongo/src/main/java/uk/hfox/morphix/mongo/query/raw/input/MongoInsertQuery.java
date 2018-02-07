@@ -19,42 +19,63 @@
 package uk.hfox.morphix.mongo.query.raw.input;
 
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.UpdateOptions;
-import org.bson.conversions.Bson;
-import uk.hfox.morphix.mongo.query.raw.MongoQueryInput;
+import com.mongodb.client.model.InsertManyOptions;
+import com.mongodb.client.model.InsertOneOptions;
+import org.bson.Document;
+import uk.hfox.morphix.mongo.query.raw.MongoInputQuery;
+import uk.hfox.morphix.utils.Conditions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Performs an update query on the database with the supplied options.
- * Supports updating a single document and updating multiple documents.
+ * Performs an insert query on the database with the supplied options.
+ * Supports inserting a single document and inserting multiple documents.
  */
-public class MongoQueryUpdate extends MongoQueryInput {
+public class MongoInsertQuery extends MongoInputQuery {
 
-    private final Bson filters;
-    private final Bson update;
+    private final List<Document> documents;
+
     private final boolean many;
-    private final UpdateOptions options;
+    private final InsertOneOptions oneOptions;
+    private final InsertManyOptions manyOptions;
 
-    public MongoQueryUpdate(MongoCollection collection, Bson filters, Bson update, boolean many, UpdateOptions options) {
+    public MongoInsertQuery(MongoCollection collection, Document document, InsertOneOptions options) {
         super(collection);
-        this.filters = filters;
-        this.update = update;
-        this.many = many;
-        this.options = options;
+        Conditions.notNull(document, "document");
+
+        this.documents = new ArrayList<>();
+        this.documents.add(document);
+
+        this.many = false;
+        this.oneOptions = options;
+        this.manyOptions = null;
+    }
+
+    public MongoInsertQuery(MongoCollection collection, List<Document> documents, InsertManyOptions options) {
+        super(collection);
+        Conditions.notEmptyOrNullFilled(documents, "documents");
+
+        this.documents = documents;
+
+        this.many = true;
+        this.oneOptions = null;
+        this.manyOptions = options;
     }
 
     @Override
     public void performQuery() {
         if (many) {
-            if (options != null) {
-                super.collection.updateMany(this.filters, this.update, this.options);
+            if (manyOptions != null) {
+                super.collection.insertMany(this.documents, manyOptions);
             } else {
-                super.collection.updateMany(this.filters, this.update);
+                super.collection.insertMany(this.documents);
             }
         } else {
-            if (options != null) {
-                super.collection.updateOne(this.filters, this.update, this.options);
+            if (oneOptions != null) {
+                super.collection.insertOne(this.documents.get(0), oneOptions);
             } else {
-                super.collection.updateOne(this.filters, this.update);
+                super.collection.insertOne(this.documents.get(0));
             }
         }
     }

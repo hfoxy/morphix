@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix API
+ * Morphix MongoDB
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,10 +16,21 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.query.raw;
+package uk.hfox.morphix.mongo.query.raw;
 
-/**
- * Represents the raw data response sent by a database
- */
-public interface QueryOutput {
+import org.bson.conversions.Bson;
+import uk.hfox.morphix.query.raw.OutputQuery;
+
+public class MongoOutputQuery implements OutputQuery {
+
+    private Bson bson;
+
+    public MongoOutputQuery(Bson bson) {
+        this.bson = bson;
+    }
+
+    public Bson getBSON() {
+        return bson;
+    }
+
 }
