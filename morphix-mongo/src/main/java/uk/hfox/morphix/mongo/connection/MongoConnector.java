@@ -165,7 +165,7 @@ public abstract class MongoConnector implements ConnectorBuilder<MorphixMongoCon
          *
          * @return true if this is a single node, false otherwise
          */
-        public boolean single() {
+        public boolean isSingle() {
             return single;
         }
 

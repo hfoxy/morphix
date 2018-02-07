@@ -31,7 +31,7 @@ class MorphixMongoConnectorTest {
     @BeforeAll
     void connectSingle() {
         MongoConnector.Builder builder = MongoConnector.builder().timeout(5000).database("morphix_test");
-        assertTrue(builder.single());
+        assertTrue(builder.isSingle());
 
         MongoConnector connector = builder.build();
         assertTrue(connector instanceof SingleNodeConnector);
@@ -49,7 +49,7 @@ class MorphixMongoConnectorTest {
         hosts.add(new ServerAddress("localhost", 27017));
 
         MongoConnector.Builder builder = MongoConnector.builder().pool(hosts).timeout(5000).database("morphix_test");
-        assertFalse(builder.single());
+        assertFalse(builder.isSingle());
 
         MongoConnector connector = builder.build();
         assertTrue(connector instanceof PoolConnector);
