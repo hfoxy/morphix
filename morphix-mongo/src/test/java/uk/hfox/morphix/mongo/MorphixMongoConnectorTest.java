@@ -24,6 +24,11 @@ class MorphixMongoConnectorTest {
     private MorphixMongoConnector pooled;
 
     @BeforeAll
+    void connectFail() {
+        assertThrows(IllegalArgumentException.class, () -> MongoConnector.builder().timeout(5000).build());
+    }
+
+    @BeforeAll
     void connectSingle() {
         MongoConnector.Builder builder = MongoConnector.builder().timeout(5000).database("morphix_test");
         assertTrue(builder.single());

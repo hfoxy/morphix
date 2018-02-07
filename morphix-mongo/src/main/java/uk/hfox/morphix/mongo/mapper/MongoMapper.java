@@ -19,13 +19,13 @@
 package uk.hfox.morphix.mongo.mapper;
 
 import uk.hfox.morphix.mapper.Mapper;
-import uk.hfox.morphix.mongo.query.raw.MongoQueryInput;
-import uk.hfox.morphix.mongo.query.raw.MongoQueryOutput;
+import uk.hfox.morphix.mongo.query.raw.MongoInputQuery;
+import uk.hfox.morphix.mongo.query.raw.MongoOutputQuery;
 
 /**
  * Mapper for MongoDB BSON objects
  *
  * @param <T> The Object to map
  */
-public interface MongoMapper<T> extends Mapper<T, MongoQueryOutput, MongoQueryInput> {
+public interface MongoMapper<T> extends Mapper<T, MongoOutputQuery, MongoInputQuery> {
 }

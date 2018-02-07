@@ -18,17 +18,17 @@
  */
 package uk.hfox.morphix.mapper;
 
-import uk.hfox.morphix.query.raw.QueryInput;
-import uk.hfox.morphix.query.raw.QueryOutput;
+import uk.hfox.morphix.query.raw.InputQuery;
+import uk.hfox.morphix.query.raw.OutputQuery;
 
 /**
  * Maps a given type to/from a raw query
  *
  * @param <T> The type of Object to map
- * @param <O> The type of QueryOutput
- * @param <I> The type of QueryInput
+ * @param <O> The type of OutputQuery
+ * @param <I> The type of InputQuery
  */
-public interface Mapper<T, O extends QueryOutput, I extends QueryInput> {
+public interface Mapper<T, O extends OutputQuery, I extends InputQuery> {
 
     /**
      * Gets the type class that this mapper maps
