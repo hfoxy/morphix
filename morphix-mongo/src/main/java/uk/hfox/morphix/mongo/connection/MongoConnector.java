@@ -22,20 +22,28 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ServerAddress;
 import uk.hfox.morphix.connector.ConnectorBuilder;
+import uk.hfox.morphix.utils.Conditions;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MongoConnector implements ConnectorBuilder<MorphixMongoConnector> {
 
+    protected final String database;
     protected final int timeout;
     protected final List<ServerAddress> addresses;
 
     MongoConnector(Builder builder) {
+        this.database = builder.database;
         this.timeout = builder.timeout;
         this.addresses = builder.addresses;
     }
 
+    /**
+     * Builds the set of Mongo options used to build the MongoClient
+     *
+     * @return The set of options defined by this connector
+     */
     protected MongoClientOptions options() {
         MongoClientOptions.Builder builder = MongoClientOptions.builder();
         builder.connectTimeout(timeout);
@@ -49,14 +57,32 @@ public abstract class MongoConnector implements ConnectorBuilder<MorphixMongoCon
         return new MorphixMongoConnector(this);
     }
 
+    /**
+     * Gets the name of the database used by this connector
+     *
+     * @return The name of the database
+     */
+    public String getDatabase() {
+        return database;
+    }
+
+    /**
+     * Gets the MongoClient based on what type of connector is being used
+     * @return The completed Mongo client
+     */
     public abstract MongoClient getClient();
 
+    /**
+     * Creates a new builder to start designing the connector
+     * @return The new builder
+     */
     public static Builder builder() {
         return new Builder();
     }
 
     public static class Builder {
 
+        private String database;
         private boolean single;
         private List<ServerAddress> addresses = new ArrayList<>();
 
@@ -65,6 +91,18 @@ public abstract class MongoConnector implements ConnectorBuilder<MorphixMongoCon
         private Builder() {
             // private constructor only!
             address("localhost", 27017);
+        }
+
+        /**
+         * Sets the database that this connector will connect to.
+         *
+         * @param database The name of the Mongo database
+         *
+         * @return This builder instance
+         */
+        public Builder database(String database) {
+            this.database = database;
+            return this;
         }
 
         /**
@@ -137,6 +175,8 @@ public abstract class MongoConnector implements ConnectorBuilder<MorphixMongoCon
          * @return The new connector
          */
         public MongoConnector build() {
+            Conditions.notNull(this.database, "database");
+
             if (single) {
                 return new SingleNodeConnector(this);
             } else {

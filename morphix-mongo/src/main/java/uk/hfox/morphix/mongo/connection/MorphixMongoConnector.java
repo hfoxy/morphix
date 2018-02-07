@@ -19,6 +19,7 @@
 package uk.hfox.morphix.mongo.connection;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import uk.hfox.morphix.connector.MorphixConnector;
 import uk.hfox.morphix.mongo.query.MongoQueryBuilder;
 import uk.hfox.morphix.query.QueryBuilder;
@@ -33,6 +34,7 @@ public class MorphixMongoConnector implements MorphixConnector {
     private final transient MongoConnector builder;
 
     private transient MongoClient client;
+    private transient MongoDatabase database;
 
     MorphixMongoConnector(MongoConnector builder) {
         this.builder = builder;
@@ -47,6 +49,15 @@ public class MorphixMongoConnector implements MorphixConnector {
         return client;
     }
 
+    /**
+     * Gets the mongo database used by this connector
+     *
+     * @return The mongo database used by this connector
+     */
+    public MongoDatabase getDatabase() {
+        return database;
+    }
+
     @Override
     public void connect() {
         if (this.client != null) {
@@ -54,10 +65,12 @@ public class MorphixMongoConnector implements MorphixConnector {
                 throw new IllegalStateException("Client is already connected");
             } else {
                 this.client = null;
+                this.database = null;
             }
         }
 
         this.client = this.builder.getClient();
+        this.database = this.client.getDatabase(this.builder.getDatabase());
     }
 
     @Override
@@ -68,6 +81,7 @@ public class MorphixMongoConnector implements MorphixConnector {
 
         this.client.close();
         this.client = null;
+        this.database = null;
     }
 
     @Override

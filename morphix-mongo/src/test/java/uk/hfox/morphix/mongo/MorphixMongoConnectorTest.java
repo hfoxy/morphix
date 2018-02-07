@@ -25,7 +25,7 @@ class MorphixMongoConnectorTest {
 
     @BeforeAll
     void connectSingle() {
-        MongoConnector.Builder builder = MongoConnector.builder().timeout(5000);
+        MongoConnector.Builder builder = MongoConnector.builder().timeout(5000).database("morphix_test");
         assertTrue(builder.single());
 
         MongoConnector connector = builder.build();
@@ -43,7 +43,7 @@ class MorphixMongoConnectorTest {
         List<ServerAddress> hosts = new ArrayList<>();
         hosts.add(new ServerAddress("localhost", 27017));
 
-        MongoConnector.Builder builder = MongoConnector.builder().pool(hosts).timeout(5000);
+        MongoConnector.Builder builder = MongoConnector.builder().pool(hosts).timeout(5000).database("morphix_test");
         assertFalse(builder.single());
 
         MongoConnector connector = builder.build();
