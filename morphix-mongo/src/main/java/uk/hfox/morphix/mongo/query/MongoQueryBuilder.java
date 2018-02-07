@@ -21,11 +21,14 @@ package uk.hfox.morphix.mongo.query;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
-import uk.hfox.morphix.query.FieldQueryBuilder;
+import uk.hfox.morphix.mongo.query.raw.output.MongoFindQuery;
 import uk.hfox.morphix.query.QueryBuilder;
 import uk.hfox.morphix.query.QuerySortBuilder;
 import uk.hfox.morphix.query.result.QueryResult;
 import uk.hfox.morphix.utils.Conditions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MongoQueryBuilder<R> implements QueryBuilder<R> {
 
@@ -36,10 +39,14 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
     private final MongoCollection<Document> collection;
     private final MorphixMongoConnector connector;
 
+    private final Map<String, MongoFieldQueryBuilder<R>> fields;
+
     public MongoQueryBuilder(Class<R> clazz, MongoCollection<Document> collection, MorphixMongoConnector connector) {
         this.clazz = clazz;
         this.collection = collection;
         this.connector = connector;
+
+        this.fields = new HashMap<>();
     }
 
     @Override
@@ -53,8 +60,11 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
     }
 
     @Override
-    public FieldQueryBuilder<R> where(String field) {
-        throw Conditions.unimplemented();
+    public MongoFieldQueryBuilder<R> where(String field) {
+        MongoFieldQueryBuilder<R> query = new MongoFieldQueryBuilder<>(this);
+        this.fields.put(field, query);
+
+        return query;
     }
 
     @Override
@@ -75,6 +85,18 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
     @Override
     public QueryResult<R> result() {
         throw Conditions.unimplemented();
+    }
+
+    public MongoFindQuery find() {
+        Document document = new Document();
+        for (Map.Entry<String, MongoFieldQueryBuilder<R>> entry : this.fields.entrySet()) {
+            MongoFieldQueryBuilder<R> field = entry.getValue();
+            document.put(entry.getKey(), field.getBson());
+        }
+
+        MongoFindQuery query = new MongoFindQuery(collection, document);
+        query.performQuery();
+        return query;
     }
 
 }

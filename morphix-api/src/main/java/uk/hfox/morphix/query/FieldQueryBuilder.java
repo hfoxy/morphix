@@ -18,14 +18,12 @@
  */
 package uk.hfox.morphix.query;
 
-import java.io.Serializable;
-
 /**
  * Created by Harry on 28/11/2017.
  * <p>
  * Interface used to build connector-specific field queries
  */
-public interface FieldQueryBuilder<T> extends Serializable {
+public interface FieldQueryBuilder<T> {
 
     /**
      * Check if the field data matches the specified object

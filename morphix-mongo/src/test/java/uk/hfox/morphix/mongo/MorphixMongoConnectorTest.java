@@ -85,7 +85,7 @@ class MorphixMongoConnectorTest {
 
     @Test
     void createQuery() {
-        // some query
+        // assertTrue(this.singleNode.createQuery());
     }
 
 }
