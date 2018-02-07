@@ -64,6 +64,9 @@ class MorphixMongoConnectorTest {
 
     @Test
     void isConnected() {
+        assertNotNull(this.singleNode.getClient());
+        assertNotNull(this.pooled.getClient());
+
         assertTrue(this.singleNode.isConnected());
         assertTrue(this.pooled.isConnected());
     }
@@ -75,6 +78,9 @@ class MorphixMongoConnectorTest {
 
         assertFalse(this.singleNode.isConnected());
         assertFalse(this.pooled.isConnected());
+
+        assertNull(this.singleNode.getClient());
+        assertNull(this.pooled.getClient());
     }
 
     @Test

@@ -15,7 +15,7 @@ import uk.hfox.morphix.mongo.query.raw.input.MongoInsertQuery;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
@@ -66,7 +66,10 @@ class MongoFindQueryTest {
 
         Document search = new Document();
         MongoFindQuery find = new MongoFindQuery(collection, search);
+        assertFalse(find.hasQueried());
+
         find.performQuery();
+        assertTrue(find.hasQueried());
 
         int count = 0;
         FindIterable<Document> iterable = find.getOutput();
@@ -75,7 +78,10 @@ class MongoFindQueryTest {
             count++;
         }
 
-        assertEquals(count, entries);
+        assertEquals(entries, count);
+
+        find.performQuery();
+        assertEquals(iterable, find.getOutput());
     }
 
     @AfterAll
