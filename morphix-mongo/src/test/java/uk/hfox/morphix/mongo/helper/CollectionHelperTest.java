@@ -1,33 +1,19 @@
 package uk.hfox.morphix.mongo.helper;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import uk.hfox.morphix.mongo.connection.MongoConnector;
-import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
+import uk.hfox.morphix.mongo.annotations.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(PER_CLASS)
 class CollectionHelperTest {
 
-    private MorphixMongoConnector connector;
-
-    @BeforeAll
-    void setUp() {
-        MongoConnector connector = MongoConnector.builder().timeout(5000).database("morphix_test").build();
-        this.connector = connector.build();
-        this.connector.connect();
-        assumeTrue(this.connector.isConnected(), "Database not provided");
-    }
-
     @Test
     void generate() {
         Class<CollectionHelper> cls = CollectionHelper.class;
-        CollectionHelper helper = new CollectionHelper(this.connector);
+        CollectionHelper helper = new CollectionHelper(null);
         helper.setSnakeCase(false);
         helper.setLowerCase(false);
 
@@ -48,9 +34,24 @@ class CollectionHelperTest {
         assertEquals("Collection_Helper", helper.generate(cls));
     }
 
-    @AfterAll
-    void tearDown() {
-        this.connector.disconnect();
+    @Test
+    void getCollection() {
+        CollectionHelper helper = new CollectionHelper(null);
+
+        assertEquals("custom_name", helper.getCollection(MyClass.class));
+        assertEquals("automated_class", helper.getCollection(AutomatedClass.class));
+        assertEquals("basic_class", helper.getCollection(BasicClass.class));
+    }
+
+    @Collection("custom_name")
+    public static class MyClass {
+    }
+
+    @Collection
+    public static class AutomatedClass {
+    }
+
+    public static class BasicClass {
     }
 
 }

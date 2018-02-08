@@ -19,8 +19,11 @@
 package uk.hfox.morphix.mongo.helper;
 
 import uk.hfox.morphix.helper.Helper;
+import uk.hfox.morphix.mongo.annotations.Collection;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.utils.Conditions;
+import uk.hfox.morphix.utils.Definitions;
+import uk.hfox.morphix.utils.Search;
 
 import static uk.hfox.morphix.utils.Definitions.SNAKE_CASE_SPLIT_REGEX;
 
@@ -33,22 +36,45 @@ public class CollectionHelper extends Helper<MorphixMongoConnector> {
         super(connector);
     }
 
+    /**
+     * Returns if this helper is set to use snake case
+     *
+     * @return true if snake case is enabled, otherwise false
+     */
     public boolean isSnakeCase() {
         return snakeCase;
     }
 
+    /**
+     * Sets whether or not this helper should use snake case
+     * @param snakeCase true if snake case should be enabled, otherwise false
+     */
     public void setSnakeCase(boolean snakeCase) {
         this.snakeCase = snakeCase;
     }
 
+    /**
+     * Returns if this helper is set to use lower case
+     * @return true if lower case is enabled, otherwise false
+     */
     public boolean isLowerCase() {
         return lowerCase;
     }
 
+    /**
+     * Sets whether or not this helper should use lower case
+     * @param lowerCase true if lower case should be enabled, otherwise false
+     */
     public void setLowerCase(boolean lowerCase) {
         this.lowerCase = lowerCase;
     }
 
+    /**
+     * Generates a collection name based on the supplied class.
+     *
+     * @param clazz The class to generate a name from
+     * @return The generated collection name
+     */
     public String generate(Class<?> clazz) {
         Conditions.notNull(clazz);
 
@@ -71,6 +97,31 @@ public class CollectionHelper extends Helper<MorphixMongoConnector> {
         }
 
         return name;
+    }
+
+    /**
+     * Gets the collection name from the supplied class.
+     * If the collection name is the default, a collection name is
+     * automatically generated based off of this helpers settings.
+     *
+     * @param cls The class to get collection name of
+     *
+     * @return The name of the collection that this class belongs to
+     */
+    public String getCollection(Class<?> cls) {
+        Conditions.notNull(cls);
+
+        String collectionName = Definitions.DEFAULT_COLLECTION;
+        Collection annotation = Search.getInheritedAnnotation(cls, Collection.class);
+        if (annotation != null) {
+            collectionName = annotation.value();
+        }
+
+        if (collectionName.equals(Definitions.DEFAULT_COLLECTION)) {
+            collectionName = generate(cls);
+        }
+
+        return collectionName;
     }
 
 }
