@@ -20,7 +20,7 @@ package uk.hfox.morphix.helper;
 
 import uk.hfox.morphix.connector.MorphixConnector;
 
-public class Helper<C extends MorphixConnector> {
+public abstract class Helper<C extends MorphixConnector> {
 
     private final C connector;
 

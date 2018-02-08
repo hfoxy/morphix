@@ -41,6 +41,8 @@ class HelperManagerTest {
         assertEquals(this.testHelper, test);
 
         assertThrows(IllegalArgumentException.class, () -> this.manager.getHelper("test", BlankHelper.class));
+
+        assertNull(this.manager.getHelper("no-test", TestHelper.class));
     }
 
     @AfterEach
