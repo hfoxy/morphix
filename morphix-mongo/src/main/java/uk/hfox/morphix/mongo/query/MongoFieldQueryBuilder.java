@@ -19,21 +19,20 @@
 package uk.hfox.morphix.mongo.query;
 
 import uk.hfox.morphix.query.FieldQueryBuilder;
-import uk.hfox.morphix.query.QueryBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MongoFieldQueryBuilder<T> implements FieldQueryBuilder<T> {
 
-    private final QueryBuilder<T> builder;
+    private final MongoQueryBuilder<T> builder;
 
     private boolean locked;
 
     private boolean not = false;
     private Object result = null;
 
-    public MongoFieldQueryBuilder(QueryBuilder<T> builder) {
+    public MongoFieldQueryBuilder(MongoQueryBuilder<T> builder) {
         this.builder = builder;
     }
 
@@ -44,7 +43,7 @@ public class MongoFieldQueryBuilder<T> implements FieldQueryBuilder<T> {
     }
 
     @Override
-    public QueryBuilder<T> matches(Object object) {
+    public MongoQueryBuilder<T> matches(Object object) {
         checkLock();
 
         this.locked = true;
@@ -54,18 +53,18 @@ public class MongoFieldQueryBuilder<T> implements FieldQueryBuilder<T> {
     }
 
     @Override
-    public FieldQueryBuilder<T> not() {
+    public MongoFieldQueryBuilder<T> not() {
         return not(!this.not);
     }
 
     @Override
-    public FieldQueryBuilder<T> not(boolean not) {
+    public MongoFieldQueryBuilder<T> not(boolean not) {
         this.not = not;
         return this;
     }
 
     @Override
-    public QueryBuilder<T> notEqual(Object object) {
+    public MongoQueryBuilder<T> notEqual(Object object) {
         checkLock();
 
         this.locked = true;
@@ -75,7 +74,7 @@ public class MongoFieldQueryBuilder<T> implements FieldQueryBuilder<T> {
     }
 
     @Override
-    public QueryBuilder<T> greaterThan(Object object) {
+    public MongoQueryBuilder<T> greaterThan(Object object) {
         checkLock();
 
         this.locked = true;
@@ -85,7 +84,7 @@ public class MongoFieldQueryBuilder<T> implements FieldQueryBuilder<T> {
     }
 
     @Override
-    public QueryBuilder<T> greaterThanOrEqual(Object object) {
+    public MongoQueryBuilder<T> greaterThanOrEqual(Object object) {
         checkLock();
 
         this.locked = true;
@@ -95,7 +94,7 @@ public class MongoFieldQueryBuilder<T> implements FieldQueryBuilder<T> {
     }
 
     @Override
-    public QueryBuilder<T> lessThan(Object object) {
+    public MongoQueryBuilder<T> lessThan(Object object) {
         checkLock();
 
         this.locked = true;
@@ -105,7 +104,7 @@ public class MongoFieldQueryBuilder<T> implements FieldQueryBuilder<T> {
     }
 
     @Override
-    public QueryBuilder<T> lessThanOrEqual(Object object) {
+    public MongoQueryBuilder<T> lessThanOrEqual(Object object) {
         checkLock();
 
         this.locked = true;

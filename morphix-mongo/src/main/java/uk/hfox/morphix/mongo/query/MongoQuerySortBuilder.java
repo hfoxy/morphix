@@ -19,7 +19,6 @@
 package uk.hfox.morphix.mongo.query;
 
 import uk.hfox.morphix.mongo.query.sort.MongoQuerySortElement;
-import uk.hfox.morphix.query.QueryBuilder;
 import uk.hfox.morphix.query.QuerySortBuilder;
 import uk.hfox.morphix.utils.Conditions;
 
@@ -77,12 +76,12 @@ public class MongoQuerySortBuilder<R> implements QuerySortBuilder<R, MongoQueryS
     }
 
     @Override
-    public QueryBuilder<R> cancel() {
+    public MongoQueryBuilder<R> cancel() {
         return this.builder;
     }
 
     @Override
-    public QueryBuilder<R> done() {
+    public MongoQueryBuilder<R> done() {
         this.builder.sort = this;
         return this.builder;
     }
