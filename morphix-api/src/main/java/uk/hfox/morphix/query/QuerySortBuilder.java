@@ -18,9 +18,47 @@
  */
 package uk.hfox.morphix.query;
 
-import java.io.Serializable;
+import uk.hfox.morphix.query.sort.QuerySortElement;
 
-public interface QuerySortBuilder<T> extends Serializable {
+import java.util.List;
+
+public interface QuerySortBuilder<T, S extends QuerySortElement> {
+
+    /**
+     * Returns a list of elements that are present in this sort.
+     *
+     * @return The (cloned) list of elements in order
+     */
+    List<S> getElements();
+
+    /**
+     * Sorts a field in ascending order.
+     *
+     * @param field The field to add
+     *
+     * @return This builder instance
+     *
+     * @throws IllegalArgumentException if the field already exists in the sort
+     */
+    QuerySortBuilder<T, S> asc(String field);
+
+    /**
+     * Sorts a field in descending order.
+     *
+     * @param field The field to add
+     *
+     * @return This builder instance
+     *
+     * @throws IllegalArgumentException if the field already exists in the sort
+     */
+    QuerySortBuilder<T, S> desc(String field);
+
+    /**
+     * Clears the list of sort elements
+     *
+     * @return This builder instance
+     */
+    QuerySortBuilder<T, S> clear();
 
     /**
      * Gets the query that this sort is part of. This method does <b>not</b> apply the sort to the query.

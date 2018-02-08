@@ -22,7 +22,7 @@ public class TestQueryBuilder<T> implements QueryBuilder<T> {
     }
 
     @Override
-    public QuerySortBuilder<T> sort() {
+    public QuerySortBuilder<T, ?> sort() {
         throw Testing.unsupported();
     }
 

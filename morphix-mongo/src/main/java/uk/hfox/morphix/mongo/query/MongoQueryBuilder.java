@@ -23,8 +23,8 @@ import org.bson.Document;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.query.raw.input.MongoDeleteQuery;
 import uk.hfox.morphix.mongo.query.raw.output.MongoFindQuery;
+import uk.hfox.morphix.mongo.query.sort.MongoQuerySortElement;
 import uk.hfox.morphix.query.QueryBuilder;
-import uk.hfox.morphix.query.QuerySortBuilder;
 import uk.hfox.morphix.query.result.QueryResult;
 import uk.hfox.morphix.utils.Conditions;
 
@@ -39,6 +39,8 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
     private final MorphixMongoConnector connector;
 
     private final Map<String, MongoFieldQueryBuilder<R>> fields;
+
+    MongoQuerySortBuilder<R> sort;
 
     public MongoQueryBuilder(Class<R> clazz, MongoCollection<Document> collection, MorphixMongoConnector connector) {
         this.clazz = clazz;
@@ -67,8 +69,12 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
     }
 
     @Override
-    public QuerySortBuilder<R> sort() {
-        throw Conditions.unimplemented();
+    public MongoQuerySortBuilder<R> sort() {
+        if (this.sort == null) {
+            return new MongoQuerySortBuilder<>(this);
+        }
+
+        return this.sort;
     }
 
     @Override
@@ -100,6 +106,16 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
     public MongoFindQuery find() {
         MongoFindQuery query = new MongoFindQuery(collection, getFilter());
         query.performQuery();
+
+        if (this.sort != null) {
+            Document bson = new Document();
+            for (MongoQuerySortElement element : this.sort.getElements()) {
+                element.append(bson);
+            }
+
+            query.getOutput().sort(bson);
+        }
+
         return query;
     }
 

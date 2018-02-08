@@ -57,7 +57,7 @@ public interface QueryBuilder<T> {
      *
      * @return The empty sort objective
      */
-    QuerySortBuilder<T> sort();
+    QuerySortBuilder<T, ?> sort();
 
     /**
      * Delete the resulting object(s) from the database

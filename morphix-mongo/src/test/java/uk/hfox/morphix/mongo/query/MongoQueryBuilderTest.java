@@ -223,6 +223,79 @@ class MongoQueryBuilderTest {
         assertEquals(0, collection.count());
     }
 
+    @Test
+    void sortCancel() {
+        MongoCollection<Document> collection = populate("sort_cancel_test");
+        MongoQueryBuilder<Object> query = new MongoQueryBuilder<>(Object.class, collection, this.connector);
+        query.sort().desc("uuid").cancel();
+        assertNull(query.sort);
+
+        collection.deleteMany(new BsonDocument());
+        assertEquals(0, collection.count());
+    }
+
+    @Test
+    void sortClear() {
+        MongoCollection<Document> collection = populate("sort_cancel_test");
+        MongoQueryBuilder<Object> query = new MongoQueryBuilder<>(Object.class, collection, this.connector);
+        query.sort().desc("uuid").done();
+
+        assertEquals(1, query.sort().getElements().size());
+        query.sort().clear();
+        assertEquals(0, query.sort().getElements().size());
+
+        collection.deleteMany(new BsonDocument());
+        assertEquals(0, collection.count());
+    }
+
+    @Test
+    void sortDesc() {
+        MongoCollection<Document> collection = populate("sort_desc_test");
+        MongoQueryBuilder<Object> query = new MongoQueryBuilder<>(Object.class, collection, this.connector);
+        query.sort().desc("uuid").done();
+
+        assertThrows(IllegalArgumentException.class, () -> query.sort().asc("uuid"));
+        assertThrows(IllegalArgumentException.class, () -> query.sort().desc("uuid"));
+
+        int uuid = -1;
+        MongoFindQuery find = query.find();
+        FindIterable<Document> result = find.getOutput();
+        for (Document doc : result) {
+            if (uuid != -1) {
+                assertEquals(uuid - 1, (int) doc.getInteger("uuid"));
+            }
+
+            uuid = doc.getInteger("uuid");
+        }
+
+        collection.deleteMany(new BsonDocument());
+        assertEquals(0, collection.count());
+    }
+
+    @Test
+    void sortAsc() {
+        MongoCollection<Document> collection = populate("sort_asc_test");
+        MongoQueryBuilder<Object> query = new MongoQueryBuilder<>(Object.class, collection, this.connector);
+        query.sort().asc("uuid").done();
+
+        assertThrows(IllegalArgumentException.class, () -> query.sort().asc("uuid"));
+        assertThrows(IllegalArgumentException.class, () -> query.sort().desc("uuid"));
+
+        int uuid = -1;
+        MongoFindQuery find = query.find();
+        FindIterable<Document> result = find.getOutput();
+        for (Document doc : result) {
+            if (uuid != -1) {
+                assertEquals(uuid + 1, (int) doc.getInteger("uuid"));
+            }
+
+            uuid = doc.getInteger("uuid");
+        }
+
+        collection.deleteMany(new BsonDocument());
+        assertEquals(0, collection.count());
+    }
+
     private MongoCollection<Document> populate(String name) {
         MongoCollection<Document> collection = this.connector.getDatabase().getCollection(name);
         collection.deleteMany(new BsonDocument());
