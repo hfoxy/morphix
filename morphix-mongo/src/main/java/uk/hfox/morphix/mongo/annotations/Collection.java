@@ -16,23 +16,29 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.utils;
+package uk.hfox.morphix.mongo.annotations;
 
-public final class Definitions {
+import uk.hfox.morphix.utils.Definitions;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Defines the collection name used by the entity.
+ */
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Collection {
 
     /**
-     * Represents the "default" collection.
-     * If this is provided, the collection will be automatically determined
+     * Defines the collection that this entity will reside in.
+     * If the value matches the default value, it will be automatically determined
+     * by the collection helper.
+     *
+     * @return The name of the collection that this entity resides in, or "." for default.
      */
-    public static final String DEFAULT_COLLECTION = ".";
-
-    /**
-     * Regex used to convert a class name into camel case
-     */
-    public static final String SNAKE_CASE_SPLIT_REGEX = "(?<!^)(?<![A-Z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])";
-
-    Definitions() {
-        throw new UnsupportedOperationException();
-    }
+    String value() default Definitions.DEFAULT_COLLECTION;
 
 }
