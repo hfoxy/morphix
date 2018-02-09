@@ -6,9 +6,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -57,6 +56,45 @@ class SearchTest {
         assertNull(anno);
     }
 
+    @Test
+    void getAllFields() throws Exception {
+        assertThrows(IllegalArgumentException.class, () -> Search.getAllFields(null));
+
+        List<Field> fields = Search.getAllFields(BaseReflectiveSearch.class);
+        assertEquals(1, fields.size());
+        assertEquals(BaseReflectiveSearch.class.getDeclaredField("topField"), fields.get(0));
+
+        fields = Search.getAllFields(InheritedReflectiveSearch.class);
+        assertEquals(2, fields.size());
+        assertTrue(fields.contains(BaseReflectiveSearch.class.getDeclaredField("topField")));
+        assertTrue(fields.contains(InheritedReflectiveSearch.class.getDeclaredField("bottomField")));
+
+        fields = Search.getAllFields(OverridenReflectiveSearch.class);
+        assertEquals(2, fields.size());
+        assertTrue(fields.contains(BaseReflectiveSearch.class.getDeclaredField("topField")));
+        assertTrue(fields.contains(InheritedReflectiveSearch.class.getDeclaredField("bottomField")));
+    }
+
+    @Test
+    void getAllMethods() throws Exception {
+        assertThrows(IllegalArgumentException.class, () -> Search.getAllMethods(null));
+
+        List<Method> methods = Search.getAllMethods(BaseReflectiveSearch.class);
+        assertEquals(1, methods.size());
+        assertEquals(BaseReflectiveSearch.class.getDeclaredMethod("topMethod"), methods.get(0));
+
+        methods = Search.getAllMethods(InheritedReflectiveSearch.class);
+        assertEquals(2, methods.size());
+        assertTrue(methods.contains(BaseReflectiveSearch.class.getDeclaredMethod("topMethod")));
+        assertTrue(methods.contains(InheritedReflectiveSearch.class.getDeclaredMethod("bottomMethod")));
+
+        methods = Search.getAllMethods(OverridenReflectiveSearch.class);
+        assertEquals(3, methods.size());
+        assertTrue(methods.contains(BaseReflectiveSearch.class.getDeclaredMethod("topMethod")));
+        assertTrue(methods.contains(InheritedReflectiveSearch.class.getDeclaredMethod("bottomMethod")));
+        assertTrue(methods.contains(OverridenReflectiveSearch.class.getDeclaredMethod("topMethod")));
+    }
+
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface TestAnnotation {
@@ -80,6 +118,35 @@ class SearchTest {
     }
 
     private static class SuperEmptyClass {
+    }
+
+    private static class BaseReflectiveSearch {
+
+        private String topField;
+
+        public String topMethod() {
+            return "";
+        }
+
+    }
+
+    private static class InheritedReflectiveSearch extends BaseReflectiveSearch {
+
+        private String bottomField;
+
+        public String bottomMethod() {
+            return "";
+        }
+
+    }
+
+    private static class OverridenReflectiveSearch extends InheritedReflectiveSearch {
+
+        @Override
+        public String topMethod() {
+            return "overriden";
+        }
+
     }
 
 }

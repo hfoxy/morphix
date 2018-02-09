@@ -19,6 +19,12 @@
 package uk.hfox.morphix.utils;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class Search {
 
@@ -50,6 +56,48 @@ public final class Search {
         }
 
         return anno;
+    }
+
+    /**
+     * Gets a complete list of all fields for the provided class and it's superclasses
+     *
+     * @param clazz The class to search
+     *
+     * @return The full list of fields
+     */
+    public static List<Field> getAllFields(Class<?> clazz) {
+        Conditions.notNull(clazz);
+
+        List<Field> fields = new ArrayList<>();
+        Collections.addAll(fields, clazz.getDeclaredFields());
+
+        Class<?> superClazz = clazz.getSuperclass();
+        if (!superClazz.isAssignableFrom(Object.class)) {
+            fields.addAll(getAllFields(superClazz));
+        }
+
+        return fields;
+    }
+
+    /**
+     * Gets a complete list of all methods for the provided class and it's superclasses
+     *
+     * @param clazz The class to search
+     *
+     * @return The full list of methods
+     */
+    public static List<Method> getAllMethods(Class<?> clazz) {
+        Conditions.notNull(clazz);
+
+        List<Method> methods = new ArrayList<>();
+
+        Class<?> superClazz = clazz.getSuperclass();
+        if (!superClazz.isAssignableFrom(Object.class)) {
+            methods.addAll(getAllMethods(superClazz));
+        }
+
+        Collections.addAll(methods, clazz.getDeclaredMethods());
+        return methods.stream().distinct().collect(Collectors.toList());
     }
 
 }
