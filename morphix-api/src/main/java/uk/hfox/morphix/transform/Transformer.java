@@ -26,6 +26,32 @@ package uk.hfox.morphix.transform;
 public interface Transformer<T> {
 
     /**
+     * Gets the converter used to convert the supplied class
+     *
+     * @param cls The class to convert
+     *
+     * @return The converter for that class
+     */
+    Converter<T> getConverter(Class<?> cls);
+
+    /**
+     * Gets the converter used to convert the supplied type
+     *
+     * @param type The type of converter to get
+     *
+     * @return The converter for that class
+     */
+    Converter<T> getConverter(ConvertedType type);
+
+    /**
+     * Sets the converter for the supplied type
+     *
+     * @param type      The converted type to set
+     * @param converter The converter to use for the type
+     */
+    void setConverter(ConvertedType type, Converter<T> converter);
+
+    /**
      * Transforms the given Object into a database object
      *
      * @param object The object to transform
