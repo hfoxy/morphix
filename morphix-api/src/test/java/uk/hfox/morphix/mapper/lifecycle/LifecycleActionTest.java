@@ -2,9 +2,11 @@ package uk.hfox.morphix.mapper.lifecycle;
 
 import org.junit.jupiter.api.Test;
 import uk.hfox.morphix.annotations.lifecycle.field.CreatedAt;
+import uk.hfox.morphix.annotations.lifecycle.method.BeforeCreate;
 import uk.hfox.morphix.exception.connection.InvalidConfigurationException;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +43,26 @@ class LifecycleActionTest {
     }
 
     @Test
-    void isMethodSupported() {
+    void isMethodSupported() throws Exception {
+        Class<LifecycleTestClass> testClass = LifecycleTestClass.class;
+        assertFalse(CREATED_AT.isSupported(testClass.getDeclaredMethod("invalidStatic")));
+        assertFalse(BEFORE_CREATE.isSupported(testClass.getDeclaredMethod("invalidNotAnnotated")));
+        assertThrows(InvalidConfigurationException.class, () -> BEFORE_CREATE.isSupported(testClass.getDeclaredMethod("invalidStatic")));
+        assertTrue(BEFORE_CREATE.isSupported(testClass.getDeclaredMethod("beforeCreate")));
 
+        Map<LifecycleAction, List<Method>> populate = new HashMap<>();
+        LifecycleAction.populateMethods(CreatedAtTest.class, populate);
+
+        List<Method> methods = populate.get(BEFORE_CREATE);
+        assertEquals(1, methods.size());
+        assertEquals(CreatedAtTest.class.getDeclaredMethod("beforeCreate"), methods.get(0));
+
+        populate = new HashMap<>();
+        LifecycleAction.populateMethods(CreatedAtInheritedTest.class, populate);
+
+        methods = populate.get(BEFORE_CREATE);
+        assertEquals(1, methods.size());
+        assertEquals(CreatedAtTest.class.getDeclaredMethod("beforeCreate"), methods.get(0));
     }
 
     @Test
@@ -63,7 +83,15 @@ class LifecycleActionTest {
         @CreatedAt
         private LocalDateTime createdAt;
 
+        @BeforeCreate
         public static void invalidStatic() {
+        }
+
+        public void invalidNotAnnotated() {
+        }
+
+        @BeforeCreate
+        public void beforeCreate() {
         }
 
     }
@@ -72,6 +100,10 @@ class LifecycleActionTest {
 
         @CreatedAt
         private LocalDateTime createdAt;
+
+        @BeforeCreate
+        public void beforeCreate() {
+        }
 
     }
 
