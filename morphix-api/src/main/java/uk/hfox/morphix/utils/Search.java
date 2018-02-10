@@ -75,7 +75,6 @@ public final class Search {
         }
 
         for (Field field : clazz.getDeclaredFields()) {
-            System.out.println(field.getName());
             if (field.getName().equals("$jacocoData")) {
                 continue;
             }
