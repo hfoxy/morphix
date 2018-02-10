@@ -59,7 +59,7 @@ public enum ConvertedType {
             return cls.equals(double.class) || cls.equals(Double.class);
         }
     },
-    CHAR {
+    CHARACTER {
         @Override
         public boolean isSatisfied(Class<?> cls) {
             return cls.equals(char.class) || cls.equals(Character.class);
