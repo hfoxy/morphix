@@ -18,7 +18,9 @@
  */
 package uk.hfox.morphix.mapper.lifecycle;
 
+import uk.hfox.morphix.annotations.lifecycle.field.AccessedAt;
 import uk.hfox.morphix.annotations.lifecycle.field.CreatedAt;
+import uk.hfox.morphix.annotations.lifecycle.field.UpdatedAt;
 import uk.hfox.morphix.annotations.lifecycle.method.AfterCreate;
 import uk.hfox.morphix.annotations.lifecycle.method.BeforeCreate;
 import uk.hfox.morphix.exception.connection.InvalidConfigurationException;
@@ -38,7 +40,9 @@ public enum LifecycleAction {
 
     BEFORE_CREATE(BeforeCreate.class),
     AFTER_CREATE(AfterCreate.class),
-    CREATED_AT(CreatedAt.class, true, LocalDateTime.class);
+    CREATED_AT(CreatedAt.class, true, LocalDateTime.class),
+    ACCESSED_AT(AccessedAt.class, true, LocalDateTime.class),
+    UPDATED_AT(UpdatedAt.class, true, LocalDateTime.class);
 
     private final boolean field;
     private final Class<? extends Annotation> annotation;
@@ -57,6 +61,15 @@ public enum LifecycleAction {
         }
 
         this.fieldType = fieldType;
+    }
+
+    /**
+     * Returns if this action is designed for fields or methods
+     *
+     * @return true if this is a field-only annotation, false if this is a method-only annotation
+     */
+    public boolean isField() {
+        return field;
     }
 
     /**

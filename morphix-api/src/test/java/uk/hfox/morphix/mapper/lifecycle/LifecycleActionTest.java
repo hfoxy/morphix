@@ -1,7 +1,10 @@
 package uk.hfox.morphix.mapper.lifecycle;
 
 import org.junit.jupiter.api.Test;
+import uk.hfox.morphix.annotations.lifecycle.field.AccessedAt;
 import uk.hfox.morphix.annotations.lifecycle.field.CreatedAt;
+import uk.hfox.morphix.annotations.lifecycle.field.UpdatedAt;
+import uk.hfox.morphix.annotations.lifecycle.method.AfterCreate;
 import uk.hfox.morphix.annotations.lifecycle.method.BeforeCreate;
 import uk.hfox.morphix.exception.connection.InvalidConfigurationException;
 
@@ -66,8 +69,27 @@ class LifecycleActionTest {
     }
 
     @Test
-    void populate() {
+    void populateFields() {
+        Map<LifecycleAction, List<Field>> populate = new HashMap<>();
+        LifecycleAction.populateFields(SampleTest.class, populate);
 
+        for (LifecycleAction action : LifecycleAction.values()) {
+            if (action.isField()) {
+                assertEquals(1, populate.get(action).size(), action.name() + " does not have the correct number of fields");
+            }
+        }
+    }
+
+    @Test
+    void populateMethods() {
+        Map<LifecycleAction, List<Method>> populate = new HashMap<>();
+        LifecycleAction.populateMethods(SampleTest.class, populate);
+
+        for (LifecycleAction action : LifecycleAction.values()) {
+            if (!action.isField()) {
+                assertEquals(1, populate.get(action).size(), action.name() + " does not have the correct number of methods");
+            }
+        }
     }
 
     public static class LifecycleTestClass {
@@ -108,6 +130,27 @@ class LifecycleActionTest {
     }
 
     public static class CreatedAtInheritedTest extends CreatedAtTest {
+    }
+
+    public static class SampleTest {
+
+        @CreatedAt
+        private LocalDateTime createdAt;
+
+        @AccessedAt
+        private LocalDateTime accessedAt;
+
+        @UpdatedAt
+        private LocalDateTime updatedAt;
+
+        @BeforeCreate
+        public void beforeCreate() {
+        }
+
+        @AfterCreate
+        public void afterCreate() {
+        }
+
     }
 
 }
