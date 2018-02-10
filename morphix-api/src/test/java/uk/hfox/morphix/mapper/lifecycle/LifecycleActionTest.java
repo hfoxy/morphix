@@ -52,6 +52,7 @@ class LifecycleActionTest {
         assertFalse(BEFORE_CREATE.isSupported(testClass.getDeclaredMethod("invalidNotAnnotated")));
         assertThrows(InvalidConfigurationException.class, () -> BEFORE_CREATE.isSupported(testClass.getDeclaredMethod("invalidStatic")));
         assertTrue(BEFORE_CREATE.isSupported(testClass.getDeclaredMethod("beforeCreate")));
+        assertThrows(InvalidConfigurationException.class, () -> BEFORE_CREATE.isSupported(testClass.getDeclaredMethod("invalidHasArguments", String.class)));
 
         Map<LifecycleAction, List<Method>> populate = new HashMap<>();
         LifecycleAction.populateMethods(CreatedAtTest.class, populate);
@@ -110,6 +111,10 @@ class LifecycleActionTest {
         }
 
         public void invalidNotAnnotated() {
+        }
+
+        @BeforeCreate
+        public void invalidHasArguments(String arg) {
         }
 
         @BeforeCreate

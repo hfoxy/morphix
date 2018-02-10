@@ -22,7 +22,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,11 +68,19 @@ public final class Search {
         Conditions.notNull(clazz);
 
         List<Field> fields = new ArrayList<>();
-        Collections.addAll(fields, clazz.getDeclaredFields());
 
         Class<?> superClazz = clazz.getSuperclass();
         if (!superClazz.isAssignableFrom(Object.class)) {
             fields.addAll(getAllFields(superClazz));
+        }
+
+        for (Field field : clazz.getDeclaredFields()) {
+            System.out.println(field.getName());
+            if (field.getName().equals("$jacocoData")) {
+                continue;
+            }
+
+            fields.add(field);
         }
 
         return fields;
@@ -96,7 +103,14 @@ public final class Search {
             methods.addAll(getAllMethods(superClazz));
         }
 
-        Collections.addAll(methods, clazz.getDeclaredMethods());
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (method.getName().equals("$jacocoInit")) {
+                continue;
+            }
+
+            methods.add(method);
+        }
+
         return methods.stream().distinct().collect(Collectors.toList());
     }
 
