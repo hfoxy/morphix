@@ -22,8 +22,6 @@ import uk.hfox.morphix.connector.MorphixConnector;
 import uk.hfox.morphix.query.result.QueryResult;
 
 /**
- * Created by Harry on 28/11/2017.
- * <p>
  * Interface used to build connector-specific queries
  */
 public interface QueryBuilder<T> {
