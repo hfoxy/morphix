@@ -19,8 +19,10 @@
 package uk.hfox.morphix.mapper;
 
 import uk.hfox.morphix.annotations.Lifecycle;
+import uk.hfox.morphix.exception.mapper.MorphixFieldException;
 import uk.hfox.morphix.mapper.lifecycle.LifecycleAction;
-import uk.hfox.morphix.transform.Converter;
+import uk.hfox.morphix.transform.Transformer;
+import uk.hfox.morphix.utils.Conditions;
 import uk.hfox.morphix.utils.Search;
 
 import java.lang.reflect.Field;
@@ -29,26 +31,41 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MappedEntity<T> {
+public abstract class MappedEntity<F extends MappedField, T extends Transformer> {
+
+    private final T transformer;
 
     private final Class<?> clazz;
+    private final Lifecycle lifecycle;
     private final Map<LifecycleAction, List<Method>> lifecycleMethods;
-    private final Map<Field, Converter<T>> fields;
+    private final Map<LifecycleAction, List<Field>> lifecycleFields;
+    private final Map<String, F> fields;
 
-    public MappedEntity(Class<?> clazz) {
+    public MappedEntity(T transformer, Class<?> clazz) {
+        this.transformer = transformer;
         this.clazz = clazz;
-        this.lifecycleMethods = getLifecycleMethods();
+        this.lifecycle = Search.getInheritedAnnotation(this.clazz, Lifecycle.class);
+        this.lifecycleMethods = isLifecycle() ? new HashMap<>() : null;
+        this.lifecycleFields = isLifecycle() ? new HashMap<>() : null;
         this.fields = new HashMap<>();
     }
 
     /**
-     * Decides if lifecycle support should be enabled and creates a hashmap accordindly.
+     * Gets the transformer used by this entity
      *
-     * @return An empty hashmap, or null if lifecycle support is disabled
+     * @return The transformer used by this entity
      */
-    private Map<LifecycleAction, List<Method>> getLifecycleMethods() {
-        Lifecycle anno = Search.getInheritedAnnotation(this.clazz, Lifecycle.class);
-        return anno != null && anno.value() ? new HashMap<>() : null;
+    public T getTransformer() {
+        return transformer;
+    }
+
+    /**
+     * Determines if this mapped entity has lifecycle support enabled or disabled
+     *
+     * @return true if the lifecycle annotation is present and enabled, otherwise false
+     */
+    public boolean isLifecycle() {
+        return this.lifecycle != null && this.lifecycle.value();
     }
 
     /**
@@ -58,6 +75,66 @@ public class MappedEntity<T> {
         if (this.lifecycleMethods != null) {
             this.lifecycleMethods.clear();
             LifecycleAction.populateMethods(clazz, this.lifecycleMethods);
+        }
+
+        if (this.lifecycleFields != null) {
+            this.lifecycleFields.clear();
+            LifecycleAction.populateFields(clazz, this.lifecycleFields);
+        }
+    }
+
+    /**
+     * Gets the mapped field instance for the supplied reflective field
+     *
+     * @param field The reflective field
+     *
+     * @return A new mapped field instance
+     */
+    protected abstract F getField(Field field);
+
+    public void call(LifecycleAction action, Object entity) {
+        Conditions.notNull(action);
+        Conditions.notNull(entity);
+
+        if (action.isField()) {
+            throw new IllegalArgumentException("action is of field type (" + action.name() + ")");
+        }
+
+        List<Method> methods = this.lifecycleMethods.get(action);
+        callMethods(methods, entity);
+    }
+
+    private void callMethods(List<Method> methods, Object entity) {
+        for (Method method : methods) {
+            try {
+                method.setAccessible(true);
+                method.invoke(entity);
+            } catch (Exception ex) {
+                throw new MorphixFieldException("Unable to set value on method", ex);
+            }
+        }
+    }
+
+    public void set(LifecycleAction action, Object entity, Object value) {
+        Conditions.notNull(action);
+        Conditions.notNull(entity);
+
+        if (!action.isField()) {
+            throw new IllegalArgumentException("action is of field type (" + action.name() + ")");
+        }
+
+        List<Field> fields = this.lifecycleFields.get(action);
+        setFields(fields, entity, value);
+    }
+
+    private void setFields(List<Field> fields, Object entity, Object value) {
+        for (Field field : fields) {
+            try {
+                field.setAccessible(true);
+                field.set(entity, value);
+            } catch (Exception ex) {
+                throw new MorphixFieldException("Unable to set value on field", ex);
+            }
         }
     }
 

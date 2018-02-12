@@ -16,43 +16,55 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.mapper;
+package uk.hfox.morphix.transform;
 
-import uk.hfox.morphix.transform.Converter;
+public class FieldFilter {
 
-import java.lang.reflect.Field;
+    private final boolean excludes;
+    private final String[] fields;
 
-/**
- * Represents a field to be mapped
- *
- * @param <T> The DB type
- */
-public class MappedField<T> {
-
-    private final Field field;
-    private final Converter<T> converter;
-
-    public MappedField(Field field, Converter<T> converter) {
-        this.field = field;
-        this.converter = converter;
+    public FieldFilter(boolean excludes, String... fields) {
+        this.excludes = excludes;
+        this.fields = fields;
     }
 
     /**
-     * Gets the field to be mapped
+     * Returns if this field is an exclude or include filter
      *
-     * @return The field to be mapped
+     * @return true for exclude, false for include
      */
-    public Field getField() {
-        return field;
+    public boolean isExcludes() {
+        return excludes;
     }
 
     /**
-     * Gets the converter used for this field
+     * Gets an array of fields used by this filter
      *
-     * @return The converter to be used
+     * @return The fields used by this filter
      */
-    public Converter<T> getConverter() {
-        return converter;
+    public String[] getFields() {
+        return fields;
+    }
+
+    /**
+     * Checks if the field is allowed in the filter
+     *
+     * @param field The name of the field to check
+     *
+     * @return true if this field is accepted, otherwise false
+     */
+    public boolean isAccepted(String field) {
+        boolean contains = false;
+        for (String string : fields) {
+            if (string.equals(field)) {
+                contains = true;
+                continue;
+            }
+        }
+
+        // If exclude enabled, return !contains
+        // If exclude disabled, return contains
+        return excludes != contains;
     }
 
 }

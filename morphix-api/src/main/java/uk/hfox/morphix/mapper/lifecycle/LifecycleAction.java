@@ -129,7 +129,9 @@ public enum LifecycleAction {
 
     public static void populateMethods(Class<?> clazz, Map<LifecycleAction, List<Method>> lifecycle) {
         for (LifecycleAction action : values()) {
-            lifecycle.put(action, new ArrayList<>());
+            if (!action.isField()) {
+                lifecycle.put(action, new ArrayList<>());
+            }
         }
 
         List<Method> methods = Search.getAllMethods(clazz);
@@ -144,7 +146,9 @@ public enum LifecycleAction {
 
     public static void populateFields(Class<?> clazz, Map<LifecycleAction, List<Field>> lifecycle) {
         for (LifecycleAction action : values()) {
-            lifecycle.put(action, new ArrayList<>());
+            if (action.isField()) {
+                lifecycle.put(action, new ArrayList<>());
+            }
         }
 
         List<Field> fields = Search.getAllFields(clazz);

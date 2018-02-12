@@ -64,18 +64,31 @@ public interface Transformer<T> {
      * Transforms the given Object into a database object
      *
      * @param object The object to transform
+     * @param filter The filter to be applied
      *
      * @return The database object output
      */
-    T toDB(Object object, String... fields);
+    T toDB(Object object, FieldFilter filter);
 
     /**
      * Transforms the database object into an Object of undefined type
      *
      * @param db The database object
+     * @param entity The existing entity, or null if no entity currently exists
      *
      * @return The undefined Object output
      */
-    Object fromDB(T db);
+    <O> O fromDB(T db, O entity);
+
+    /**
+     * Transforms the database object into an Object of undefined type
+     *
+     * @param db     The database object
+     * @param entity The existing entity, or null if no entity currently exists
+     * @param entity The filter to be applied
+     *
+     * @return The undefined Object output
+     */
+    <O> O fromDB(T db, O entity, FieldFilter filter);
 
 }

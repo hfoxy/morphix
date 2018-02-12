@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix API
+ * Morphix MongoDB
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,43 +16,18 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.mapper;
+package uk.hfox.morphix.mongo.mapper;
 
+import org.bson.Document;
+import uk.hfox.morphix.mapper.MappedField;
 import uk.hfox.morphix.transform.Converter;
 
 import java.lang.reflect.Field;
 
-/**
- * Represents a field to be mapped
- *
- * @param <T> The DB type
- */
-public class MappedField<T> {
+public class MongoField extends MappedField<Document> {
 
-    private final Field field;
-    private final Converter<T> converter;
-
-    public MappedField(Field field, Converter<T> converter) {
-        this.field = field;
-        this.converter = converter;
-    }
-
-    /**
-     * Gets the field to be mapped
-     *
-     * @return The field to be mapped
-     */
-    public Field getField() {
-        return field;
-    }
-
-    /**
-     * Gets the converter used for this field
-     *
-     * @return The converter to be used
-     */
-    public Converter<T> getConverter() {
-        return converter;
+    public MongoField(Field field, Converter<Document> converter) {
+        super(field, converter);
     }
 
 }

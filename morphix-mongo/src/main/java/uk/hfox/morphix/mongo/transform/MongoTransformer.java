@@ -19,9 +19,12 @@
 package uk.hfox.morphix.mongo.transform;
 
 import org.bson.Document;
+import uk.hfox.morphix.mongo.mapper.MongoEntity;
 import uk.hfox.morphix.transform.ConvertedType;
 import uk.hfox.morphix.transform.Converter;
+import uk.hfox.morphix.transform.FieldFilter;
 import uk.hfox.morphix.transform.Transformer;
+import uk.hfox.morphix.utils.Conditions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,9 +35,30 @@ import java.util.Map;
 public class MongoTransformer implements Transformer<Document> {
 
     private final Map<ConvertedType, Converter<Document>> converters;
+    private final Map<Class<?>, MongoEntity> entities;
 
     public MongoTransformer() {
         this.converters = new HashMap<>();
+        this.entities = new HashMap<>();
+    }
+
+    /**
+     * Gets the existing mapped entity, or creates a new mapped entity
+     *
+     * @param cls The class of mapped entity to get
+     *
+     * @return The mapped entity associated with this class
+     */
+    public MongoEntity getOrMapEntity(Class<?> cls) {
+        MongoEntity entity = this.entities.get(cls);
+        if (entity == null) {
+            entity = new MongoEntity(this, cls);
+            entity.map();
+
+            this.entities.put(cls, entity);
+        }
+
+        return entity;
     }
 
     @Override
@@ -66,16 +90,27 @@ public class MongoTransformer implements Transformer<Document> {
 
     @Override
     public Document toDB(Object object) {
-        return toDB(object, new String[0]);
+        return toDB(object, new FieldFilter(true));
     }
 
     @Override
-    public Document toDB(Object object, String... fields) {
+    public Document toDB(Object object, FieldFilter filter) {
+        Conditions.notNull(object);
+        Conditions.notNull(filter);
+
+        MongoEntity entity = getOrMapEntity(object.getClass());
+
+
         return null;
     }
 
     @Override
-    public Object fromDB(Document db) {
+    public <O> O fromDB(Document db, O entity) {
+        return null;
+    }
+
+    @Override
+    public <O> O fromDB(Document db, O entity, FieldFilter filter) {
         return null;
     }
 
