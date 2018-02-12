@@ -3,8 +3,7 @@ package uk.hfox.morphix.transform;
 import org.junit.jupiter.api.Test;
 import uk.hfox.morphix.annotations.Entity;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.hfox.morphix.transform.ConvertedType.*;
 
 class ConvertedTypeTest {
@@ -77,8 +76,66 @@ class ConvertedTypeTest {
         assertTrue(ENTITY.isSatisfied(EntityTest.class));
     }
 
+    @Test
+    void findByPrimitiveField() throws Exception {
+        check(PrimitiveTypes.class);
+    }
+
+    @Test
+    void findByClassField() throws Exception {
+        Class<ObjectTypes> cls = ObjectTypes.class;
+        check(cls);
+
+        assertEquals(STRING, ConvertedType.findByField(cls.getDeclaredField("stringField")));
+
+        assertEquals(ENTITY, ConvertedType.findByField(cls.getDeclaredField("entityField")));
+        assertThrows(IllegalArgumentException.class, () -> ConvertedType.findByField(cls.getDeclaredField("objectField")));
+    }
+
+    private void check(Class<?> cls) throws Exception {
+        assertEquals(BYTE, ConvertedType.findByField(cls.getDeclaredField("byteField")));
+        assertEquals(SHORT, ConvertedType.findByField(cls.getDeclaredField("shortField")));
+        assertEquals(INTEGER, ConvertedType.findByField(cls.getDeclaredField("intField")));
+        assertEquals(LONG, ConvertedType.findByField(cls.getDeclaredField("longField")));
+        assertEquals(FLOAT, ConvertedType.findByField(cls.getDeclaredField("floatField")));
+        assertEquals(DOUBLE, ConvertedType.findByField(cls.getDeclaredField("doubleField")));
+        assertEquals(CHARACTER, ConvertedType.findByField(cls.getDeclaredField("characterField")));
+        assertEquals(BOOLEAN, ConvertedType.findByField(cls.getDeclaredField("booleanField")));
+    }
+
     @Entity
     public static class EntityTest {
+    }
+
+    public static class PrimitiveTypes {
+
+        private byte byteField;
+        private short shortField;
+        private int intField;
+        private long longField;
+        private float floatField;
+        private double doubleField;
+        private char characterField;
+        private boolean booleanField;
+
+    }
+
+    public static class ObjectTypes {
+
+        private Byte byteField;
+        private Short shortField;
+        private Integer intField;
+        private Long longField;
+        private Float floatField;
+        private Double doubleField;
+        private Character characterField;
+        private Boolean booleanField;
+
+        private String stringField;
+
+        private EntityTest entityField;
+        private Object objectField;
+
     }
 
 }

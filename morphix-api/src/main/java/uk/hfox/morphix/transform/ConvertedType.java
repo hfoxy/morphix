@@ -21,6 +21,8 @@ package uk.hfox.morphix.transform;
 import uk.hfox.morphix.annotations.Entity;
 import uk.hfox.morphix.utils.Search;
 
+import java.lang.reflect.Field;
+
 public enum ConvertedType {
 
     BYTE {
@@ -86,5 +88,15 @@ public enum ConvertedType {
     };
 
     public abstract boolean isSatisfied(Class<?> cls);
+
+    public static ConvertedType findByField(Field field) {
+        for (ConvertedType type : values()) {
+            if (type.isSatisfied(field.getType())) {
+                return type;
+            }
+        }
+
+        throw new IllegalArgumentException("invalid field type");
+    }
 
 }
