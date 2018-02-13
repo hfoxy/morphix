@@ -22,7 +22,7 @@ class MappedFieldTest {
         this.type = ConvertedType.ENTITY;
         this.field = TestClass.class.getDeclaredField("field");
         this.converter = new BlankConverter();
-        this.mapped = new ObjectMappedField(type, field, converter);
+        this.mapped = new ObjectMappedField(field.getName(), type, field, converter);
     }
 
     @Test
@@ -62,7 +62,7 @@ class MappedFieldTest {
 
     public static class ObjectMappedField extends MappedField<Object> {
 
-        public ObjectMappedField(ConvertedType type, Field field, Converter<Object> converter) {
+        public ObjectMappedField(String name, ConvertedType type, Field field, Converter<Object> converter) {
             super(name, type, field, converter);
         }
 
