@@ -18,6 +18,7 @@
  */
 package uk.hfox.morphix.mapper;
 
+import uk.hfox.morphix.transform.ConvertedType;
 import uk.hfox.morphix.transform.Converter;
 
 import java.lang.reflect.Field;
@@ -29,12 +30,23 @@ import java.lang.reflect.Field;
  */
 public class MappedField<T> {
 
+    private final ConvertedType type;
     private final Field field;
     private final Converter<T> converter;
 
-    public MappedField(Field field, Converter<T> converter) {
+    public MappedField(ConvertedType type, Field field, Converter<T> converter) {
+        this.type = type;
         this.field = field;
         this.converter = converter;
+    }
+
+    /**
+     * Gets the type of field that is being converted
+     *
+     * @return The type of field
+     */
+    public ConvertedType getType() {
+        return type;
     }
 
     /**

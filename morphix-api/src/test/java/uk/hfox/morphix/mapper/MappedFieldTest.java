@@ -1,6 +1,8 @@
 package uk.hfox.morphix.mapper;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.hfox.morphix.transform.ConvertedType;
 import uk.hfox.morphix.transform.Converter;
 import uk.hfox.morphix.utils.Conditions;
 
@@ -10,19 +12,31 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MappedFieldTest {
 
+    private ConvertedType type;
+    private Field field;
+    private BlankConverter converter;
+    private ObjectMappedField mapped;
+
+    @BeforeEach
+    void setup() throws Exception {
+        this.type = ConvertedType.ENTITY;
+        this.field = TestClass.class.getDeclaredField("field");
+        this.converter = new BlankConverter();
+        this.mapped = new ObjectMappedField(type, field, converter);
+    }
+
     @Test
-    void getField() throws Exception {
-        Field field = TestClass.class.getDeclaredField("field");
-        BlankConverter converter = new BlankConverter();
-        ObjectMappedField mapped = new ObjectMappedField(field, converter);
+    void getType() {
+        assertEquals(type, mapped.getType());
+    }
+
+    @Test
+    void getField() {
         assertEquals(field, mapped.getField());
     }
 
     @Test
-    void getConverter() throws Exception {
-        Field field = TestClass.class.getDeclaredField("field");
-        BlankConverter converter = new BlankConverter();
-        ObjectMappedField mapped = new ObjectMappedField(field, converter);
+    void getConverter() {
         assertEquals(converter, mapped.getConverter());
     }
 
@@ -48,8 +62,8 @@ class MappedFieldTest {
 
     public static class ObjectMappedField extends MappedField<Object> {
 
-        public ObjectMappedField(Field field, Converter<Object> converter) {
-            super(field, converter);
+        public ObjectMappedField(ConvertedType type, Field field, Converter<Object> converter) {
+            super(type, field, converter);
         }
 
     }

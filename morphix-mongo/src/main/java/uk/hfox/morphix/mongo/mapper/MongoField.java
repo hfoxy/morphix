@@ -20,14 +20,15 @@ package uk.hfox.morphix.mongo.mapper;
 
 import org.bson.Document;
 import uk.hfox.morphix.mapper.MappedField;
+import uk.hfox.morphix.transform.ConvertedType;
 import uk.hfox.morphix.transform.Converter;
 
 import java.lang.reflect.Field;
 
 public class MongoField extends MappedField<Document> {
 
-    public MongoField(Field field, Converter<Document> converter) {
-        super(field, converter);
+    public MongoField(ConvertedType type, Field field, Converter<Document> converter) {
+        super(type, field, converter);
     }
 
 }
