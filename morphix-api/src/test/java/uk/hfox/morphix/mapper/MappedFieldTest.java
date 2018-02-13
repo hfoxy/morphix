@@ -26,6 +26,11 @@ class MappedFieldTest {
     }
 
     @Test
+    void getName() {
+        assertEquals(field.getName(), mapped.getName());
+    }
+
+    @Test
     void getType() {
         assertEquals(type, mapped.getType());
     }
