@@ -26,6 +26,7 @@ import uk.hfox.morphix.exception.mapper.MorphixFieldException;
 import uk.hfox.morphix.mapper.lifecycle.LifecycleAction;
 import uk.hfox.morphix.transform.Transformer;
 import uk.hfox.morphix.utils.Conditions;
+import uk.hfox.morphix.utils.search.EntitySearchCriteria;
 import uk.hfox.morphix.utils.search.Search;
 
 import java.lang.reflect.Field;
@@ -85,7 +86,7 @@ public abstract class MappedEntity<F extends MappedField, T extends Transformer>
             LifecycleAction.populateFields(clazz, this.lifecycleFields);
         }
 
-        List<Field> allFields = Search.getAllFields(this.clazz);
+        List<Field> allFields = Search.getAllFields(this.clazz, new EntitySearchCriteria());
         for (Field field : allFields) {
             insert(field);
         }
