@@ -18,12 +18,13 @@
  */
 package uk.hfox.morphix.mapper.lifecycle;
 
+import uk.hfox.morphix.annotations.field.Transient;
 import uk.hfox.morphix.annotations.lifecycle.field.AccessedAt;
 import uk.hfox.morphix.annotations.lifecycle.field.CreatedAt;
 import uk.hfox.morphix.annotations.lifecycle.field.UpdatedAt;
 import uk.hfox.morphix.annotations.lifecycle.method.AfterCreate;
 import uk.hfox.morphix.annotations.lifecycle.method.BeforeCreate;
-import uk.hfox.morphix.exception.connection.InvalidConfigurationException;
+import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.utils.Conditions;
 import uk.hfox.morphix.utils.search.Search;
 
@@ -89,9 +90,19 @@ public enum LifecycleAction {
             return false;
         }
 
+        if (field.getAnnotation(Transient.class) != null) {
+            String message = "lifecycle field " + field.getName() + " in " + field.getDeclaringClass().getName()
+                    + " is declared as transient";
+
+            throw new MorphixEntityException(message);
+        }
+
         boolean stc = Modifier.isStatic(field.getModifiers());
         if (stc) {
-            throw new InvalidConfigurationException("lifecycle annotations cannot be used on static methods");
+            String message = "lifecycle field " + field.getName() + " in " + field.getDeclaringClass().getName()
+                    + " is declared as static";
+
+            throw new MorphixEntityException(message);
         }
 
         return this.fieldType.isAssignableFrom(field.getType());
@@ -116,12 +127,18 @@ public enum LifecycleAction {
 
         boolean stc = Modifier.isStatic(method.getModifiers());
         if (stc) {
-            throw new InvalidConfigurationException("lifecycle annotations cannot be used on static methods");
+            String message = "lifecycle method " + method.getName() + " in " + method.getDeclaringClass().getName()
+                    + " is declared as static";
+
+            throw new MorphixEntityException(message);
         }
 
         Class<?>[] args = method.getParameterTypes();
         if (args.length != 0) {
-            throw new InvalidConfigurationException("lifecycle annotations cannot be used on methods with parameters");
+            String message = "lifecycle method " + method.getName() + " in " + method.getDeclaringClass().getName()
+                    + " is declared with " + args.length + " parameters";
+
+            throw new MorphixEntityException(message);
         }
 
         return true;

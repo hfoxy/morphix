@@ -1,12 +1,13 @@
 package uk.hfox.morphix.mapper.lifecycle;
 
 import org.junit.jupiter.api.Test;
+import uk.hfox.morphix.annotations.field.Transient;
 import uk.hfox.morphix.annotations.lifecycle.field.AccessedAt;
 import uk.hfox.morphix.annotations.lifecycle.field.CreatedAt;
 import uk.hfox.morphix.annotations.lifecycle.field.UpdatedAt;
 import uk.hfox.morphix.annotations.lifecycle.method.AfterCreate;
 import uk.hfox.morphix.annotations.lifecycle.method.BeforeCreate;
-import uk.hfox.morphix.exception.connection.InvalidConfigurationException;
+import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -26,7 +27,8 @@ class LifecycleActionTest {
         Class<LifecycleTestClass> testClass = LifecycleTestClass.class;
         assertFalse(BEFORE_CREATE.isSupported(testClass.getDeclaredField("invalidStatic")));
         assertFalse(CREATED_AT.isSupported(testClass.getDeclaredField("invalidNotAnnotated")));
-        assertThrows(InvalidConfigurationException.class, () -> CREATED_AT.isSupported(testClass.getDeclaredField("invalidStatic")));
+        assertThrows(MorphixEntityException.class, () -> CREATED_AT.isSupported(testClass.getDeclaredField("invalidStatic")));
+        assertThrows(MorphixEntityException.class, () -> CREATED_AT.isSupported(testClass.getDeclaredField("invalidTransient")));
         assertFalse(CREATED_AT.isSupported(testClass.getDeclaredField("invalidType")));
         assertTrue(CREATED_AT.isSupported(testClass.getDeclaredField("createdAt")));
 
@@ -50,9 +52,9 @@ class LifecycleActionTest {
         Class<LifecycleTestClass> testClass = LifecycleTestClass.class;
         assertFalse(CREATED_AT.isSupported(testClass.getDeclaredMethod("invalidStatic")));
         assertFalse(BEFORE_CREATE.isSupported(testClass.getDeclaredMethod("invalidNotAnnotated")));
-        assertThrows(InvalidConfigurationException.class, () -> BEFORE_CREATE.isSupported(testClass.getDeclaredMethod("invalidStatic")));
+        assertThrows(MorphixEntityException.class, () -> BEFORE_CREATE.isSupported(testClass.getDeclaredMethod("invalidStatic")));
         assertTrue(BEFORE_CREATE.isSupported(testClass.getDeclaredMethod("beforeCreate")));
-        assertThrows(InvalidConfigurationException.class, () -> BEFORE_CREATE.isSupported(testClass.getDeclaredMethod("invalidHasArguments", String.class)));
+        assertThrows(MorphixEntityException.class, () -> BEFORE_CREATE.isSupported(testClass.getDeclaredMethod("invalidHasArguments", String.class)));
 
         Map<LifecycleAction, List<Method>> populate = new HashMap<>();
         LifecycleAction.populateMethods(CreatedAtTest.class, populate);
@@ -94,6 +96,10 @@ class LifecycleActionTest {
     }
 
     public static class LifecycleTestClass {
+
+        @CreatedAt
+        @Transient
+        private static String invalidTransient;
 
         @CreatedAt
         private static String invalidStatic;
