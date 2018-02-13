@@ -22,8 +22,8 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import uk.hfox.morphix.connector.MorphixConnector;
 import uk.hfox.morphix.mongo.query.MongoQueryBuilder;
+import uk.hfox.morphix.mongo.transform.MongoTransformer;
 import uk.hfox.morphix.query.QueryBuilder;
-import uk.hfox.morphix.transform.Transformer;
 import uk.hfox.morphix.utils.Conditions;
 
 /**
@@ -115,7 +115,7 @@ public class MorphixMongoConnector implements MorphixConnector {
      * {@inheritDoc}
      */
     @Override
-    public Transformer getTransformer() {
+    public MongoTransformer getTransformer() {
         throw Conditions.unimplemented();
     }
 
