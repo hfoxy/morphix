@@ -19,13 +19,12 @@
 package uk.hfox.morphix.connector;
 
 import uk.hfox.morphix.query.QueryBuilder;
-
-import java.io.Serializable;
+import uk.hfox.morphix.transform.Transformer;
 
 /**
  * Connector interface used by the API to perform queries on the database
  */
-public interface MorphixConnector extends Serializable {
+public interface MorphixConnector {
 
     /**
      * Connect to the database
@@ -43,6 +42,13 @@ public interface MorphixConnector extends Serializable {
      * @return true if it is connected, otherwise false
      */
     boolean isConnected();
+
+    /**
+     * Gets the transformer used by this connector
+     *
+     * @return The active transformer
+     */
+    Transformer getTransformer();
 
     /**
      * QueryBuilder the database using the specified class as a collection and result reference

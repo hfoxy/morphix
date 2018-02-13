@@ -23,6 +23,8 @@ import com.mongodb.client.MongoDatabase;
 import uk.hfox.morphix.connector.MorphixConnector;
 import uk.hfox.morphix.mongo.query.MongoQueryBuilder;
 import uk.hfox.morphix.query.QueryBuilder;
+import uk.hfox.morphix.transform.Transformer;
+import uk.hfox.morphix.utils.Conditions;
 
 /**
  * MongoDB implementation of the Morphix connector
@@ -107,6 +109,14 @@ public class MorphixMongoConnector implements MorphixConnector {
         }
 
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Transformer getTransformer() {
+        throw Conditions.unimplemented();
     }
 
     /**

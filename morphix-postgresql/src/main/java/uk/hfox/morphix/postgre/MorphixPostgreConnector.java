@@ -20,6 +20,7 @@ package uk.hfox.morphix.postgre;
 
 import uk.hfox.morphix.connector.MorphixConnector;
 import uk.hfox.morphix.query.QueryBuilder;
+import uk.hfox.morphix.transform.Transformer;
 import uk.hfox.morphix.utils.Conditions;
 
 /**
@@ -48,6 +49,14 @@ public class MorphixPostgreConnector implements MorphixConnector {
      */
     @Override
     public boolean isConnected() {
+        throw Conditions.unimplemented();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Transformer getTransformer() {
         throw Conditions.unimplemented();
     }
 
