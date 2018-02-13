@@ -2,6 +2,8 @@ package uk.hfox.morphix.transform;
 
 import org.junit.jupiter.api.Test;
 import uk.hfox.morphix.annotations.Entity;
+import uk.hfox.morphix.annotations.field.Reference;
+import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.hfox.morphix.transform.ConvertedType.*;
@@ -77,6 +79,12 @@ class ConvertedTypeTest {
     }
 
     @Test
+    void referenceType() {
+        assertFalse(REFERENCE.isSatisfied(Object.class));
+        assertTrue(REFERENCE.isSatisfied(EntityTest.class));
+    }
+
+    @Test
     void findByPrimitiveField() throws Exception {
         check(PrimitiveTypes.class);
     }
@@ -90,9 +98,14 @@ class ConvertedTypeTest {
 
         assertEquals(ENTITY, ConvertedType.findByField(cls.getDeclaredField("entityField")));
         assertThrows(IllegalArgumentException.class, () -> ConvertedType.findByField(cls.getDeclaredField("objectField")));
+
+        assertEquals(REFERENCE, ConvertedType.findByField(cls.getDeclaredField("referenceField")));
+        assertThrows(MorphixEntityException.class, () -> ConvertedType.findByField(cls.getDeclaredField("objectReferenceField")));
     }
 
     private void check(Class<?> cls) throws Exception {
+        assertThrows(IllegalArgumentException.class, () -> ConvertedType.findByField(null));
+
         assertEquals(BYTE, ConvertedType.findByField(cls.getDeclaredField("byteField")));
         assertEquals(SHORT, ConvertedType.findByField(cls.getDeclaredField("shortField")));
         assertEquals(INTEGER, ConvertedType.findByField(cls.getDeclaredField("intField")));
@@ -135,6 +148,12 @@ class ConvertedTypeTest {
 
         private EntityTest entityField;
         private Object objectField;
+
+        @Reference
+        private EntityTest referenceField;
+
+        @Reference
+        private Object objectReferenceField;
 
     }
 

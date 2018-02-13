@@ -19,6 +19,9 @@
 package uk.hfox.morphix.transform;
 
 import uk.hfox.morphix.annotations.Entity;
+import uk.hfox.morphix.annotations.field.Reference;
+import uk.hfox.morphix.exception.mapper.MorphixEntityException;
+import uk.hfox.morphix.utils.Conditions;
 import uk.hfox.morphix.utils.Search;
 
 import java.lang.reflect.Field;
@@ -85,18 +88,43 @@ public enum ConvertedType {
             Entity entity = Search.getInheritedAnnotation(cls, Entity.class);
             return entity != null;
         }
+    },
+    REFERENCE {
+        @Override
+        public boolean isSatisfied(Class<?> cls) {
+            return ENTITY.isSatisfied(cls);
+        }
     };
 
     public abstract boolean isSatisfied(Class<?> cls);
 
     public static ConvertedType findByField(Field field) {
+        Conditions.notNull(field);
+
+        Reference reference = field.getAnnotation(Reference.class);
+        if (reference != null) {
+            if (!REFERENCE.isSatisfied(field.getType())) {
+                String message = "field '" + field.getName() + "'" +
+                        " in " + field.getDeclaringClass().getName() +
+                        " declared as reference but was not an entity";
+
+                throw new MorphixEntityException(message);
+            }
+
+            return REFERENCE;
+        }
+
         for (ConvertedType type : values()) {
             if (type.isSatisfied(field.getType())) {
                 return type;
             }
         }
 
-        throw new IllegalArgumentException("invalid field type");
+        String message = "field '" + field.getName() + "'" +
+                " in " + field.getDeclaringClass().getName() +
+                " has an invalid type";
+
+        throw new IllegalArgumentException(message);
     }
 
 }
