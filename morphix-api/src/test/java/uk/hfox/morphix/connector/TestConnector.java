@@ -1,6 +1,7 @@
 package uk.hfox.morphix.connector;
 
 import uk.hfox.morphix.query.QueryBuilder;
+import uk.hfox.morphix.transform.Transformer;
 import uk.hfox.morphix.utils.Testing;
 
 public class TestConnector implements MorphixConnector {
@@ -17,6 +18,11 @@ public class TestConnector implements MorphixConnector {
 
     @Override
     public boolean isConnected() {
+        throw Testing.unsupported();
+    }
+
+    @Override
+    public Transformer getTransformer() {
         throw Testing.unsupported();
     }
 
