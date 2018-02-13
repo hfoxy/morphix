@@ -30,14 +30,25 @@ import java.lang.reflect.Field;
  */
 public class MappedField<T> {
 
+    private final String name;
     private final ConvertedType type;
     private final Field field;
     private final Converter<T> converter;
 
-    public MappedField(ConvertedType type, Field field, Converter<T> converter) {
+    public MappedField(String name, ConvertedType type, Field field, Converter<T> converter) {
+        this.name = name;
         this.type = type;
         this.field = field;
         this.converter = converter;
+    }
+
+    /**
+     * Gets the name of the field in the database
+     *
+     * @return The name of the field
+     */
+    public String getName() {
+        return name;
     }
 
     /**

@@ -100,13 +100,12 @@ public class MongoTransformer implements Transformer<Document> {
 
         MongoEntity entity = getOrMapEntity(object.getClass());
 
-
         return null;
     }
 
     @Override
     public <O> O fromDB(Document db, O entity) {
-        return null;
+        return fromDB(db, entity, new FieldFilter(true));
     }
 
     @Override

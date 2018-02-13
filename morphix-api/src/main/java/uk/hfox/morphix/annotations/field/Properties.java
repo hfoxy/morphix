@@ -35,6 +35,6 @@ public @interface Properties {
      *
      * @return The name
      */
-    String value();
+    String name();
 
 }

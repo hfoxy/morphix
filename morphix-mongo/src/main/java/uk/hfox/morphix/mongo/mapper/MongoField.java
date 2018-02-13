@@ -27,8 +27,8 @@ import java.lang.reflect.Field;
 
 public class MongoField extends MappedField<Document> {
 
-    public MongoField(ConvertedType type, Field field, Converter<Document> converter) {
-        super(type, field, converter);
+    public MongoField(String name, ConvertedType type, Field field, Converter<Document> converter) {
+        super(name, type, field, converter);
     }
 
 }

@@ -63,7 +63,7 @@ class MappedFieldTest {
     public static class ObjectMappedField extends MappedField<Object> {
 
         public ObjectMappedField(ConvertedType type, Field field, Converter<Object> converter) {
-            super(type, field, converter);
+            super(name, type, field, converter);
         }
 
     }

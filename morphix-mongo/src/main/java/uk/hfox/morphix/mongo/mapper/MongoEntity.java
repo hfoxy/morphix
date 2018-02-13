@@ -18,8 +18,12 @@
  */
 package uk.hfox.morphix.mongo.mapper;
 
+import org.bson.Document;
+import uk.hfox.morphix.annotations.field.Properties;
 import uk.hfox.morphix.mapper.MappedEntity;
 import uk.hfox.morphix.mongo.transform.MongoTransformer;
+import uk.hfox.morphix.transform.ConvertedType;
+import uk.hfox.morphix.transform.Converter;
 
 import java.lang.reflect.Field;
 
@@ -30,8 +34,12 @@ public class MongoEntity extends MappedEntity<MongoField, MongoTransformer> {
     }
 
     @Override
-    protected MongoField getField(Field field) {
-        return null;
+    protected MongoField getField(Properties properties, Field field) {
+        ConvertedType type = ConvertedType.findByField(field);
+        Converter<Document> converter = getTransformer().getConverter(type);
+
+        String name = properties != null ? properties.name() : field.getName();
+        return new MongoField(name, type, field, converter);
     }
 
 }
