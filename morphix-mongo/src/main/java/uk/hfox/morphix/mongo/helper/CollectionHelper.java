@@ -23,7 +23,7 @@ import uk.hfox.morphix.mongo.annotations.Collection;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.utils.Conditions;
 import uk.hfox.morphix.utils.Definitions;
-import uk.hfox.morphix.utils.Search;
+import uk.hfox.morphix.utils.search.Search;
 
 import static uk.hfox.morphix.utils.Definitions.SNAKE_CASE_SPLIT_REGEX;
 

@@ -26,7 +26,7 @@ import uk.hfox.morphix.exception.mapper.MorphixFieldException;
 import uk.hfox.morphix.mapper.lifecycle.LifecycleAction;
 import uk.hfox.morphix.transform.Transformer;
 import uk.hfox.morphix.utils.Conditions;
-import uk.hfox.morphix.utils.Search;
+import uk.hfox.morphix.utils.search.Search;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

@@ -25,7 +25,7 @@ import uk.hfox.morphix.annotations.lifecycle.method.AfterCreate;
 import uk.hfox.morphix.annotations.lifecycle.method.BeforeCreate;
 import uk.hfox.morphix.exception.connection.InvalidConfigurationException;
 import uk.hfox.morphix.utils.Conditions;
-import uk.hfox.morphix.utils.Search;
+import uk.hfox.morphix.utils.search.Search;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

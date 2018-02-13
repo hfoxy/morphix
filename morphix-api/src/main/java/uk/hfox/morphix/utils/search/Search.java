@@ -16,7 +16,9 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.utils;
+package uk.hfox.morphix.utils.search;
+
+import uk.hfox.morphix.utils.Conditions;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -74,6 +76,41 @@ public final class Search {
             fields.addAll(getAllFields(superClazz));
         }
 
+        addFields(fields, clazz);
+        return fields;
+    }
+
+    /**
+     * Gets a complete list of all fields for the provided class and it's superclasses.
+     * Superclasses are included until the last search criteria is met
+     *
+     * @param clazz    The class to search
+     * @param criteria The criteria to check against
+     *
+     * @return The full list of fields
+     */
+    public static List<Field> getAllFields(Class<?> clazz, SearchCriteria criteria) {
+        Conditions.notNull(clazz);
+        Conditions.notNull(criteria);
+
+        List<Field> allFields = new ArrayList<>();
+
+        Class<?> check = clazz;
+        List<Field> fields = new ArrayList<>();
+        while (!check.isAssignableFrom(Object.class)) {
+            addFields(fields, check);
+            if (criteria.isSatisfied(check)) {
+                allFields.addAll(fields);
+                fields = new ArrayList<>();
+            }
+
+            check = check.getSuperclass();
+        }
+
+        return allFields;
+    }
+
+    private static void addFields(List<Field> fields, Class<?> clazz) {
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getName().equals("$jacocoData")) {
                 continue;
@@ -81,8 +118,6 @@ public final class Search {
 
             fields.add(field);
         }
-
-        return fields;
     }
 
     /**

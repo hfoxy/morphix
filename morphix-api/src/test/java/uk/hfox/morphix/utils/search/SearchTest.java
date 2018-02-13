@@ -1,4 +1,4 @@
-package uk.hfox.morphix.utils;
+package uk.hfox.morphix.utils.search;
 
 import org.junit.jupiter.api.Test;
 

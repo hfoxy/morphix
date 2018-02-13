@@ -22,7 +22,7 @@ import uk.hfox.morphix.annotations.Entity;
 import uk.hfox.morphix.annotations.field.Reference;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.utils.Conditions;
-import uk.hfox.morphix.utils.Search;
+import uk.hfox.morphix.utils.search.Search;
 
 import java.lang.reflect.Field;
 

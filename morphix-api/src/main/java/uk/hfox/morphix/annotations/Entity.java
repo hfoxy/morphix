@@ -44,13 +44,10 @@ public @interface Entity {
     Class<? extends MorphixConnector>[] connectors() default {};
 
     /**
-     * Defines the list of Morphix connector types that this entity can be used on.
-     * Example: {MorphixMongoConnector.class, MorphixPostgreConnector.class}
-     * <p>
-     * An empty array represents "no filter", allowing all connectors.
+     * Specifies if this Entity is to inherit the fields from it's parents
      *
-     * @return The list of Morphix connector types
+     * @return true if parent fields are inherited, otherwise false
      */
-    Class<? extends MorphixConnector>[] collections() default {};
+    boolean parents() default false;
 
 }
