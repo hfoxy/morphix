@@ -18,6 +18,8 @@
  */
 package uk.hfox.morphix.transform;
 
+import uk.hfox.morphix.exception.transformer.MorphixTransformationException;
+
 /**
  * Used to transform an Object into a given type and vice versa
  *
@@ -78,7 +80,22 @@ public interface Transformer<T> {
      *
      * @return The undefined Object output
      */
-    <O> O fromDB(T db, O entity);
+    <O> O fromGenericDB(T db, O entity);
+
+    /**
+     * Alias of {@link Transformer#fromGenericDB(Object, Object, FieldFilter)}
+     */
+    @SuppressWarnings("unchecked")
+    default <O> O fromDB(Object db, O entity) {
+        T dbg;
+        try {
+            dbg = (T) db;
+        } catch (ClassCastException ex) {
+            throw new MorphixTransformationException("Unable to cast to generic type", ex);
+        }
+
+        return fromGenericDB(dbg, entity);
+    }
 
     /**
      * Transforms the database object into an Object of undefined type
@@ -89,6 +106,21 @@ public interface Transformer<T> {
      *
      * @return The undefined Object output
      */
-    <O> O fromDB(T db, O entity, FieldFilter filter);
+    <O> O fromGenericDB(T db, O entity, FieldFilter filter);
+
+    /**
+     * Alias of {@link Transformer#fromGenericDB(Object, Object, FieldFilter)}
+     */
+    @SuppressWarnings("unchecked")
+    default <O> O fromDB(Object db, O entity, FieldFilter filter) {
+        T dbg;
+        try {
+            dbg = (T) db;
+        } catch (ClassCastException ex) {
+            throw new MorphixTransformationException("Unable to cast to generic type", ex);
+        }
+
+        return fromGenericDB(dbg, entity, filter);
+    }
 
 }
