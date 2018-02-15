@@ -18,7 +18,7 @@ class MongoHelperManagerTest {
 
     @BeforeAll
     void setUp() {
-        this.manager = new MongoHelperManager();
+        this.manager = new MongoHelperManager(null);
         this.helper = new CollectionHelper(null);
 
         this.manager.setHelper("collection", this.helper);

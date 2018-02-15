@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix MongoDB
+ * Morphix API
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,35 +16,20 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.mongo.query.raw.output;
-
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-import uk.hfox.morphix.mongo.query.raw.MongoOutputQuery;
-import uk.hfox.morphix.query.raw.FindQuery;
+package uk.hfox.morphix.query.raw;
 
 /**
- * Performs a find query on the collection
+ * Represents an iterable result of DB entries
+ *
+ * @param <T> The type of DB entry
  */
-public class MongoFindQuery extends MongoOutputQuery<FindIterable<Document>> implements FindQuery<Document> {
+public interface FindQuery<T> {
 
-    private final Bson search;
-
-    public MongoFindQuery(MongoCollection<Document> collection, Bson search) {
-        super(collection);
-        this.search = search;
-    }
-
-    @Override
-    protected void runQuery() {
-        super.output = super.collection.find(search);
-    }
-
-    @Override
-    public Iterable<Document> getResults() {
-        return getOutput();
-    }
+    /**
+     * Gets the results of the find query in the form of an iterable
+     *
+     * @return The iterable results
+     */
+    Iterable<T> getResults();
 
 }

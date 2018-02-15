@@ -104,12 +104,12 @@ public class MongoTransformer implements Transformer<Document> {
     }
 
     @Override
-    public <O> O fromDB(Document db, O entity) {
-        return fromDB(db, entity, new FieldFilter(true));
+    public <O> O fromGenericDB(Document db, O entity) {
+        return fromGenericDB(db, entity, new FieldFilter(true));
     }
 
     @Override
-    public <O> O fromDB(Document db, O entity, FieldFilter filter) {
+    public <O> O fromGenericDB(Document db, O entity, FieldFilter filter) {
         return null;
     }
 

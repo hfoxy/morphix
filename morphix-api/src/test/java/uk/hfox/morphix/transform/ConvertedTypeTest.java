@@ -5,6 +5,8 @@ import uk.hfox.morphix.annotations.Entity;
 import uk.hfox.morphix.annotations.field.Reference;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.hfox.morphix.transform.ConvertedType.*;
 
@@ -73,6 +75,12 @@ class ConvertedTypeTest {
     }
 
     @Test
+    void dateTimeType() {
+        assertFalse(DATETIME.isSatisfied(Object.class));
+        assertTrue(DATETIME.isSatisfied(LocalDateTime.class));
+    }
+
+    @Test
     void entityType() {
         assertFalse(ENTITY.isSatisfied(Object.class));
         assertTrue(ENTITY.isSatisfied(EntityTest.class));
@@ -95,6 +103,8 @@ class ConvertedTypeTest {
         check(cls);
 
         assertEquals(STRING, ConvertedType.findByField(cls.getDeclaredField("stringField")));
+
+        assertEquals(DATETIME, ConvertedType.findByField(cls.getDeclaredField("dateTimeField")));
 
         assertEquals(ENTITY, ConvertedType.findByField(cls.getDeclaredField("entityField")));
         assertThrows(IllegalArgumentException.class, () -> ConvertedType.findByField(cls.getDeclaredField("objectField")));
@@ -145,6 +155,8 @@ class ConvertedTypeTest {
         private Boolean booleanField;
 
         private String stringField;
+
+        private LocalDateTime dateTimeField;
 
         private EntityTest entityField;
         private Object objectField;

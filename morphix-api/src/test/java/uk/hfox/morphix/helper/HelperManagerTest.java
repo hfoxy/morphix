@@ -16,7 +16,7 @@ class HelperManagerTest {
     @BeforeEach
     void setUp() {
         this.connector = new TestConnector();
-        this.manager = new HelperManager<>();
+        this.manager = new HelperManager<>(connector);
 
         this.testHelper = new TestHelper(connector);
         this.manager.setHelper("test", testHelper);

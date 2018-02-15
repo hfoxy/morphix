@@ -23,6 +23,7 @@ import uk.hfox.morphix.annotations.field.Properties;
 import uk.hfox.morphix.annotations.field.Transient;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.exception.mapper.MorphixFieldException;
+import uk.hfox.morphix.exception.mapper.MorphixMethodException;
 import uk.hfox.morphix.mapper.lifecycle.LifecycleAction;
 import uk.hfox.morphix.transform.Transformer;
 import uk.hfox.morphix.utils.Conditions;
@@ -135,10 +136,9 @@ public abstract class MappedEntity<F extends MappedField, T extends Transformer>
     private void callMethods(List<Method> methods, Object entity) {
         for (Method method : methods) {
             try {
-                method.setAccessible(true);
                 method.invoke(entity);
             } catch (Exception ex) {
-                throw new MorphixFieldException("Unable to set value on method", ex);
+                throw new MorphixMethodException("Unable to invoke method", ex);
             }
         }
     }
@@ -151,8 +151,8 @@ public abstract class MappedEntity<F extends MappedField, T extends Transformer>
             throw new IllegalArgumentException("action is of field type (" + action.name() + ")");
         }
 
-        List<Field> fields = this.lifecycleFields.get(action);
-        setFields(fields, entity, value);
+        List<Field> list = this.lifecycleFields.get(action);
+        setFields(list, entity, value);
     }
 
     private void setFields(List<Field> fields, Object entity, Object value) {

@@ -21,47 +21,43 @@ package uk.hfox.morphix.entity;
 import uk.hfox.morphix.connector.MorphixConnector;
 import uk.hfox.morphix.transform.FieldFilter;
 
-import java.util.Map;
-
 public interface EntityHelper {
 
     MorphixConnector getConnector();
 
     /**
-     * Updates this entity using the supplied map
-     * Fields within this map are pushed to both this object and the database
-     *
-     * @param fields The map of fields to update
+     * Alias of {@link EntityManager#update(Object)}
      */
-    default void update(Map<String, Object> fields) {
-        // TODO: update
+    default void update() {
+        getConnector().getEntityManager().update(this);
     }
 
     /**
-     * Updates fields within the entity which are accepted by the supplied filter.
-     * If the update parameter is marked as true, fields within the entity will be updated after the update operation
-     *
-     * @param filter The filter to check against
-     * @param update true if the entity should be updated after the operation completes, otherwise false
-     */
-    default void update(FieldFilter filter, boolean update) {
-        // TODO: update
-    }
-
-    /**
-     * Alias of {@link EntityHelper#update(FieldFilter, boolean)}
-     *
-     * @param filter The filter to check against
+     * Alias of {@link EntityManager#update(Object, FieldFilter)}
      */
     default void update(FieldFilter filter) {
-        // TODO: update
+        getConnector().getEntityManager().update(this, filter);
     }
 
     /**
-     * Saves all fields in the entity
+     * Alias of {@link EntityManager#save(Object)}
      */
     default void save() {
-        // TODO: save
+        getConnector().getEntityManager().save(this);
+    }
+
+    /**
+     * Alias of {@link EntityManager#save(Object, FieldFilter, boolean)}
+     */
+    default void save(FieldFilter filter, boolean update) {
+        getConnector().getEntityManager().save(this, filter, update);
+    }
+
+    /**
+     * Alias of {@link EntityManager#save(Object, FieldFilter)}
+     */
+    default void save(FieldFilter filter) {
+        getConnector().getEntityManager().save(this, filter);
     }
 
 }

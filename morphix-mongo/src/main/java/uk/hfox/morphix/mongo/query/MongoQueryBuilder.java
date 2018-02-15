@@ -103,6 +103,7 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
         return document;
     }
 
+    @Override
     public MongoFindQuery find() {
         MongoFindQuery query = new MongoFindQuery(collection, getFilter());
         query.performQuery();

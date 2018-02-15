@@ -21,6 +21,8 @@ package uk.hfox.morphix.mongo.connection;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import uk.hfox.morphix.connector.MorphixConnector;
+import uk.hfox.morphix.mongo.entity.MongoEntityManager;
+import uk.hfox.morphix.mongo.helper.MongoHelperManager;
 import uk.hfox.morphix.mongo.query.MongoQueryBuilder;
 import uk.hfox.morphix.mongo.transform.MongoTransformer;
 import uk.hfox.morphix.query.QueryBuilder;
@@ -31,15 +33,17 @@ import uk.hfox.morphix.utils.Conditions;
  */
 public class MorphixMongoConnector implements MorphixConnector {
 
-    private static final long serialVersionUID = -3349895475330867986L;
+    private final MongoConnector builder;
+    private final MongoEntityManager entityManager;
+    private final MongoHelperManager helperManager;
 
-    private final transient MongoConnector builder;
-
-    private transient MongoClient client;
-    private transient MongoDatabase database;
+    private MongoClient client;
+    private MongoDatabase database;
 
     MorphixMongoConnector(MongoConnector builder) {
         this.builder = builder;
+        this.entityManager = new MongoEntityManager(this);
+        this.helperManager = new MongoHelperManager(this);
     }
 
     /**
@@ -119,13 +123,24 @@ public class MorphixMongoConnector implements MorphixConnector {
         throw Conditions.unimplemented();
     }
 
+    @Override
+    public MongoEntityManager getEntityManager() {
+        return this.entityManager;
+    }
+
+    @Override
+    public MongoHelperManager getHelperManager() {
+        return this.helperManager;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public <T> QueryBuilder<T> createQuery(Class<T> cls) {
-        // TODO: find collection name
-        return createQuery(cls, "");
+        return createQuery(cls, getHelperManager()
+                .getCollectionHelper()
+                .getCollection(cls));
     }
 
     /**

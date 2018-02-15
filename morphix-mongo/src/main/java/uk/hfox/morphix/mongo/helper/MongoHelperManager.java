@@ -26,6 +26,11 @@ public class MongoHelperManager extends HelperManager<MorphixMongoConnector> {
 
     private static final String COLLECTION_HELPER = "collection";
 
+    public MongoHelperManager(MorphixMongoConnector connector) {
+        super(connector);
+        setCollectionHelper(new CollectionHelper(connector));
+    }
+
     public CollectionHelper getCollectionHelper() {
         return getHelper(COLLECTION_HELPER, CollectionHelper.class);
     }

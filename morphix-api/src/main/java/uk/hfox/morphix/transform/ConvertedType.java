@@ -25,6 +25,7 @@ import uk.hfox.morphix.utils.Conditions;
 import uk.hfox.morphix.utils.search.Search;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 
 public enum ConvertedType {
 
@@ -80,6 +81,12 @@ public enum ConvertedType {
         @Override
         public boolean isSatisfied(Class<?> cls) {
             return cls.equals(String.class);
+        }
+    },
+    DATETIME {
+        @Override
+        public boolean isSatisfied(Class<?> cls) {
+            return cls.equals(LocalDateTime.class);
         }
     },
     ENTITY {

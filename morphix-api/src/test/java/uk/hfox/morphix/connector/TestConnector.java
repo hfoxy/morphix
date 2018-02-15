@@ -1,5 +1,7 @@
 package uk.hfox.morphix.connector;
 
+import uk.hfox.morphix.entity.EntityManager;
+import uk.hfox.morphix.helper.HelperManager;
 import uk.hfox.morphix.query.QueryBuilder;
 import uk.hfox.morphix.transform.Transformer;
 import uk.hfox.morphix.utils.Testing;
@@ -23,6 +25,16 @@ public class TestConnector implements MorphixConnector {
 
     @Override
     public Transformer getTransformer() {
+        throw Testing.unsupported();
+    }
+
+    @Override
+    public EntityManager getEntityManager() {
+        throw Testing.unsupported();
+    }
+
+    @Override
+    public HelperManager getHelperManager() {
         throw Testing.unsupported();
     }
 

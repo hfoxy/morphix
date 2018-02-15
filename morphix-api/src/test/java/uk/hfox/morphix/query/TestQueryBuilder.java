@@ -1,6 +1,7 @@
 package uk.hfox.morphix.query;
 
 import uk.hfox.morphix.connector.MorphixConnector;
+import uk.hfox.morphix.query.raw.FindQuery;
 import uk.hfox.morphix.query.result.QueryResult;
 import uk.hfox.morphix.utils.Testing;
 
@@ -38,6 +39,11 @@ public class TestQueryBuilder<T> implements QueryBuilder<T> {
 
     @Override
     public QueryResult<T> result() {
+        throw Testing.unsupported();
+    }
+
+    @Override
+    public FindQuery find() {
         throw Testing.unsupported();
     }
 

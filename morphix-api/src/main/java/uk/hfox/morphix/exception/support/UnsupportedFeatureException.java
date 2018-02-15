@@ -26,9 +26,11 @@ import uk.hfox.morphix.exception.MorphixException;
  * <p>
  * Thrown by implementing libraries when a database does not support a feature
  */
-public class UnsupportedFeatureException extends Exception implements MorphixException {
+public class UnsupportedFeatureException extends RuntimeException implements MorphixException {
 
-    private final MorphixConnector connector;
+    private static final long serialVersionUID = -5490223022325284572L;
+
+    private final transient MorphixConnector connector;
 
     public UnsupportedFeatureException(MorphixConnector connector, String message) {
         super(message);

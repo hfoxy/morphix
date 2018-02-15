@@ -98,11 +98,19 @@ public interface Transformer<T> {
     }
 
     /**
-     * Transforms the database object into an Object of undefined type
+     * Transforms the supplied database entry into a new Java object, populates new
+     * data into the supplied entity, or populates new data into an entity from the
+     * cache, depending on the arguments
+     *
+     * The return type of this method will match the type of the entity provided,
+     * thus if no entity is provided, it will default to Object.
+     *
+     * If no entity is provided, an attempt will be made to find the existing entity in
+     * the cache. If no entity can be found, one will be created instead.
      *
      * @param db     The database object
-     * @param entity The existing entity, or null if no entity currently exists
-     * @param entity The filter to be applied
+     * @param entity The existing entity, or null
+     * @param filter The filter to be applied
      *
      * @return The undefined Object output
      */

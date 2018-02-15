@@ -25,10 +25,21 @@ import java.util.Map;
 
 public class HelperManager<C extends MorphixConnector> {
 
+    protected final C connector;
     private final Map<String, Helper<C>> helpers;
 
-    public HelperManager() {
+    public HelperManager(C connector) {
+        this.connector = connector;
         this.helpers = new HashMap<>();
+    }
+
+    /**
+     * Gets the connector that this helper manager belongs to
+     *
+     * @return The connector
+     */
+    public C getConnector() {
+        return connector;
     }
 
     /**

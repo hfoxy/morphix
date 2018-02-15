@@ -18,6 +18,8 @@
  */
 package uk.hfox.morphix.connector;
 
+import uk.hfox.morphix.entity.EntityManager;
+import uk.hfox.morphix.helper.HelperManager;
 import uk.hfox.morphix.query.QueryBuilder;
 import uk.hfox.morphix.transform.Transformer;
 
@@ -49,6 +51,20 @@ public interface MorphixConnector {
      * @return The active transformer
      */
     Transformer getTransformer();
+
+    /**
+     * Gets the {@link EntityManager} used by this connector
+     *
+     * @return The manager in use
+     */
+    EntityManager getEntityManager();
+
+    /**
+     * Gets the {@link HelperManager} used by this connector
+     *
+     * @return The manager in use
+     */
+    HelperManager getHelperManager();
 
     /**
      * QueryBuilder the database using the specified class as a collection and result reference

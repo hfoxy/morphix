@@ -19,6 +19,8 @@
 package uk.hfox.morphix.postgre;
 
 import uk.hfox.morphix.connector.MorphixConnector;
+import uk.hfox.morphix.entity.EntityManager;
+import uk.hfox.morphix.helper.HelperManager;
 import uk.hfox.morphix.query.QueryBuilder;
 import uk.hfox.morphix.transform.Transformer;
 import uk.hfox.morphix.utils.Conditions;
@@ -57,6 +59,22 @@ public class MorphixPostgreConnector implements MorphixConnector {
      */
     @Override
     public Transformer getTransformer() {
+        throw Conditions.unimplemented();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EntityManager getEntityManager() {
+        throw Conditions.unimplemented();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public HelperManager getHelperManager() {
         throw Conditions.unimplemented();
     }
 

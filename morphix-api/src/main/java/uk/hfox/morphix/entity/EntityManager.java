@@ -16,72 +16,68 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.query;
+package uk.hfox.morphix.entity;
 
 import uk.hfox.morphix.connector.MorphixConnector;
 import uk.hfox.morphix.query.raw.FindQuery;
-import uk.hfox.morphix.query.result.QueryResult;
+import uk.hfox.morphix.transform.FieldFilter;
 
 /**
- * Interface used to build connector-specific queries
+ * Manages the entities (saves/loads/updates/etc)
  */
-public interface QueryBuilder<T> {
+public interface EntityManager {
 
     /**
-     * Gets the connector used to query the database
+     * Gets the connector that this manager belongs to
      *
-     * @return The connector used to query the database
+     * @return The connector
      */
     MorphixConnector getConnector();
 
     /**
-     * Gets the class output expected by this query
-     *
-     * @return The generic class
+     * Updates all fields in this entity
      */
-    Class<T> getQueryType();
+    default void update(Object entity) {
+        update(entity, new FieldFilter(true));
+    }
 
     /**
-     * Create a field query for the specified field
+     * Updates fields within the entity which are accepted by the supplied filter.
      *
-     * @param field The field to check
-     *
-     * @return The FieldQueryBuilder representing the specified field
+     * @param filter The filter to check against
      */
-    FieldQueryBuilder<T> where(String field);
+    void update(Object entity, FieldFilter filter);
 
     /**
-     * Creates a sort objective for the database you are using.
-     * This will allow you to set DB specific mechanisms
+     * Updates fields within each of the query responses
      *
-     * @return The empty sort objective
+     * @param query  The response of objects to update
+     * @param filter The filter to check against
      */
-    QuerySortBuilder<T, ?> sort();
+    void update(FindQuery query, FieldFilter filter);
 
     /**
-     * Delete the resulting object(s) from the database
+     * Saves all fields in the entity
      */
-    void delete();
+    default void save(Object entity) {
+        save(entity, new FieldFilter(true));
+    }
 
     /**
-     * Delete the resulting object(s) from the database, with the option of deleting just 1
+     * Saves fields within the entity which are accepted by the supplied filter.
+     * If the update parameter is marked as true, fields within the entity will be updated after the update operation
      *
-     * @param justOne true if only 1 object should be deleted, false otherwise
+     * @param filter The filter to check against
      */
-    void delete(boolean justOne);
+    void save(Object entity, FieldFilter filter, boolean update);
 
     /**
-     * Get an iterable copy of the results given by the query
+     * Alias of {@link EntityManager#save(Object, FieldFilter, boolean)}
      *
-     * @return An iterable set of results
+     * @param filter The filter to check against
      */
-    QueryResult<T> result();
-
-    /**
-     * Gets a DB response of this query
-     *
-     * @return The db response
-     */
-    FindQuery find();
+    default void save(Object entity, FieldFilter filter) {
+        save(entity, filter, false);
+    }
 
 }

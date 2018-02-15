@@ -5,11 +5,14 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import uk.hfox.morphix.annotations.Entity;
 import uk.hfox.morphix.exception.connection.InvalidConfigurationException;
+import uk.hfox.morphix.mongo.annotations.Collection;
 import uk.hfox.morphix.mongo.connection.MongoConnector;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.connection.PoolConnector;
 import uk.hfox.morphix.mongo.connection.SingleNodeConnector;
+import uk.hfox.morphix.query.QueryBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +88,36 @@ class MorphixMongoConnectorTest {
 
     @Test
     void createQuery() {
-        // assertTrue(this.singleNode.createQuery());
+        QueryBuilder<TestEntity> query1 = this.singleNode.createQuery(TestEntity.class);
+        assertNotNull(query1);
+        assertEquals(this.singleNode, query1.getConnector());
+
+        query1 = this.pooled.createQuery(TestEntity.class);
+        assertNotNull(query1);
+        assertEquals(this.pooled, query1.getConnector());
+
+        QueryBuilder<TestCollectionEntity> query2 = this.singleNode.createQuery(TestCollectionEntity.class);
+        assertNotNull(query2);
+        assertEquals(this.singleNode, query2.getConnector());
+
+        query2 = this.pooled.createQuery(TestCollectionEntity.class);
+        assertNotNull(query2);
+        assertEquals(this.pooled, query2.getConnector());
+    }
+
+    @Entity
+    public static class TestEntity {
+
+        private String string;
+
+    }
+
+    @Entity
+    @Collection("test_collection")
+    public static class TestCollectionEntity {
+
+        private String string;
+
     }
 
 }
