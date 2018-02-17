@@ -40,7 +40,7 @@ public class MorphixMongoConnector implements MorphixConnector {
     private MongoClient client;
     private MongoDatabase database;
 
-    MorphixMongoConnector(MongoConnector builder) {
+    protected MorphixMongoConnector(MongoConnector builder) {
         this.builder = builder;
         this.entityManager = new MongoEntityManager(this);
         this.helperManager = new MongoHelperManager(this);

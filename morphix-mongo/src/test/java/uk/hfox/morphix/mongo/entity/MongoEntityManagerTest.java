@@ -1,14 +1,17 @@
 package uk.hfox.morphix.mongo.entity;
 
 import org.junit.jupiter.api.Test;
-import uk.hfox.morphix.connector.TestConnector;
+import uk.hfox.morphix.mongo.TestMorphixMongoConnector;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class MongoEntityManagerTest {
 
     @Test
     void getConnector() {
-        TestConnector connector = new TestConnector();
-        // MongoEntityManager manager = new MongoEntityManager(connector);
+        TestMorphixMongoConnector connector = new TestMorphixMongoConnector();
+        MongoEntityManager manager = new MongoEntityManager(connector);
+        assertNotNull(manager.getConnector());
     }
 
 }
