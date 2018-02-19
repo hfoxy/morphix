@@ -77,16 +77,17 @@ public interface Transformer<T> {
      *
      * @param db The database object
      * @param entity The existing entity, or null if no entity currently exists
+     * @param cls The type of entity to construct
      *
      * @return The undefined Object output
      */
-    <O> O fromGenericDB(T db, O entity);
+    <O> O fromGenericDB(T db, O entity, Class<O> cls);
 
     /**
-     * Alias of {@link Transformer#fromGenericDB(Object, Object, FieldFilter)}
+     * Alias of {@link Transformer#fromGenericDB(Object, Object, Class, FieldFilter)}
      */
     @SuppressWarnings("unchecked")
-    default <O> O fromDB(Object db, O entity) {
+    default <O> O fromDB(Object db, O entity, Class<O> cls) {
         T dbg;
         try {
             dbg = (T) db;
@@ -94,7 +95,7 @@ public interface Transformer<T> {
             throw new MorphixTransformationException("Unable to cast to generic type", ex);
         }
 
-        return fromGenericDB(dbg, entity);
+        return fromGenericDB(dbg, entity, cls);
     }
 
     /**
@@ -108,19 +109,24 @@ public interface Transformer<T> {
      * If no entity is provided, an attempt will be made to find the existing entity in
      * the cache. If no entity can be found, one will be created instead.
      *
+     * Either entity or cls must be provided, if neither are provided a search will be
+     * made for the object in the cache. If no such object exists, a null response will
+     * be given
+     *
      * @param db     The database object
      * @param entity The existing entity, or null
+     * @param cls    The type of entity to construct
      * @param filter The filter to be applied
      *
      * @return The undefined Object output
      */
-    <O> O fromGenericDB(T db, O entity, FieldFilter filter);
+    <O> O fromGenericDB(T db, O entity, Class<O> cls, FieldFilter filter);
 
     /**
-     * Alias of {@link Transformer#fromGenericDB(Object, Object, FieldFilter)}
+     * Alias of {@link Transformer#fromGenericDB(Object, Object, Class, FieldFilter)}
      */
     @SuppressWarnings("unchecked")
-    default <O> O fromDB(Object db, O entity, FieldFilter filter) {
+    default <O> O fromDB(Object db, O entity, Class<O> cls, FieldFilter filter) {
         T dbg;
         try {
             dbg = (T) db;
@@ -128,7 +134,7 @@ public interface Transformer<T> {
             throw new MorphixTransformationException("Unable to cast to generic type", ex);
         }
 
-        return fromGenericDB(dbg, entity, filter);
+        return fromGenericDB(dbg, entity, cls, filter);
     }
 
 }

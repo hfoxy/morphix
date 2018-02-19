@@ -18,6 +18,7 @@
  */
 package uk.hfox.morphix.mapper;
 
+import uk.hfox.morphix.exception.mapper.MorphixFieldException;
 import uk.hfox.morphix.transform.ConvertedType;
 import uk.hfox.morphix.transform.Converter;
 
@@ -76,6 +77,23 @@ public class MappedField<T> {
      */
     public Converter<T> getConverter() {
         return converter;
+    }
+
+    public Object getValue(Object obj) {
+        try {
+            this.field.setAccessible(true);
+            return this.field.get(obj);
+        } catch (IllegalAccessException ex) {
+            throw new MorphixFieldException("unable to access field", ex);
+        }
+    }
+
+    public void setValue(Object obj, Object value) {
+        try {
+            this.field.set(obj, value);
+        } catch (IllegalAccessException ex) {
+            throw new MorphixFieldException("unable to access field", ex);
+        }
     }
 
 }

@@ -74,6 +74,15 @@ public abstract class MappedEntity<F extends MappedField, T extends Transformer>
     }
 
     /**
+     * Gets a map of the fields used by this entity
+     *
+     * @return The map of fields
+     */
+    public Map<String, F> getFields() {
+        return fields;
+    }
+
+    /**
      * Clears and repopulates the entity with new mapped fields
      */
     public void map() {

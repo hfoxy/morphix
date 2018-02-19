@@ -7,7 +7,7 @@ public class FloatConverter implements Converter<Document> {
 
     @Override
     public Float pull(String key, Document entry) {
-        double value = entry.getDouble(key);
+        Object value = entry.get(key);
         return (float) value;
     }
 

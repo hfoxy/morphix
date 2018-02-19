@@ -23,7 +23,9 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import uk.hfox.morphix.entity.EntityManager;
+import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.exception.support.UnsupportedFeatureException;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.helper.CollectionHelper;
@@ -73,7 +75,7 @@ public class MongoEntityManager implements EntityManager {
         MongoFindQuery find = new MongoFindQuery(collection, getFilters(entity));
         find.performQuery();
 
-        getConnector().getTransformer().fromGenericDB(find.getOutput().first(), entity, filter);
+        getConnector().getTransformer().fromGenericDB(find.getOutput().first(), entity, null, filter);
     }
 
     @Override
@@ -86,7 +88,7 @@ public class MongoEntityManager implements EntityManager {
 
         MongoFindQuery find = (MongoFindQuery) query;
         for (Document document : find.getResults()) {
-            getConnector().getTransformer().fromGenericDB(document, null, filter);
+            getConnector().getTransformer().fromGenericDB(document, null, null, filter);
         }
     }
 
@@ -115,6 +117,27 @@ public class MongoEntityManager implements EntityManager {
         String collectionName = collectionHelper.getCollection(entity.getClass());
 
         return getConnector().getDatabase().getCollection(collectionName);
+    }
+
+    @Override
+    public Object getEntity(Object key) {
+        if (!(key instanceof ObjectId)) {
+            throw new MorphixEntityException("invalid key type, ObjectId required");
+        }
+
+        ObjectId id = (ObjectId) key;
+        return null;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked") // checked
+    public <T> T getEntity(Object key, Class<T> cls) {
+        Object entity = getEntity(key);
+        if (cls.isAssignableFrom(entity.getClass())) {
+            return (T) entity;
+        }
+
+        return null;
     }
 
 }

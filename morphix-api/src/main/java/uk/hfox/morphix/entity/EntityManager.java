@@ -80,4 +80,8 @@ public interface EntityManager {
         save(entity, filter, false);
     }
 
+    Object getEntity(Object key);
+
+    <T> T getEntity(Object key, Class<T> cls);
+
 }

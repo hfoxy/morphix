@@ -26,7 +26,6 @@ import uk.hfox.morphix.mongo.helper.MongoHelperManager;
 import uk.hfox.morphix.mongo.query.MongoQueryBuilder;
 import uk.hfox.morphix.mongo.transform.MongoTransformer;
 import uk.hfox.morphix.query.QueryBuilder;
-import uk.hfox.morphix.utils.Conditions;
 
 /**
  * MongoDB implementation of the Morphix connector
@@ -34,6 +33,8 @@ import uk.hfox.morphix.utils.Conditions;
 public class MorphixMongoConnector implements MorphixConnector {
 
     private final MongoConnector builder;
+
+    private final MongoTransformer transformer;
     private final MongoEntityManager entityManager;
     private final MongoHelperManager helperManager;
 
@@ -42,6 +43,7 @@ public class MorphixMongoConnector implements MorphixConnector {
 
     protected MorphixMongoConnector(MongoConnector builder) {
         this.builder = builder;
+        this.transformer = new MongoTransformer(this);
         this.entityManager = new MongoEntityManager(this);
         this.helperManager = new MongoHelperManager(this);
     }
@@ -120,7 +122,7 @@ public class MorphixMongoConnector implements MorphixConnector {
      */
     @Override
     public MongoTransformer getTransformer() {
-        throw Conditions.unimplemented();
+        return this.transformer;
     }
 
     @Override

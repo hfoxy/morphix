@@ -19,27 +19,48 @@
 package uk.hfox.morphix.mongo.transform;
 
 import org.bson.Document;
+import uk.hfox.morphix.exception.mapper.MorphixEntityException;
+import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.mapper.MongoEntity;
+import uk.hfox.morphix.mongo.mapper.MongoField;
+import uk.hfox.morphix.mongo.transform.converter.*;
 import uk.hfox.morphix.transform.ConvertedType;
 import uk.hfox.morphix.transform.Converter;
 import uk.hfox.morphix.transform.FieldFilter;
 import uk.hfox.morphix.transform.Transformer;
 import uk.hfox.morphix.utils.Conditions;
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+
+import static uk.hfox.morphix.transform.ConvertedType.*;
 
 /**
  * Transforms MongoDB Bson document into an Object and vice versa
  */
 public class MongoTransformer implements Transformer<Document> {
 
+    private final MorphixMongoConnector connector;
+
     private final Map<ConvertedType, Converter<Document>> converters;
     private final Map<Class<?>, MongoEntity> entities;
 
-    public MongoTransformer() {
+    public MongoTransformer(MorphixMongoConnector connector) {
+        this.connector = connector;
         this.converters = new HashMap<>();
         this.entities = new HashMap<>();
+
+        setConverter(BYTE, new ByteConverter());
+        setConverter(SHORT, new ShortConverter());
+        setConverter(INTEGER, new IntegerConverter());
+        setConverter(LONG, new LongConverter());
+        setConverter(FLOAT, new FloatConverter());
+        setConverter(DOUBLE, new DoubleConverter());
+        setConverter(CHARACTER, new CharacterConverter());
+        setConverter(BOOLEAN, new BooleanConverter());
+        setConverter(STRING, new StringConverter());
+        setConverter(DATETIME, new DateTimeConverter());
     }
 
     /**
@@ -98,19 +119,64 @@ public class MongoTransformer implements Transformer<Document> {
         Conditions.notNull(object);
         Conditions.notNull(filter);
 
+        Document document = new Document();
         MongoEntity entity = getOrMapEntity(object.getClass());
+        Map<String, MongoField> fields = entity.getFields();
 
-        return null;
+        for (Map.Entry<String, MongoField> entry : fields.entrySet()) {
+            if (!filter.isAccepted(entry.getKey())) {
+                continue;
+            }
+
+            MongoField field = entry.getValue();
+            field.getConverter().push(field.getName(), document, field.getValue(object));
+        }
+
+        return document;
     }
 
     @Override
-    public <O> O fromGenericDB(Document db, O entity) {
-        return fromGenericDB(db, entity, new FieldFilter(true));
+    public <O> O fromGenericDB(Document db, O entity, Class<O> cls) {
+        return fromGenericDB(db, entity, cls, new FieldFilter(true));
     }
 
     @Override
-    public <O> O fromGenericDB(Document db, O entity, FieldFilter filter) {
-        return null;
+    @SuppressWarnings("unchecked")
+    public <O> O fromGenericDB(Document document, O entity, Class<O> cls, FieldFilter filter) {
+        Conditions.notNull(document);
+        Conditions.notNull(filter);
+
+        if (entity == null && cls == null) {
+            entity = (O) this.connector.getEntityManager().getEntity(document.getObjectId("_id"));
+
+            if (entity == null) {
+                return null;
+            }
+        }
+
+        if (entity == null) {
+            try {
+                Constructor<O> constructor = cls.getConstructor();
+                entity = constructor.newInstance();
+            } catch (Exception ex) {
+                throw new MorphixEntityException("unable to construct entity", ex);
+            }
+        }
+
+        MongoEntity mongoEntity = getOrMapEntity(entity.getClass());
+        Map<String, MongoField> fields = mongoEntity.getFields();
+
+        for (Map.Entry<String, MongoField> entry : fields.entrySet()) {
+            if (!filter.isAccepted(entry.getKey())) {
+                continue;
+            }
+
+            MongoField field = entry.getValue();
+            Object value = field.getConverter().pull(field.getName(), document);
+            field.setValue(entity, value);
+        }
+
+        return entity;
     }
 
 }
