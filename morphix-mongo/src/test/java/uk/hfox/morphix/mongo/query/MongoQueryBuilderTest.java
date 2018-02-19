@@ -306,9 +306,9 @@ class MongoQueryBuilderTest {
         collection.deleteMany(new BsonDocument());
         assertEquals(0, collection.count());
 
-        Item[] items = new Item[100];
+        Item[] items = new Item[10000];
         for (int i = 0; i < items.length; i++) {
-            Item item = new Item(this.connector, i + 1, String.format("%03d", i + 1));
+            Item item = new Item(this.connector, i + 1, String.format("%05d", i + 1));
             item.save();
 
             items[i] = item;
