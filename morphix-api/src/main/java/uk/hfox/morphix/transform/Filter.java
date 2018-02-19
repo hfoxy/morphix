@@ -16,48 +16,17 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.entity;
+package uk.hfox.morphix.transform;
 
-import uk.hfox.morphix.connector.MorphixConnector;
-import uk.hfox.morphix.transform.Filter;
-
-public interface EntityHelper {
-
-    MorphixConnector getConnector();
+public interface Filter {
 
     /**
-     * Alias of {@link EntityManager#update(Object)}
+     * Checks if the field is allowed in the filter
+     *
+     * @param field The name of the field to check
+     *
+     * @return true if this field is accepted, otherwise false
      */
-    default void update() {
-        getConnector().getEntityManager().update(this);
-    }
-
-    /**
-     * Alias of {@link EntityManager#update(Object, Filter)}
-     */
-    default void update(Filter filter) {
-        getConnector().getEntityManager().update(this, filter);
-    }
-
-    /**
-     * Alias of {@link EntityManager#save(Object)}
-     */
-    default void save() {
-        getConnector().getEntityManager().save(this);
-    }
-
-    /**
-     * Alias of {@link EntityManager#save(Object, Filter, boolean)}
-     */
-    default void save(Filter filter, boolean update) {
-        getConnector().getEntityManager().save(this, filter, update);
-    }
-
-    /**
-     * Alias of {@link EntityManager#save(Object, Filter)}
-     */
-    default void save(Filter filter) {
-        getConnector().getEntityManager().save(this, filter);
-    }
+    boolean isAccepted(String field);
 
 }

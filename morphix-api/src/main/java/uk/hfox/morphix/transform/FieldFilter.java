@@ -18,7 +18,7 @@
  */
 package uk.hfox.morphix.transform;
 
-public class FieldFilter {
+public class FieldFilter implements Filter {
 
     private final boolean excludes;
     private final String[] fields;
@@ -53,12 +53,13 @@ public class FieldFilter {
      *
      * @return true if this field is accepted, otherwise false
      */
+    @Override
     public boolean isAccepted(String field) {
         boolean contains = false;
         for (String string : fields) {
             if (string.equals(field)) {
                 contains = true;
-                continue;
+                break;
             }
         }
 

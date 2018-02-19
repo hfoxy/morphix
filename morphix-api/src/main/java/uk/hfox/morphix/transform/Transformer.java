@@ -70,7 +70,7 @@ public interface Transformer<T> {
      *
      * @return The database object output
      */
-    T toDB(Object object, FieldFilter filter);
+    T toDB(Object object, Filter filter);
 
     /**
      * Transforms the database object into an Object of undefined type
@@ -84,7 +84,7 @@ public interface Transformer<T> {
     <O> O fromGenericDB(T db, O entity, Class<O> cls);
 
     /**
-     * Alias of {@link Transformer#fromGenericDB(Object, Object, Class, FieldFilter)}
+     * Alias of {@link Transformer#fromGenericDB(Object, Object, Class, Filter)}
      */
     @SuppressWarnings("unchecked")
     default <O> O fromDB(Object db, O entity, Class<O> cls) {
@@ -120,13 +120,13 @@ public interface Transformer<T> {
      *
      * @return The undefined Object output
      */
-    <O> O fromGenericDB(T db, O entity, Class<O> cls, FieldFilter filter);
+    <O> O fromGenericDB(T db, O entity, Class<O> cls, Filter filter);
 
     /**
-     * Alias of {@link Transformer#fromGenericDB(Object, Object, Class, FieldFilter)}
+     * Alias of {@link Transformer#fromGenericDB(Object, Object, Class, Filter)}
      */
     @SuppressWarnings("unchecked")
-    default <O> O fromDB(Object db, O entity, Class<O> cls, FieldFilter filter) {
+    default <O> O fromDB(Object db, O entity, Class<O> cls, Filter filter) {
         T dbg;
         try {
             dbg = (T) db;

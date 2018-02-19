@@ -37,7 +37,7 @@ public class TestTransformer implements Transformer<Object> {
     }
 
     @Override
-    public Object toDB(Object object, FieldFilter filter) {
+    public Object toDB(Object object, Filter filter) {
         throw Testing.unsupported();
     }
 
@@ -47,7 +47,7 @@ public class TestTransformer implements Transformer<Object> {
     }
 
     @Override
-    public <O> O fromGenericDB(Object db, O entity, Class<O> cls, FieldFilter filter) {
+    public <O> O fromGenericDB(Object db, O entity, Class<O> cls, Filter filter) {
         throw Testing.unsupported();
     }
 

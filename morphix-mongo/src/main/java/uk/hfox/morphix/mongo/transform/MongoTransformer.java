@@ -24,10 +24,7 @@ import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.mapper.MongoEntity;
 import uk.hfox.morphix.mongo.mapper.MongoField;
 import uk.hfox.morphix.mongo.transform.converter.*;
-import uk.hfox.morphix.transform.ConvertedType;
-import uk.hfox.morphix.transform.Converter;
-import uk.hfox.morphix.transform.FieldFilter;
-import uk.hfox.morphix.transform.Transformer;
+import uk.hfox.morphix.transform.*;
 import uk.hfox.morphix.utils.Conditions;
 
 import java.lang.reflect.Constructor;
@@ -116,7 +113,7 @@ public class MongoTransformer implements Transformer<Document> {
     }
 
     @Override
-    public Document toDB(Object object, FieldFilter filter) {
+    public Document toDB(Object object, Filter filter) {
         Conditions.notNull(object);
         Conditions.notNull(filter);
 
@@ -143,7 +140,7 @@ public class MongoTransformer implements Transformer<Document> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <O> O fromGenericDB(Document document, O entity, Class<O> cls, FieldFilter filter) {
+    public <O> O fromGenericDB(Document document, O entity, Class<O> cls, Filter filter) {
         Conditions.notNull(document);
         Conditions.notNull(filter);
 

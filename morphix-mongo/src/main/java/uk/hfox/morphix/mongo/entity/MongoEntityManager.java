@@ -32,7 +32,7 @@ import uk.hfox.morphix.mongo.helper.CollectionHelper;
 import uk.hfox.morphix.mongo.query.raw.input.MongoUpdateQuery;
 import uk.hfox.morphix.mongo.query.raw.output.MongoFindQuery;
 import uk.hfox.morphix.query.raw.FindQuery;
-import uk.hfox.morphix.transform.FieldFilter;
+import uk.hfox.morphix.transform.Filter;
 import uk.hfox.morphix.utils.Conditions;
 
 public class MongoEntityManager implements EntityManager {
@@ -68,7 +68,7 @@ public class MongoEntityManager implements EntityManager {
      * {@inheritDoc}
      */
     @Override
-    public void update(Object entity, FieldFilter filter) {
+    public void update(Object entity, Filter filter) {
         Conditions.notNull(entity);
 
         MongoCollection<Document> collection = getCollection(entity);
@@ -79,7 +79,7 @@ public class MongoEntityManager implements EntityManager {
     }
 
     @Override
-    public void update(FindQuery query, FieldFilter filter) {
+    public void update(FindQuery query, Filter filter) {
         Conditions.notNull(query);
 
         if (!(query instanceof MongoFindQuery)) {
@@ -96,7 +96,7 @@ public class MongoEntityManager implements EntityManager {
      * {@inheritDoc}
      */
     @Override
-    public void save(Object entity, FieldFilter filter, boolean update) {
+    public void save(Object entity, Filter filter, boolean update) {
         Conditions.notNull(entity);
 
         MongoCollection<Document> collection = getCollection(entity);
