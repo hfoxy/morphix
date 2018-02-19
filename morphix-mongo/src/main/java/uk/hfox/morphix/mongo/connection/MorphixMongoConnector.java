@@ -21,6 +21,7 @@ package uk.hfox.morphix.mongo.connection;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import uk.hfox.morphix.connector.MorphixConnector;
+import uk.hfox.morphix.mongo.entity.MongoCache;
 import uk.hfox.morphix.mongo.entity.MongoEntityManager;
 import uk.hfox.morphix.mongo.helper.MongoHelperManager;
 import uk.hfox.morphix.mongo.query.MongoQueryBuilder;
@@ -43,8 +44,10 @@ public class MorphixMongoConnector implements MorphixConnector {
 
     protected MorphixMongoConnector(MongoConnector builder) {
         this.builder = builder;
-        this.transformer = new MongoTransformer(this);
-        this.entityManager = new MongoEntityManager(this);
+
+        MongoCache cache = new MongoCache();
+        this.transformer = new MongoTransformer(this, cache);
+        this.entityManager = new MongoEntityManager(this, cache);
         this.helperManager = new MongoHelperManager(this);
     }
 

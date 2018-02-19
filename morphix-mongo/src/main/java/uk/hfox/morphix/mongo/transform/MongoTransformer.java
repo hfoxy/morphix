@@ -19,8 +19,10 @@
 package uk.hfox.morphix.mongo.transform;
 
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
+import uk.hfox.morphix.mongo.entity.MongoCache;
 import uk.hfox.morphix.mongo.mapper.MongoEntity;
 import uk.hfox.morphix.mongo.mapper.MongoField;
 import uk.hfox.morphix.mongo.transform.converter.*;
@@ -39,12 +41,14 @@ import static uk.hfox.morphix.transform.ConvertedType.*;
 public class MongoTransformer implements Transformer<Document> {
 
     private final MorphixMongoConnector connector;
+    private final MongoCache cache;
 
     private final Map<ConvertedType, Converter<Document>> converters;
     private final Map<Class<?>, MongoEntity> entities;
 
-    public MongoTransformer(MorphixMongoConnector connector) {
+    public MongoTransformer(MorphixMongoConnector connector, MongoCache cache) {
         this.connector = connector;
+        this.cache = cache;
         this.converters = new HashMap<>();
         this.entities = new HashMap<>();
 
@@ -144,12 +148,15 @@ public class MongoTransformer implements Transformer<Document> {
         Conditions.notNull(document);
         Conditions.notNull(filter);
 
-        if (entity == null && cls == null) {
-            entity = (O) this.connector.getEntityManager().getEntity(document.getObjectId("_id"));
-
-            if (entity == null) {
-                return null;
+        if (entity == null) {
+            ObjectId key = document.getObjectId("_id");
+            if (key != null) {
+                entity = (O) this.cache.getEntity(key);
             }
+        }
+
+        if (entity == null && cls == null) {
+            return null;
         }
 
         if (entity == null) {

@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix API
+ * Morphix MongoDB
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,45 +16,47 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.query.result;
+package uk.hfox.morphix.mongo.query;
 
+import uk.hfox.morphix.query.result.QueryResult;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by Harry on 28/11/2017.
- * <p>
- * An iterable set of results returned by a query object
- */
-public interface QueryResult<T> extends Iterable<T> {
+public class MongoQueryResult<R> implements QueryResult<R> {
 
-    /**
-     * Alias of first();
-     *
-     * @return The first result returned by the query
-     *
-     * @see QueryResult#first()
-     */
-    T one();
+    private final List<R> list;
+    private final Iterator<R> iterator;
 
-    /**
-     * Get the first result from the query
-     *
-     * @return The first result returned by the query
-     */
-    T first();
+    public MongoQueryResult(List<R> list) {
+        this.list = list;
+        this.iterator = list.iterator();
+    }
 
-    /**
-     * Get the last result from the query
-     *
-     * @return The last result returned by the query
-     */
-    T last();
+    @Override
+    public R one() {
+        return first();
+    }
 
-    /**
-     * Get the results given by the query as a List
-     *
-     * @return An unmodifiable list of results
-     */
-    List<T> all();
+    @Override
+    public R first() {
+        return list.get(0);
+    }
+
+    @Override
+    public R last() {
+        return list.get(list.size() - 1);
+    }
+
+    @Override
+    public List<R> all() {
+        return new ArrayList<>(list);
+    }
+
+    @Override
+    public Iterator<R> iterator() {
+        return this.list.iterator();
+    }
 
 }

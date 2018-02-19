@@ -8,6 +8,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import uk.hfox.morphix.annotations.Entity;
+import uk.hfox.morphix.annotations.field.Transient;
+import uk.hfox.morphix.entity.EntityHelper;
 import uk.hfox.morphix.mongo.connection.MongoConnector;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.query.raw.input.MongoInsertQuery;
@@ -296,6 +299,26 @@ class MongoQueryBuilderTest {
         assertEquals(0, collection.count());
     }
 
+    @Test
+    void results() {
+        String name = this.connector.getHelperManager().getCollectionHelper().getCollection(Item.class);
+        MongoCollection<Document> collection = this.connector.getDatabase().getCollection(name);
+        collection.deleteMany(new BsonDocument());
+        assertEquals(0, collection.count());
+
+        Item[] items = new Item[100];
+        for (int i = 0; i < items.length; i++) {
+            Item item = new Item(this.connector, i + 1, String.format("%03d", i + 1));
+            item.save();
+
+            items[i] = item;
+        }
+
+        for (Item item : this.connector.createQuery(Item.class).result()) {
+            assertEquals(items[item.id - 1], item);
+        }
+    }
+
     private MongoCollection<Document> populate(String name) {
         MongoCollection<Document> collection = this.connector.getDatabase().getCollection(name);
         collection.deleteMany(new BsonDocument());
@@ -319,6 +342,28 @@ class MongoQueryBuilderTest {
     @AfterAll
     void tearDown() {
         this.connector.disconnect();
+    }
+
+    @Entity
+    public static class Item implements EntityHelper {
+
+        @Transient
+        private final MorphixMongoConnector connector;
+
+        private int id;
+        private String name;
+
+        public Item(MorphixMongoConnector connector, int id, String name) {
+            this.connector = connector;
+            this.id = id;
+            this.name = name;
+        }
+
+        @Override
+        public MorphixMongoConnector getConnector() {
+            return connector;
+        }
+
     }
 
 }

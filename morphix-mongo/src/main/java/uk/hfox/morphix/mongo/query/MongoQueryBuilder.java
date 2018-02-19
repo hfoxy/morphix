@@ -26,9 +26,10 @@ import uk.hfox.morphix.mongo.query.raw.output.MongoFindQuery;
 import uk.hfox.morphix.mongo.query.sort.MongoQuerySortElement;
 import uk.hfox.morphix.query.QueryBuilder;
 import uk.hfox.morphix.query.result.QueryResult;
-import uk.hfox.morphix.utils.Conditions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MongoQueryBuilder<R> implements QueryBuilder<R> {
@@ -90,7 +91,16 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
 
     @Override
     public QueryResult<R> result() {
-        throw Conditions.unimplemented();
+        MongoFindQuery query = find();
+
+        List<R> results = new ArrayList<>();
+        for (Document document : query.getResults()) {
+            R result = this.connector.getTransformer().fromGenericDB(document, null, clazz);
+            results.add(result);
+            this.connector.getEntityManager().getCache().put(document.getObjectId("_id"), result);
+        }
+
+        return new MongoQueryResult<>(results);
     }
 
     private Document getFilter() {

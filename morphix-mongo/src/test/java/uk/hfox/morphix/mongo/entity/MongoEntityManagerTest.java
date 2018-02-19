@@ -10,7 +10,7 @@ class MongoEntityManagerTest {
     @Test
     void getConnector() {
         TestMorphixMongoConnector connector = new TestMorphixMongoConnector();
-        MongoEntityManager manager = new MongoEntityManager(connector);
+        MongoEntityManager manager = new MongoEntityManager(connector, null);
         assertNotNull(manager.getConnector());
     }
 

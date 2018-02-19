@@ -25,10 +25,10 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import uk.hfox.morphix.entity.EntityManager;
-import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.exception.support.UnsupportedFeatureException;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.helper.CollectionHelper;
+import uk.hfox.morphix.mongo.query.raw.input.MongoInsertQuery;
 import uk.hfox.morphix.mongo.query.raw.input.MongoUpdateQuery;
 import uk.hfox.morphix.mongo.query.raw.output.MongoFindQuery;
 import uk.hfox.morphix.query.raw.FindQuery;
@@ -38,9 +38,11 @@ import uk.hfox.morphix.utils.Conditions;
 public class MongoEntityManager implements EntityManager {
 
     private final MorphixMongoConnector connector;
+    private final MongoCache cache;
 
-    public MongoEntityManager(MorphixMongoConnector connector) {
+    public MongoEntityManager(MorphixMongoConnector connector, MongoCache cache) {
         this.connector = connector;
+        this.cache = cache;
     }
 
     /**
@@ -51,6 +53,10 @@ public class MongoEntityManager implements EntityManager {
     @Override
     public MorphixMongoConnector getConnector() {
         return this.connector;
+    }
+
+    public MongoCache getCache() {
+        return cache;
     }
 
     /**
@@ -100,9 +106,19 @@ public class MongoEntityManager implements EntityManager {
         Conditions.notNull(entity);
 
         MongoCollection<Document> collection = getCollection(entity);
-        Document document = new Document("$set", getConnector().getTransformer().toDB(entity, filter));
+        Document document = getConnector().getTransformer().toDB(entity, filter);
 
-        new MongoUpdateQuery(collection, getFilters(entity), document, false, new UpdateOptions()).performQuery();
+        ObjectId id = this.cache.getId(entity);
+        if (id == null) {
+            new MongoInsertQuery(collection, document, null).performQuery();
+
+            ObjectId key = document.getObjectId("_id");
+            this.cache.getIds().put(entity, key);
+            this.cache.getCache().put(key, entity);
+        } else {
+            document = new Document("$set", document);
+            new MongoUpdateQuery(collection, getFilters(entity), document, false, new UpdateOptions()).performQuery();
+        }
     }
 
     /**
@@ -117,27 +133,6 @@ public class MongoEntityManager implements EntityManager {
         String collectionName = collectionHelper.getCollection(entity.getClass());
 
         return getConnector().getDatabase().getCollection(collectionName);
-    }
-
-    @Override
-    public Object getEntity(Object key) {
-        if (!(key instanceof ObjectId)) {
-            throw new MorphixEntityException("invalid key type, ObjectId required");
-        }
-
-        ObjectId id = (ObjectId) key;
-        return null;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked") // checked
-    public <T> T getEntity(Object key, Class<T> cls) {
-        Object entity = getEntity(key);
-        if (cls.isAssignableFrom(entity.getClass())) {
-            return (T) entity;
-        }
-
-        return null;
     }
 
 }
