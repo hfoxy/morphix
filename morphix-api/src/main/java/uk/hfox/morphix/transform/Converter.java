@@ -26,14 +26,24 @@ package uk.hfox.morphix.transform;
 public interface Converter<T> {
 
     /**
+     * Alias of {@link Converter#pull(String, Object, Object)}
+     */
+    default Object pull(String key, T entry) {
+        return pull(key, entry, null);
+    }
+
+    /**
      * Pulls the object from the DB entry
      *
      * @param key   The key to pull
      * @param entry The DB entry to pull from
+     * @param value The current value, or null if no value exists
      *
      * @return The constructed object created from the entry
      */
-    Object pull(String key, T entry);
+    default Object pull(String key, T entry, Object value) {
+        return pull(key, entry);
+    }
 
     /**
      * Pushes the object to the DB entry

@@ -61,6 +61,7 @@ public class MongoTransformer implements Transformer<Document> {
         setConverter(BOOLEAN, new BooleanConverter());
         setConverter(STRING, new StringConverter());
         setConverter(DATETIME, new DateTimeConverter());
+        setConverter(ENTITY, new EntityConverter(this));
     }
 
     /**
@@ -172,7 +173,14 @@ public class MongoTransformer implements Transformer<Document> {
             }
 
             MongoField field = entry.getValue();
-            Object value = field.getConverter().pull(field.getName(), document);
+            Object value;
+
+            if (field.getType() == ENTITY || field.getType() == REFERENCE) {
+                value = field.getConverter().pull(field.getName(), document, field.getValue(entity));
+            } else {
+                value = field.getConverter().pull(field.getName(), document);
+            }
+
             field.setValue(entity, value);
         }
 

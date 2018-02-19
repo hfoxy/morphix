@@ -19,18 +19,26 @@
 package uk.hfox.morphix.mongo.transform.converter;
 
 import org.bson.Document;
+import uk.hfox.morphix.mongo.transform.MongoTransformer;
 import uk.hfox.morphix.transform.Converter;
 
-public class BooleanConverter implements Converter<Document> {
+public class EntityConverter implements Converter<Document> {
+
+    private final MongoTransformer transformer;
+
+    public EntityConverter(MongoTransformer transformer) {
+        this.transformer = transformer;
+    }
 
     @Override
-    public Boolean pull(String key, Document entry) {
-        return entry.getBoolean(key);
+    public Object pull(String key, Document entry, Object value) {
+        Document child = (Document) entry.get(key);
+        return this.transformer.fromGenericDB(child, value, null);
     }
 
     @Override
     public void push(String key, Document entry, Object value) {
-        entry.put(key, value);
+        entry.put(key, this.transformer.toDB(value));
     }
 
 }

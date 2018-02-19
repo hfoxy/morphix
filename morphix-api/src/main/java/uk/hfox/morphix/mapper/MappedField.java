@@ -96,4 +96,14 @@ public class MappedField<T> {
         }
     }
 
+    @Override
+    public String toString() {
+        return "MappedField{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                ", field=" + field +
+                ", converter=" + converter +
+                '}';
+    }
+
 }
