@@ -42,7 +42,6 @@ public enum LifecycleAction {
     AFTER_CREATE(AfterCreate.class),
     BEFORE_UPDATE(BeforeUpdate.class),
     AFTER_UPDATE(AfterUpdate.class),
-    BEFORE_ACCESS(BeforeAccess.class),
     AFTER_ACCESS(AfterAccess.class),
     BEFORE_OUT_TRANSFORM(BeforeOutTransform.class),
     AFTER_OUT_TRANSFORM(AfterOutTransform.class),

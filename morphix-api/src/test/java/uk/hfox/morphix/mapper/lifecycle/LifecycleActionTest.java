@@ -161,7 +161,6 @@ class LifecycleActionTest {
         public void afterCreate() {
         }
 
-        @BeforeAccess
         public void beforeAccess() {
         }
 
