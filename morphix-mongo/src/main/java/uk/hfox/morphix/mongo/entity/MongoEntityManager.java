@@ -37,6 +37,7 @@ import uk.hfox.morphix.query.raw.FindQuery;
 import uk.hfox.morphix.transform.Filter;
 import uk.hfox.morphix.utils.Conditions;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -145,10 +146,10 @@ public class MongoEntityManager implements EntityManager {
             lifecycle.add(new LifecycleEntity(mongoEntity, id != null, entity));
 
             if (id != null) {
-                mongoEntity.call(LifecycleAction.UPDATED_AT, entity);
+                mongoEntity.set(LifecycleAction.UPDATED_AT, entity, LocalDateTime.now());
                 mongoEntity.call(LifecycleAction.BEFORE_UPDATE, entity);
             } else {
-                mongoEntity.call(LifecycleAction.CREATED_AT, entity);
+                mongoEntity.set(LifecycleAction.CREATED_AT, entity, LocalDateTime.now());
                 mongoEntity.call(LifecycleAction.BEFORE_CREATE, entity);
             }
 

@@ -151,6 +151,7 @@ public abstract class MappedEntity<F extends MappedField, T extends Transformer>
     public void call(LifecycleAction action, Object entity) {
         Conditions.notNull(action);
         Conditions.notNull(entity);
+        if (!isLifecycle()) return;
 
         if (action.isField()) {
             throw new IllegalArgumentException("action is of field type (" + action.name() + ")");
@@ -173,6 +174,7 @@ public abstract class MappedEntity<F extends MappedField, T extends Transformer>
     public void set(LifecycleAction action, Object entity, Object value) {
         Conditions.notNull(action);
         Conditions.notNull(entity);
+        if (!isLifecycle()) return;
 
         if (!action.isField()) {
             throw new IllegalArgumentException("action is of field type (" + action.name() + ")");

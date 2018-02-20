@@ -5,8 +5,7 @@ import uk.hfox.morphix.annotations.field.Transient;
 import uk.hfox.morphix.annotations.lifecycle.field.AccessedAt;
 import uk.hfox.morphix.annotations.lifecycle.field.CreatedAt;
 import uk.hfox.morphix.annotations.lifecycle.field.UpdatedAt;
-import uk.hfox.morphix.annotations.lifecycle.method.AfterCreate;
-import uk.hfox.morphix.annotations.lifecycle.method.BeforeCreate;
+import uk.hfox.morphix.annotations.lifecycle.method.*;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 
 import java.lang.reflect.Field;
@@ -160,6 +159,38 @@ class LifecycleActionTest {
 
         @AfterCreate
         public void afterCreate() {
+        }
+
+        @BeforeAccess
+        public void beforeAccess() {
+        }
+
+        @AfterAccess
+        public void afterAccess() {
+        }
+
+        @BeforeUpdate
+        public void beforeUpdate() {
+        }
+
+        @AfterUpdate
+        public void afterUpdate() {
+        }
+
+        @BeforeInTransform
+        public void beforeInTransform() {
+        }
+
+        @AfterInTransform
+        public void afterInTransform() {
+        }
+
+        @BeforeOutTransform
+        public void beforeOutTransform() {
+        }
+
+        @AfterOutTransform
+        public void afterOutTransform() {
         }
 
     }
