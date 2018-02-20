@@ -21,6 +21,7 @@ package uk.hfox.morphix.mongo.transform;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
+import uk.hfox.morphix.mapper.lifecycle.LifecycleAction;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.entity.MongoCache;
 import uk.hfox.morphix.mongo.mapper.MongoEntity;
@@ -124,6 +125,7 @@ public class MongoTransformer implements Transformer<Document> {
         Document document = new Document();
         MongoEntity entity = getOrMapEntity(object.getClass());
         Map<String, MongoField> fields = entity.getFields();
+        entity.call(LifecycleAction.BEFORE_OUT_TRANSFORM, object);
 
         for (Map.Entry<String, MongoField> entry : fields.entrySet()) {
             if (!filter.isAccepted(entry.getKey())) {
@@ -134,6 +136,7 @@ public class MongoTransformer implements Transformer<Document> {
             field.getConverter().push(field.getName(), document, field.getValue(object));
         }
 
+        entity.call(LifecycleAction.AFTER_OUT_TRANSFORM, object);
         return document;
     }
 
@@ -170,6 +173,7 @@ public class MongoTransformer implements Transformer<Document> {
 
         MongoEntity mongoEntity = getOrMapEntity(entity.getClass());
         Map<String, MongoField> fields = mongoEntity.getFields();
+        mongoEntity.call(LifecycleAction.BEFORE_IN_TRANSFORM, entity);
 
         for (Map.Entry<String, MongoField> entry : fields.entrySet()) {
             if (!filter.isAccepted(entry.getKey())) {
@@ -188,6 +192,7 @@ public class MongoTransformer implements Transformer<Document> {
             field.setValue(entity, value);
         }
 
+        mongoEntity.call(LifecycleAction.AFTER_IN_TRANSFORM, entity);
         return entity;
     }
 
