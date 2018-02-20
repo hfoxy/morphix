@@ -35,6 +35,11 @@ import uk.hfox.morphix.query.raw.FindQuery;
 import uk.hfox.morphix.transform.Filter;
 import uk.hfox.morphix.utils.Conditions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class MongoEntityManager implements EntityManager {
 
     private final MorphixMongoConnector connector;
@@ -67,21 +72,26 @@ public class MongoEntityManager implements EntityManager {
      * @return The bson filter
      */
     public Bson getFilters(Object object) {
-        return Filters.eq("_id", null);
+        return Filters.eq("_id", cache.getId(object));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void update(Object entity, Filter filter) {
-        Conditions.notNull(entity);
+    public void update(Filter filter, Object... entities) {
+        Conditions.notNull(entities);
+        if (entities.length == 0) {
+            return;
+        }
 
-        MongoCollection<Document> collection = getCollection(entity);
-        MongoFindQuery find = new MongoFindQuery(collection, getFilters(entity));
-        find.performQuery();
+        MongoCollection<Document> collection = getCollection(entities[0]);
+        for (Object entity : entities) {
+            MongoFindQuery find = new MongoFindQuery(collection, getFilters(entity));
+            find.performQuery();
 
-        getConnector().getTransformer().fromGenericDB(find.getOutput().first(), entity, null, filter);
+            getConnector().getTransformer().fromGenericDB(find.getOutput().first(), entity, null, filter);
+        }
     }
 
     @Override
@@ -102,22 +112,36 @@ public class MongoEntityManager implements EntityManager {
      * {@inheritDoc}
      */
     @Override
-    public void save(Object entity, Filter filter, boolean update) {
-        Conditions.notNull(entity);
+    public void save(Filter filter, boolean update, Object... entities) {
+        Conditions.notNull(entities);
+        if (entities.length == 0) {
+            return;
+        }
 
-        MongoCollection<Document> collection = getCollection(entity);
-        Document document = getConnector().getTransformer().toDB(entity, filter);
+        MongoCollection<Document> collection = getCollection(entities[0]);
+        Map<Document, Object> inserts = new HashMap<>();
 
-        ObjectId id = this.cache.getId(entity);
-        if (id == null) {
-            new MongoInsertQuery(collection, document, null).performQuery();
+        for (Object entity : entities) {
+            Document document = getConnector().getTransformer().toDB(entity, filter);
 
-            ObjectId key = document.getObjectId("_id");
-            this.cache.getIds().put(entity, key);
-            this.cache.getCache().put(key, entity);
+            ObjectId id = this.cache.getId(entity);
+            if (id != null) {
+                document = new Document("$set", document);
+                new MongoUpdateQuery(collection, getFilters(entity), document, false, new UpdateOptions()).performQuery();
+            } else {
+                inserts.put(document, entity);
+            }
+        }
+
+        List<Document> documents = new ArrayList<>(inserts.keySet());
+        if (documents.size() == 1) {
+            new MongoInsertQuery(collection, documents.get(0), null).performQuery();
         } else {
-            document = new Document("$set", document);
-            new MongoUpdateQuery(collection, getFilters(entity), document, false, new UpdateOptions()).performQuery();
+            new MongoInsertQuery(collection, documents, null).performQuery();
+        }
+
+        for (Map.Entry<Document, Object> entry : inserts.entrySet()) {
+            this.cache.put(entry.getKey().getObjectId("_id"), entry.getValue());
         }
     }
 

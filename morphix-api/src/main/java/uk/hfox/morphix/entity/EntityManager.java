@@ -38,8 +38,8 @@ public interface EntityManager {
     /**
      * Updates all fields in this entity
      */
-    default void update(Object entity) {
-        update(entity, new FieldFilter(true));
+    default void update(Object[] entities) {
+        update(new FieldFilter(true), entities);
     }
 
     /**
@@ -47,7 +47,7 @@ public interface EntityManager {
      *
      * @param filter The filter to check against
      */
-    void update(Object entity, Filter filter);
+    void update(Filter filter, Object[] entity);
 
     /**
      * Updates fields within each of the query responses
@@ -60,8 +60,8 @@ public interface EntityManager {
     /**
      * Saves all fields in the entity
      */
-    default void save(Object entity) {
-        save(entity, new FieldFilter(true));
+    default void save(Object[] entities) {
+        save(new FieldFilter(true), entities);
     }
 
     /**
@@ -70,15 +70,15 @@ public interface EntityManager {
      *
      * @param filter The filter to check against
      */
-    void save(Object entity, Filter filter, boolean update);
+    void save(Filter filter, boolean update, Object[] entities);
 
     /**
-     * Alias of {@link EntityManager#save(Object, Filter, boolean)}
+     * Alias of {@link EntityManager#save(Filter, boolean, Object[])}
      *
      * @param filter The filter to check against
      */
-    default void save(Object entity, Filter filter) {
-        save(entity, filter, false);
+    default void save(Filter filter, Object[] entities) {
+        save(filter, false, entities);
     }
 
 }

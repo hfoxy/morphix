@@ -26,38 +26,38 @@ public interface EntityHelper {
     MorphixConnector getConnector();
 
     /**
-     * Alias of {@link EntityManager#update(Object)}
+     * Alias of {@link EntityManager#update(Object[])}
      */
     default void update() {
-        getConnector().getEntityManager().update(this);
+        getConnector().getEntityManager().update(new Object[]{this});
     }
 
     /**
-     * Alias of {@link EntityManager#update(Object, Filter)}
+     * Alias of {@link EntityManager#update(Filter, Object[])}
      */
     default void update(Filter filter) {
-        getConnector().getEntityManager().update(this, filter);
+        getConnector().getEntityManager().update(filter, new Object[]{this});
     }
 
     /**
-     * Alias of {@link EntityManager#save(Object)}
+     * Alias of {@link EntityManager#save(Object[])}
      */
     default void save() {
-        getConnector().getEntityManager().save(this);
+        getConnector().getEntityManager().save(new Object[]{this});
     }
 
     /**
-     * Alias of {@link EntityManager#save(Object, Filter, boolean)}
+     * Alias of {@link EntityManager#save(Filter, boolean, Object[])}
      */
     default void save(Filter filter, boolean update) {
-        getConnector().getEntityManager().save(this, filter, update);
+        getConnector().getEntityManager().save(filter, update, new Object[]{this});
     }
 
     /**
-     * Alias of {@link EntityManager#save(Object, Filter)}
+     * Alias of {@link EntityManager#save(Filter, Object[])}
      */
     default void save(Filter filter) {
-        getConnector().getEntityManager().save(this, filter);
+        getConnector().getEntityManager().save(filter, new Object[]{this});
     }
 
 }

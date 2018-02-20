@@ -19,21 +19,22 @@
 package uk.hfox.morphix.mongo.entity;
 
 import org.bson.types.ObjectId;
-import uk.hfox.morphix.annotations.field.Id;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
-import uk.hfox.morphix.utils.search.Search;
+import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
+import uk.hfox.morphix.mongo.mapper.MongoEntity;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MongoCache {
 
+    private final MorphixMongoConnector connector;
     private final Map<ObjectId, Object> cache;
     private final Map<Object, ObjectId> ids;
 
-    public MongoCache() {
+    public MongoCache(MorphixMongoConnector connector) {
+        this.connector = connector;
         this.cache = new HashMap<>();
         this.ids = new HashMap<>();
     }
@@ -46,25 +47,13 @@ public class MongoCache {
         return ids;
     }
 
-    public Field getIdField(Object entity) {
-        List<Field> fields = Search.getAllFields(entity.getClass());
-        for (Field field : fields) {
-            Id anno = field.getAnnotation(Id.class);
-            if (anno == null) {
-                continue;
-            }
-
-            return field;
-        }
-
-        return null;
-    }
-
     public ObjectId getId(Object entity) {
         ObjectId id = null;
 
         try {
-            Field field = getIdField(entity);
+            MongoEntity mongoEntity = this.connector.getTransformer().getOrMapEntity(entity.getClass());
+
+            Field field = mongoEntity.getIdField();
             if (field != null) {
                 id = (ObjectId) field.get(entity);
             }
@@ -97,6 +86,17 @@ public class MongoCache {
     }
 
     public void put(ObjectId id, Object entity) {
+        MongoEntity mongoEntity = this.connector.getTransformer().getOrMapEntity(entity.getClass());
+        Field field = mongoEntity.getIdField();
+        if (field != null) {
+            try {
+                field.setAccessible(true);
+                field.set(entity, id);
+            } catch (IllegalAccessException ex) {
+                throw new MorphixEntityException("unable to access field", ex);
+            }
+        }
+
         this.ids.put(entity, id);
         this.cache.put(id, entity);
     }

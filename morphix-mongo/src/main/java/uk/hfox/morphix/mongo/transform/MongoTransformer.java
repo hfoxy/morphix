@@ -145,8 +145,8 @@ public class MongoTransformer implements Transformer<Document> {
     @Override
     @SuppressWarnings("unchecked")
     public <O> O fromGenericDB(Document document, O entity, Class<O> cls, Filter filter) {
-        Conditions.notNull(document);
-        Conditions.notNull(filter);
+        Conditions.notNull(document, "document");
+        Conditions.notNull(filter, "filter");
 
         if (entity == null) {
             ObjectId key = document.getObjectId("_id");

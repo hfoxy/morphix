@@ -45,7 +45,7 @@ public class MorphixMongoConnector implements MorphixConnector {
     protected MorphixMongoConnector(MongoConnector builder) {
         this.builder = builder;
 
-        MongoCache cache = new MongoCache();
+        MongoCache cache = new MongoCache(this);
         this.transformer = new MongoTransformer(this, cache);
         this.entityManager = new MongoEntityManager(this, cache);
         this.helperManager = new MongoHelperManager(this);

@@ -19,8 +19,10 @@
 package uk.hfox.morphix.transform;
 
 import uk.hfox.morphix.annotations.Entity;
+import uk.hfox.morphix.annotations.field.Id;
 import uk.hfox.morphix.annotations.field.Reference;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
+import uk.hfox.morphix.exception.mapper.MorphixFieldException;
 import uk.hfox.morphix.utils.Conditions;
 import uk.hfox.morphix.utils.search.Search;
 
@@ -101,12 +103,23 @@ public enum ConvertedType {
         public boolean isSatisfied(Class<?> cls) {
             return ENTITY.isSatisfied(cls);
         }
+    },
+    ID {
+        @Override
+        public boolean isSatisfied(Class<?> cls) {
+            return false;
+        }
     };
 
     public abstract boolean isSatisfied(Class<?> cls);
 
     public static ConvertedType findByField(Field field) {
         Conditions.notNull(field);
+
+        Id id = field.getAnnotation(Id.class);
+        if (id != null) {
+            return ID;
+        }
 
         Reference reference = field.getAnnotation(Reference.class);
         if (reference != null) {
@@ -131,7 +144,7 @@ public enum ConvertedType {
                 " in " + field.getDeclaringClass().getName() +
                 " has an invalid type";
 
-        throw new IllegalArgumentException(message);
+        throw new MorphixFieldException(message);
     }
 
 }

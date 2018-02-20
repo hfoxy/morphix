@@ -19,6 +19,7 @@
 package uk.hfox.morphix.mapper;
 
 import uk.hfox.morphix.annotations.Lifecycle;
+import uk.hfox.morphix.annotations.field.Id;
 import uk.hfox.morphix.annotations.field.Properties;
 import uk.hfox.morphix.annotations.field.Transient;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
@@ -45,6 +46,8 @@ public abstract class MappedEntity<F extends MappedField, T extends Transformer>
     private final Map<LifecycleAction, List<Method>> lifecycleMethods;
     private final Map<LifecycleAction, List<Field>> lifecycleFields;
     private final Map<String, F> fields;
+
+    private Field idField;
 
     public MappedEntity(T transformer, Class<?> clazz) {
         this.transformer = transformer;
@@ -83,6 +86,15 @@ public abstract class MappedEntity<F extends MappedField, T extends Transformer>
     }
 
     /**
+     * Gets the field used to set the Entity's id. This can be null
+     *
+     * @return The ID field
+     */
+    public Field getIdField() {
+        return idField;
+    }
+
+    /**
      * Clears and repopulates the entity with new mapped fields
      */
     public void map() {
@@ -115,6 +127,12 @@ public abstract class MappedEntity<F extends MappedField, T extends Transformer>
 
         if (this.fields.containsKey(field.getName())) {
             throw new MorphixEntityException("field name '" + field.getName() + "' already exists");
+        }
+
+        if (field.getAnnotation(Id.class) != null) {
+            field.setAccessible(true);
+            this.idField = field;
+            return;
         }
 
         F mapped = getField(field.getAnnotation(Properties.class), field);

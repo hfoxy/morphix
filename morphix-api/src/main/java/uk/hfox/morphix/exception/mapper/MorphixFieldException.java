@@ -27,6 +27,10 @@ public class MorphixFieldException extends RuntimeException implements MorphixEx
 
     private static final long serialVersionUID = 6215638622273705866L;
 
+    public MorphixFieldException(String message) {
+        super(message);
+    }
+
     public MorphixFieldException(String message, Throwable cause) {
         super(message, cause);
     }

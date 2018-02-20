@@ -9,12 +9,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import uk.hfox.morphix.annotations.Entity;
+import uk.hfox.morphix.annotations.field.Id;
 import uk.hfox.morphix.annotations.field.Transient;
 import uk.hfox.morphix.entity.EntityHelper;
 import uk.hfox.morphix.mongo.connection.MongoConnector;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.query.raw.input.MongoInsertQuery;
+import uk.hfox.morphix.mongo.query.raw.input.MongoUpdateQuery;
 import uk.hfox.morphix.mongo.query.raw.output.MongoFindQuery;
+import uk.hfox.morphix.transform.FieldFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -309,13 +312,23 @@ class MongoQueryBuilderTest {
         Item[] items = new Item[10000];
         for (int i = 0; i < items.length; i++) {
             Item item = new Item(this.connector, i + 1, String.format("%05d", i + 1));
-            item.save();
-
             items[i] = item;
+            assertNull(item.objectId);
         }
+
+        this.connector.getEntityManager().save(items);
 
         for (Item item : this.connector.createQuery(Item.class).result()) {
             assertEquals(items[item.id - 1], item);
+            assertNotNull(item.objectId);
+        }
+
+        Document bson = new Document("$set", new Document("name", "updated"));
+        new MongoUpdateQuery(collection, new Document(), bson, true, null).performQuery();
+
+        this.connector.getEntityManager().update(new FieldFilter(false, "name"), items);
+        for (Item item : items) {
+            assertEquals("updated", item.name);
         }
     }
 
@@ -346,6 +359,9 @@ class MongoQueryBuilderTest {
 
     @Entity
     public static class Item implements EntityHelper {
+
+        @Id
+        private Object objectId;
 
         @Transient
         private final MorphixMongoConnector connector;
