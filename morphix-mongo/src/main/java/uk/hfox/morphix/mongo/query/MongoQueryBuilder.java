@@ -20,13 +20,16 @@ package uk.hfox.morphix.mongo.query;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
+import uk.hfox.morphix.mapper.lifecycle.LifecycleAction;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
+import uk.hfox.morphix.mongo.mapper.MongoEntity;
 import uk.hfox.morphix.mongo.query.raw.input.MongoDeleteQuery;
 import uk.hfox.morphix.mongo.query.raw.output.MongoFindQuery;
 import uk.hfox.morphix.mongo.query.sort.MongoQuerySortElement;
 import uk.hfox.morphix.query.QueryBuilder;
 import uk.hfox.morphix.query.result.QueryResult;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -98,6 +101,9 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
             R result = this.connector.getTransformer().fromGenericDB(document, null, clazz);
             results.add(result);
             this.connector.getEntityManager().getCache().put(document.getObjectId("_id"), result);
+
+            MongoEntity entity = this.connector.getTransformer().getOrMapEntity(result.getClass());
+            entity.set(LifecycleAction.ACCESSED_AT, result, LocalDateTime.now());
         }
 
         return new MongoQueryResult<>(results);
