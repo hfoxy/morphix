@@ -114,7 +114,7 @@ public class MongoEntityManager implements EntityManager {
      * {@inheritDoc}
      */
     @Override
-    public void save(Filter filter, boolean update, Object... entities) {
+    public void save(Filter filter, boolean update, Object[] entities) {
         Conditions.notNull(entities);
         if (entities.length == 0) {
             return;
@@ -123,7 +123,22 @@ public class MongoEntityManager implements EntityManager {
         MongoCollection<Document> collection = getCollection(entities[0]);
         Map<Document, Object> inserts = new HashMap<>();
         List<LifecycleEntity> lifecycle = new ArrayList<>();
+        populateOrUpdate(filter, entities, collection, inserts, lifecycle);
+        performInsert(collection, inserts);
 
+        for (LifecycleEntity entry : lifecycle) {
+            MongoEntity mongoEntity = entry.mongoEntity;
+
+            if (entry.update) {
+                mongoEntity.call(LifecycleAction.AFTER_UPDATE, entry.entity);
+            } else {
+                mongoEntity.call(LifecycleAction.AFTER_CREATE, entry.entity);
+            }
+        }
+    }
+
+    private void populateOrUpdate(Filter filter, Object[] entities, MongoCollection<Document> collection,
+                                  Map<Document, Object> inserts, List<LifecycleEntity> lifecycle) {
         for (Object entity : entities) {
             ObjectId id = this.cache.getId(entity);
             MongoEntity mongoEntity = this.connector.getTransformer().getOrMapEntity(entity.getClass());
@@ -146,7 +161,9 @@ public class MongoEntityManager implements EntityManager {
                 inserts.put(document, entity);
             }
         }
+    }
 
+    private void performInsert(MongoCollection<Document> collection, Map<Document, Object> inserts) {
         List<Document> documents = new ArrayList<>(inserts.keySet());
         if (documents.size() == 1) {
             new MongoInsertQuery(collection, documents.get(0), null).performQuery();
@@ -156,16 +173,6 @@ public class MongoEntityManager implements EntityManager {
 
         for (Map.Entry<Document, Object> entry : inserts.entrySet()) {
             this.cache.put(entry.getKey().getObjectId("_id"), entry.getValue());
-        }
-
-        for (LifecycleEntity entry : lifecycle) {
-            MongoEntity mongoEntity = entry.mongoEntity;
-
-            if (entry.update) {
-                mongoEntity.call(LifecycleAction.AFTER_UPDATE, entry.entity);
-            } else {
-                mongoEntity.call(LifecycleAction.AFTER_CREATE, entry.entity);
-            }
         }
     }
 
