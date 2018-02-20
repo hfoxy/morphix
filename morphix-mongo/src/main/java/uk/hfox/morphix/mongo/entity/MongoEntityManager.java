@@ -150,7 +150,7 @@ public class MongoEntityManager implements EntityManager {
         List<Document> documents = new ArrayList<>(inserts.keySet());
         if (documents.size() == 1) {
             new MongoInsertQuery(collection, documents.get(0), null).performQuery();
-        } else {
+        } else if (!documents.isEmpty()) {
             new MongoInsertQuery(collection, documents, null).performQuery();
         }
 
