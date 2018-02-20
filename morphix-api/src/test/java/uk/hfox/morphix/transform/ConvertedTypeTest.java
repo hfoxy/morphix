@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import uk.hfox.morphix.annotations.Entity;
 import uk.hfox.morphix.annotations.field.Reference;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
+import uk.hfox.morphix.exception.mapper.MorphixFieldException;
 
 import java.time.LocalDateTime;
 
@@ -107,7 +108,7 @@ class ConvertedTypeTest {
         assertEquals(DATETIME, ConvertedType.findByField(cls.getDeclaredField("dateTimeField")));
 
         assertEquals(ENTITY, ConvertedType.findByField(cls.getDeclaredField("entityField")));
-        assertThrows(IllegalArgumentException.class, () -> ConvertedType.findByField(cls.getDeclaredField("objectField")));
+        assertThrows(MorphixFieldException.class, () -> ConvertedType.findByField(cls.getDeclaredField("objectField")));
 
         assertEquals(REFERENCE, ConvertedType.findByField(cls.getDeclaredField("referenceField")));
         assertThrows(MorphixEntityException.class, () -> ConvertedType.findByField(cls.getDeclaredField("objectReferenceField")));
