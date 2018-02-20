@@ -22,8 +22,7 @@ import uk.hfox.morphix.annotations.field.Transient;
 import uk.hfox.morphix.annotations.lifecycle.field.AccessedAt;
 import uk.hfox.morphix.annotations.lifecycle.field.CreatedAt;
 import uk.hfox.morphix.annotations.lifecycle.field.UpdatedAt;
-import uk.hfox.morphix.annotations.lifecycle.method.AfterCreate;
-import uk.hfox.morphix.annotations.lifecycle.method.BeforeCreate;
+import uk.hfox.morphix.annotations.lifecycle.method.*;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.utils.Conditions;
 import uk.hfox.morphix.utils.search.Search;
@@ -41,6 +40,14 @@ public enum LifecycleAction {
 
     BEFORE_CREATE(BeforeCreate.class),
     AFTER_CREATE(AfterCreate.class),
+    BEFORE_UPDATE(BeforeUpdate.class),
+    AFTER_UPDATE(AfterUpdate.class),
+    BEFORE_ACCESS(BeforeAccess.class),
+    AFTER_ACCESS(AfterAccess.class),
+    BEFORE_OUT_TRANSFORM(BeforeOutTransform.class),
+    AFTER_OUT_TRANSFORM(AfterOutTransform.class),
+    BEFORE_IN_TRANSFORM(BeforeInTransform.class),
+    AFTER_IN_TRANSFORM(AfterInTransform.class),
     CREATED_AT(CreatedAt.class, true, LocalDateTime.class),
     ACCESSED_AT(AccessedAt.class, true, LocalDateTime.class),
     UPDATED_AT(UpdatedAt.class, true, LocalDateTime.class);
