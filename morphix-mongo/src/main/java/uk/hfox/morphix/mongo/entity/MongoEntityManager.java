@@ -26,8 +26,10 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import uk.hfox.morphix.entity.EntityManager;
 import uk.hfox.morphix.exception.support.UnsupportedFeatureException;
+import uk.hfox.morphix.mapper.lifecycle.LifecycleAction;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.helper.CollectionHelper;
+import uk.hfox.morphix.mongo.mapper.MongoEntity;
 import uk.hfox.morphix.mongo.query.raw.input.MongoInsertQuery;
 import uk.hfox.morphix.mongo.query.raw.input.MongoUpdateQuery;
 import uk.hfox.morphix.mongo.query.raw.output.MongoFindQuery;
@@ -120,11 +122,23 @@ public class MongoEntityManager implements EntityManager {
 
         MongoCollection<Document> collection = getCollection(entities[0]);
         Map<Document, Object> inserts = new HashMap<>();
+        List<LifecycleEntity> lifecycle = new ArrayList<>();
 
         for (Object entity : entities) {
+            ObjectId id = this.cache.getId(entity);
+            MongoEntity mongoEntity = this.connector.getTransformer().getOrMapEntity(entity.getClass());
+            lifecycle.add(new LifecycleEntity(mongoEntity, id != null, entity));
+
+            if (id != null) {
+                mongoEntity.call(LifecycleAction.UPDATED_AT, entity);
+                mongoEntity.call(LifecycleAction.BEFORE_UPDATE, entity);
+            } else {
+                mongoEntity.call(LifecycleAction.CREATED_AT, entity);
+                mongoEntity.call(LifecycleAction.BEFORE_CREATE, entity);
+            }
+
             Document document = getConnector().getTransformer().toDB(entity, filter);
 
-            ObjectId id = this.cache.getId(entity);
             if (id != null) {
                 document = new Document("$set", document);
                 new MongoUpdateQuery(collection, getFilters(entity), document, false, new UpdateOptions()).performQuery();
@@ -143,6 +157,16 @@ public class MongoEntityManager implements EntityManager {
         for (Map.Entry<Document, Object> entry : inserts.entrySet()) {
             this.cache.put(entry.getKey().getObjectId("_id"), entry.getValue());
         }
+
+        for (LifecycleEntity entry : lifecycle) {
+            MongoEntity mongoEntity = entry.mongoEntity;
+
+            if (entry.update) {
+                mongoEntity.call(LifecycleAction.AFTER_UPDATE, entry.entity);
+            } else {
+                mongoEntity.call(LifecycleAction.AFTER_CREATE, entry.entity);
+            }
+        }
     }
 
     /**
@@ -157,6 +181,20 @@ public class MongoEntityManager implements EntityManager {
         String collectionName = collectionHelper.getCollection(entity.getClass());
 
         return getConnector().getDatabase().getCollection(collectionName);
+    }
+
+    private static final class LifecycleEntity {
+
+        private final MongoEntity mongoEntity;
+        private final boolean update;
+        private final Object entity;
+
+        public LifecycleEntity(MongoEntity mongoEntity, boolean update, Object entity) {
+            this.mongoEntity = mongoEntity;
+            this.update = update;
+            this.entity = entity;
+        }
+
     }
 
 }
