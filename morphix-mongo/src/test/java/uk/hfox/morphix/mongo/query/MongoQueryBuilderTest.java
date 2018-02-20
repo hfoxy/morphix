@@ -306,29 +306,65 @@ class MongoQueryBuilderTest {
     void results() {
         String name = this.connector.getHelperManager().getCollectionHelper().getCollection(Item.class);
         MongoCollection<Document> collection = this.connector.getDatabase().getCollection(name);
-        collection.deleteMany(new BsonDocument());
-        assertEquals(0, collection.count());
 
-        Item[] items = new Item[10000];
-        for (int i = 0; i < items.length; i++) {
-            Item item = new Item(this.connector, i + 1, String.format("%05d", i + 1));
-            items[i] = item;
-            assertNull(item.objectId);
-        }
+        for (int k = 0; k < 5; k++) {
+            int sum = 0;
+            int runs = 100;
+            long lowest = -1;
+            long total = 0;
 
-        this.connector.getEntityManager().save(items);
+            long start = System.currentTimeMillis();
+            for (int j = 0; j < runs; j++) {
+                int records = 100;
+                sum += records;
 
-        for (Item item : this.connector.createQuery(Item.class).result()) {
-            assertEquals(items[item.id - 1], item);
-            assertNotNull(item.objectId);
-        }
+                collection.deleteMany(new BsonDocument());
+                assertEquals(0, collection.count());
 
-        Document bson = new Document("$set", new Document("name", "updated"));
-        new MongoUpdateQuery(collection, new Document(), bson, true, null).performQuery();
+                Item[] items = new Item[records];
+                for (int i = 0; i < items.length; i++) {
+                    Item item = new Item(this.connector, i + 1, String.format("%05d", i + 1));
+                    items[i] = item;
+                    assertNull(item.objectId);
+                }
 
-        this.connector.getEntityManager().update(new FieldFilter(false, "name"), items);
-        for (Item item : items) {
-            assertEquals("updated", item.name);
+                this.connector.getEntityManager().save(items);
+
+                for (Item item : this.connector.createQuery(Item.class).result()) {
+                    assertEquals(items[item.id - 1], item);
+                    assertNotNull(item.objectId);
+                }
+
+                Document bson = new Document("$set", new Document("name", "updated"));
+                new MongoUpdateQuery(collection, new Document(), bson, true, null).performQuery();
+
+                this.connector.getEntityManager().update(new FieldFilter(false, "name"), items);
+                for (Item item : items) {
+                    assertEquals("updated", item.name);
+                }
+
+                long end = System.currentTimeMillis();
+                long time = end - start;
+                total += time;
+                if (lowest == -1 || lowest > time) {
+                    lowest = time;
+                }
+
+                StringBuilder builder = new StringBuilder();
+                builder.append(records).append(" inserted (").append(String.format("%03d", j + 1)).append("): ");
+                builder.append(time).append("ms");
+                // System.out.println(builder.toString());
+
+                start = System.currentTimeMillis();
+            }
+
+            double average = (double) total;
+            average = average / runs;
+
+            System.out.println("Records inserted: " + sum);
+            System.out.println("Total time: " + total + "ms");
+            System.out.println("Lowest time: " + lowest + "ms");
+            System.out.println("Average time: " + String.format("%04f", average));
         }
     }
 
