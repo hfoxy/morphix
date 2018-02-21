@@ -3,13 +3,14 @@ package uk.hfox.morphix.mongo.transform;
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
 import uk.hfox.morphix.annotations.Entity;
+import uk.hfox.morphix.annotations.field.Properties;
+import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.mongo.TestMorphixMongoConnector;
 import uk.hfox.morphix.transform.FieldFilter;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class MongoTransformerTest {
 
@@ -45,6 +46,11 @@ class MongoTransformerTest {
         assertEquals(document.get("c"), base.c);
         assertEquals(document.get("d"), base.d);
         assertEquals(original, base.i);
+
+        assertNull(transformer.fromGenericDB(new Document(), null, null));
+
+        assertThrows(MorphixEntityException.class, () -> transformer
+                .fromGenericDB(new Document("name", "entity"), null, Broken.class));
     }
 
     @Entity
@@ -62,6 +68,9 @@ class MongoTransformerTest {
         private LocalDateTime time = LocalDateTime.now();
         private Sub sub = new Sub();
 
+        @Properties(name = "my_string")
+        private String myString = "test";
+
         @Override
         public String toString() {
             return "Base{" +
@@ -76,6 +85,7 @@ class MongoTransformerTest {
                     ", i='" + i + '\'' +
                     ", time=" + time +
                     ", sub=" + sub +
+                    ", myString='" + myString + '\'' +
                     '}';
         }
 
@@ -91,6 +101,17 @@ class MongoTransformerTest {
             return "Sub{" +
                     "sub='" + sub + '\'' +
                     '}';
+        }
+
+    }
+
+    @Entity
+    public static class Broken {
+
+        private String name;
+
+        public Broken(String name) {
+            this.name = name;
         }
 
     }
