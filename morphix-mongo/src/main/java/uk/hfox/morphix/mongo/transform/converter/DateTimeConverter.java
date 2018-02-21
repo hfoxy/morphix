@@ -39,10 +39,6 @@ public class DateTimeConverter implements Converter<Document> {
 
     @Override
     public void push(String key, Document entry, Object value) {
-        if (!(value instanceof LocalDateTime)) {
-            throw new IllegalArgumentException("value must be LocalDateTime");
-        }
-
         LocalDateTime local = (LocalDateTime) value;
         ZonedDateTime zoned = local.atZone(ZoneId.systemDefault());
         Date date = Date.from(zoned.toInstant());

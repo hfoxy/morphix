@@ -2,6 +2,7 @@ package uk.hfox.morphix.transform;
 
 import org.junit.jupiter.api.Test;
 import uk.hfox.morphix.annotations.Entity;
+import uk.hfox.morphix.annotations.field.Id;
 import uk.hfox.morphix.annotations.field.Reference;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.exception.mapper.MorphixFieldException;
@@ -94,6 +95,12 @@ class ConvertedTypeTest {
     }
 
     @Test
+    void idType() {
+        assertFalse(ID.isSatisfied(Object.class));
+        assertFalse(ID.isSatisfied(EntityTest.class));
+    }
+
+    @Test
     void findByPrimitiveField() throws Exception {
         check(PrimitiveTypes.class);
     }
@@ -112,6 +119,8 @@ class ConvertedTypeTest {
 
         assertEquals(REFERENCE, ConvertedType.findByField(cls.getDeclaredField("referenceField")));
         assertThrows(MorphixEntityException.class, () -> ConvertedType.findByField(cls.getDeclaredField("objectReferenceField")));
+
+        assertEquals(ID, ConvertedType.findByField(cls.getDeclaredField("id")));
     }
 
     private void check(Class<?> cls) throws Exception {
@@ -167,6 +176,9 @@ class ConvertedTypeTest {
 
         @Reference
         private Object objectReferenceField;
+
+        @Id
+        private Object id;
 
     }
 

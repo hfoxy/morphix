@@ -37,6 +37,8 @@ class MongoEntityManagerTest {
 
     @Test
     void update() {
+        runTest(0);
+
         int count = 1;
         for (int i = 0; i < 4; i++) {
             runTest(count);

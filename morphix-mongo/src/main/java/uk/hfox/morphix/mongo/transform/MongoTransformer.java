@@ -22,7 +22,6 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.mapper.lifecycle.LifecycleAction;
-import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.entity.MongoCache;
 import uk.hfox.morphix.mongo.mapper.MongoEntity;
 import uk.hfox.morphix.mongo.mapper.MongoField;
@@ -31,6 +30,7 @@ import uk.hfox.morphix.transform.*;
 import uk.hfox.morphix.utils.Conditions;
 
 import java.lang.reflect.Constructor;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,16 +41,14 @@ import static uk.hfox.morphix.transform.ConvertedType.*;
  */
 public class MongoTransformer implements Transformer<Document> {
 
-    private final MorphixMongoConnector connector;
     private final MongoCache cache;
 
-    private final Map<ConvertedType, Converter<Document>> converters;
+    private final EnumMap<ConvertedType, Converter<Document>> converters;
     private final Map<Class<?>, MongoEntity> entities;
 
-    public MongoTransformer(MorphixMongoConnector connector, MongoCache cache) {
-        this.connector = connector;
+    public MongoTransformer(MongoCache cache) {
         this.cache = cache;
-        this.converters = new HashMap<>();
+        this.converters = new EnumMap<>(ConvertedType.class);
         this.entities = new HashMap<>();
 
         setConverter(BYTE, new ByteConverter());
