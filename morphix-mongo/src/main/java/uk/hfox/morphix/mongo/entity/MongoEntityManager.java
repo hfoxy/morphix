@@ -25,7 +25,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import uk.hfox.morphix.entity.EntityManager;
-import uk.hfox.morphix.exception.support.UnsupportedFeatureException;
 import uk.hfox.morphix.mapper.lifecycle.LifecycleAction;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.helper.CollectionHelper;
@@ -33,7 +32,6 @@ import uk.hfox.morphix.mongo.mapper.MongoEntity;
 import uk.hfox.morphix.mongo.query.raw.input.MongoInsertQuery;
 import uk.hfox.morphix.mongo.query.raw.input.MongoUpdateQuery;
 import uk.hfox.morphix.mongo.query.raw.output.MongoFindQuery;
-import uk.hfox.morphix.query.raw.FindQuery;
 import uk.hfox.morphix.transform.Filter;
 import uk.hfox.morphix.utils.Conditions;
 
@@ -82,7 +80,7 @@ public class MongoEntityManager implements EntityManager {
      * {@inheritDoc}
      */
     @Override
-    public void update(Filter filter, Object... entities) {
+    public void update(Filter filter, Object[] entities) {
         Conditions.notNull(entities);
         if (entities.length == 0) {
             return;
@@ -94,20 +92,6 @@ public class MongoEntityManager implements EntityManager {
             find.performQuery();
 
             getConnector().getTransformer().fromGenericDB(find.getOutput().first(), entity, null, filter);
-        }
-    }
-
-    @Override
-    public void update(FindQuery query, Filter filter) {
-        Conditions.notNull(query);
-
-        if (!(query instanceof MongoFindQuery)) {
-            throw new UnsupportedFeatureException(getConnector(), "mongo does not support any query responses except mongofind");
-        }
-
-        MongoFindQuery find = (MongoFindQuery) query;
-        for (Document document : find.getResults()) {
-            getConnector().getTransformer().fromGenericDB(document, null, null, filter);
         }
     }
 

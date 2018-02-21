@@ -19,7 +19,6 @@
 package uk.hfox.morphix.entity;
 
 import uk.hfox.morphix.connector.MorphixConnector;
-import uk.hfox.morphix.query.raw.FindQuery;
 import uk.hfox.morphix.transform.FieldFilter;
 import uk.hfox.morphix.transform.Filter;
 
@@ -48,14 +47,6 @@ public interface EntityManager {
      * @param filter The filter to check against
      */
     void update(Filter filter, Object[] entity);
-
-    /**
-     * Updates fields within each of the query responses
-     *
-     * @param query  The response of objects to update
-     * @param filter The filter to check against
-     */
-    void update(FindQuery query, Filter filter);
 
     /**
      * Saves all fields in the entity
