@@ -84,23 +84,6 @@ public class MongoTransformer implements Transformer<Document> {
     }
 
     @Override
-    public Converter<Document> getConverter(Class<?> cls) {
-        ConvertedType type = null;
-        for (ConvertedType value : ConvertedType.values()) {
-            if (value.isSatisfied(cls)) {
-                type = value;
-                break;
-            }
-        }
-
-        if (type == null) {
-            return null;
-        }
-
-        return getConverter(type);
-    }
-
-    @Override
     public Converter<Document> getConverter(ConvertedType type) {
         return this.converters.get(type);
     }

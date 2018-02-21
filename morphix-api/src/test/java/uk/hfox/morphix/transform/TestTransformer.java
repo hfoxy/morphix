@@ -17,11 +17,6 @@ public class TestTransformer implements Transformer<Object> {
     }
 
     @Override
-    public Converter<Object> getConverter(Class<?> cls) {
-        throw Testing.unsupported();
-    }
-
-    @Override
     public Converter<Object> getConverter(ConvertedType type) {
         return this.converters.get(type);
     }

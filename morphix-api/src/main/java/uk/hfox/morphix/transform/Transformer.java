@@ -28,15 +28,6 @@ import uk.hfox.morphix.exception.transformer.MorphixTransformationException;
 public interface Transformer<T> {
 
     /**
-     * Gets the converter used to convert the supplied class
-     *
-     * @param cls The class to convert
-     *
-     * @return The converter for that class
-     */
-    Converter<T> getConverter(Class<?> cls);
-
-    /**
      * Gets the converter used to convert the supplied type
      *
      * @param type The type of converter to get
