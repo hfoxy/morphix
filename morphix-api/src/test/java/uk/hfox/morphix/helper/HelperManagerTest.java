@@ -23,6 +23,11 @@ class HelperManagerTest {
     }
 
     @Test
+    void getConnector() {
+        assertEquals(this.connector, this.manager.getConnector());
+    }
+
+    @Test
     void hasHelper() {
         assertTrue(this.manager.hasHelper("test"));
         assertFalse(this.manager.hasHelper("no-test"));
