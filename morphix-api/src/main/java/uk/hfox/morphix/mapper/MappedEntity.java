@@ -19,6 +19,7 @@
 package uk.hfox.morphix.mapper;
 
 import uk.hfox.morphix.annotations.Lifecycle;
+import uk.hfox.morphix.annotations.Polymorphic;
 import uk.hfox.morphix.annotations.field.Id;
 import uk.hfox.morphix.annotations.field.Properties;
 import uk.hfox.morphix.annotations.field.Transient;
@@ -43,6 +44,7 @@ public abstract class MappedEntity<F extends MappedField, T extends Transformer>
 
     private final Class<?> clazz;
     private final Lifecycle lifecycle;
+    private final Polymorphic polymorphic;
     private final Map<LifecycleAction, List<Method>> lifecycleMethods;
     private final Map<LifecycleAction, List<Field>> lifecycleFields;
     private final Map<String, F> fields;
@@ -53,6 +55,7 @@ public abstract class MappedEntity<F extends MappedField, T extends Transformer>
         this.transformer = transformer;
         this.clazz = clazz;
         this.lifecycle = Search.getInheritedAnnotation(this.clazz, Lifecycle.class);
+        this.polymorphic = Search.getInheritedAnnotation(this.clazz, Polymorphic.class);
         this.lifecycleMethods = isLifecycle() ? new HashMap<>() : null;
         this.lifecycleFields = isLifecycle() ? new HashMap<>() : null;
         this.fields = new HashMap<>();
@@ -74,6 +77,15 @@ public abstract class MappedEntity<F extends MappedField, T extends Transformer>
      */
     public boolean isLifecycle() {
         return this.lifecycle != null && this.lifecycle.value();
+    }
+
+    /**
+     * Determines if this mapped entity has polymorphism support enabled or disabled
+     *
+     * @return true if the polymorphic annotation is present and enabled, otherwise false
+     */
+    public boolean isPolymorphic() {
+        return this.polymorphic != null && this.polymorphic.value();
     }
 
     /**

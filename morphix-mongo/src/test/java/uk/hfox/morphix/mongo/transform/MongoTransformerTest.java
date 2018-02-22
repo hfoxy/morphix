@@ -3,6 +3,7 @@ package uk.hfox.morphix.mongo.transform;
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
 import uk.hfox.morphix.annotations.Entity;
+import uk.hfox.morphix.annotations.Polymorphic;
 import uk.hfox.morphix.annotations.field.Properties;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.mongo.TestMorphixMongoConnector;
@@ -53,6 +54,28 @@ class MongoTransformerTest {
                 .fromGenericDB(new Document("name", "entity"), null, Broken.class));
 
         assertNotNull(transformer.fromGenericDB(new Document("name", "test"), null, Private.class));
+
+        Index kidsIndex = new Index();
+        kidsIndex.name = "kids";
+        kidsIndex.book = new KidsBook("rawr dinosaur", "test");
+        Document kidsDoc = transformer.toDB(kidsIndex);
+
+        connector.getEntityManager().getCache().getCache().clear();
+        connector.getEntityManager().getCache().getIds().clear();
+
+        kidsIndex = transformer.fromGenericDB(kidsDoc, null, Index.class);
+        assertEquals(KidsBook.class, kidsIndex.book.getClass());
+
+        Index adultIndex = new Index();
+        adultIndex.name = "adult";
+        adultIndex.book = new AdultBook("test", "test");
+        Document adultDoc = transformer.toDB(adultIndex);
+
+        connector.getEntityManager().getCache().getCache().clear();
+        connector.getEntityManager().getCache().getIds().clear();
+
+        adultIndex = transformer.fromGenericDB(adultDoc, null, Index.class);
+        assertEquals(AdultBook.class, adultIndex.book.getClass());
     }
 
     @Entity
@@ -125,6 +148,62 @@ class MongoTransformerTest {
 
         private Private() {
             // db only
+        }
+
+    }
+
+    @Entity
+    private static class Index {
+
+        private String name;
+        private Book book;
+
+    }
+
+    @Entity
+    @Polymorphic
+    private static abstract class Book {
+
+        private String name;
+
+        private Book() {
+            // db only
+        }
+
+        public Book(String name) {
+            this.name = name;
+        }
+
+    }
+
+    @Entity
+    private static class KidsBook extends Book {
+
+        private String data;
+
+        private KidsBook() {
+            // db only
+        }
+
+        public KidsBook(String name, String data) {
+            super(name);
+            this.data = data;
+        }
+
+    }
+
+    @Entity
+    private static class AdultBook extends Book {
+
+        private String blurb;
+
+        private AdultBook() {
+            // db only
+        }
+
+        public AdultBook(String name, String blurb) {
+            super(name);
+            this.blurb = blurb;
         }
 
     }

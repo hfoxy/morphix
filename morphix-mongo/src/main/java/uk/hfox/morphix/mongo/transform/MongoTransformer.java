@@ -42,6 +42,8 @@ import static uk.hfox.morphix.transform.ConvertedType.*;
  */
 public class MongoTransformer implements Transformer<Document> {
 
+    private static final String POLYMORPHIC_KEY = "morphix_class";
+
     private final MongoCache cache;
 
     private final EnumMap<ConvertedType, Converter<Document>> converters;
@@ -110,6 +112,10 @@ public class MongoTransformer implements Transformer<Document> {
         Map<String, MongoField> fields = entity.getFields();
         entity.call(LifecycleAction.BEFORE_OUT_TRANSFORM, object);
 
+        if (entity.isPolymorphic()) {
+            document.put(POLYMORPHIC_KEY, object.getClass().getName());
+        }
+
         for (Map.Entry<String, MongoField> entry : fields.entrySet()) {
             if (!filter.isAccepted(entry.getKey())) {
                 continue;
@@ -145,18 +151,41 @@ public class MongoTransformer implements Transformer<Document> {
             return null;
         }
 
+        MongoEntity mongoEntity = null;
+
         if (entity == null) {
+            mongoEntity = getOrMapEntity(cls);
+
+            Class<?> out = cls;
+            if (mongoEntity.isPolymorphic()) {
+                String className = document.getString(POLYMORPHIC_KEY);
+                if (className == null) {
+                    throw new MorphixEntityException("no class name field in polymorphic entity");
+                }
+
+                try {
+                    out = Class.forName(className);
+                } catch (ClassNotFoundException e) {
+                    throw new MorphixEntityException("class not found for entity", e);
+                }
+
+                mongoEntity = getOrMapEntity(out);
+            }
+
             try {
-                Constructor<O> constructor = cls.getDeclaredConstructor();
+                Constructor<?> constructor = out.getDeclaredConstructor();
                 constructor.setAccessible(true);
 
                 entity = constructor.newInstance();
             } catch (Exception ex) {
-                throw new MorphixEntityException("unable to construct entity", ex);
+                throw new MorphixEntityException("unable to construct entity (" + out.getName() + ")", ex);
             }
         }
 
-        MongoEntity mongoEntity = getOrMapEntity(entity.getClass());
+        if (mongoEntity == null) {
+            mongoEntity = getOrMapEntity(entity.getClass());
+        }
+
         Map<String, MongoField> fields = mongoEntity.getFields();
         mongoEntity.call(LifecycleAction.BEFORE_IN_TRANSFORM, entity);
 
