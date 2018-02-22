@@ -41,11 +41,19 @@ public class MongoQueryResult<R> implements QueryResult<R> {
 
     @Override
     public R first() {
+        if (list.isEmpty()) {
+            return null;
+        }
+
         return list.get(0);
     }
 
     @Override
     public R last() {
+        if (list.isEmpty()) {
+            return null;
+        }
+
         return list.get(list.size() - 1);
     }
 
