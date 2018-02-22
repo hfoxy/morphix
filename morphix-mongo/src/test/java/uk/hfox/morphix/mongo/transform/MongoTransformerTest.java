@@ -51,6 +51,8 @@ class MongoTransformerTest {
 
         assertThrows(MorphixEntityException.class, () -> transformer
                 .fromGenericDB(new Document("name", "entity"), null, Broken.class));
+
+        assertNotNull(transformer.fromGenericDB(new Document("name", "test"), null, Private.class));
     }
 
     @Entity
@@ -112,6 +114,17 @@ class MongoTransformerTest {
 
         public Broken(String name) {
             this.name = name;
+        }
+
+    }
+
+    @Entity
+    public static class Private {
+
+        private String name;
+
+        private Private() {
+            // db only
         }
 
     }

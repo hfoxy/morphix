@@ -90,6 +90,7 @@ public class MappedField<T> {
 
     public void setValue(Object obj, Object value) {
         try {
+            this.field.setAccessible(true);
             this.field.set(obj, value);
         } catch (IllegalAccessException ex) {
             throw new MorphixFieldException("unable to access field", ex);

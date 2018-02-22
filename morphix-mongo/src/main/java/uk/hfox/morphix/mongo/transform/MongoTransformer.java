@@ -145,7 +145,9 @@ public class MongoTransformer implements Transformer<Document> {
 
         if (entity == null) {
             try {
-                Constructor<O> constructor = cls.getConstructor();
+                Constructor<O> constructor = cls.getDeclaredConstructor();
+                constructor.setAccessible(true);
+
                 entity = constructor.newInstance();
             } catch (Exception ex) {
                 throw new MorphixEntityException("unable to construct entity", ex);
