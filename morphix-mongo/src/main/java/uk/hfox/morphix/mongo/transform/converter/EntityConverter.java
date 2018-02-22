@@ -31,9 +31,9 @@ public class EntityConverter implements Converter<Document> {
     }
 
     @Override
-    public Object pull(String key, Document entry, Object value) {
+    public Object pull(String key, Document entry, Object value, Class<? extends Object> type) {
         Document child = (Document) entry.get(key);
-        return this.transformer.fromGenericDB(child, value, null);
+        return this.transformer.fromGenericDB(child, value, type);
     }
 
     @Override

@@ -11,14 +11,14 @@ class ConverterTest {
     void pullBasic() {
         BasicConverter converter = new BasicConverter();
         converter.pull("key", new Object());
-        converter.pull("key", new Object(), null);
+        converter.pull("key", new Object(), null, null);
     }
 
     @Test
     void pullValue() {
         ValueConverter converter = new ValueConverter();
         converter.pull("key", new Object());
-        converter.pull("key", new Object(), null);
+        converter.pull("key", new Object(), null, null);
     }
 
     private static class BasicConverter implements Converter<Object> {
@@ -39,10 +39,11 @@ class ConverterTest {
     private static class ValueConverter implements Converter<Object> {
 
         @Override
-        public Object pull(String key, Object entry, Object value) {
+        public Object pull(String key, Object entry, Object value, Class<?> type) {
             assertNotNull(key);
             assertNotNull(entry);
             assertNull(value);
+            assertNull(type);
             return null;
         }
 

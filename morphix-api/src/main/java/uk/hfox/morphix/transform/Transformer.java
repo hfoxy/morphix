@@ -72,7 +72,7 @@ public interface Transformer<T> {
      *
      * @return The undefined Object output
      */
-    <O> O fromGenericDB(T db, O entity, Class<O> cls);
+    <O> O fromGenericDB(T db, Object entity, Class<O> cls);
 
     /**
      * Alias of {@link Transformer#fromGenericDB(Object, Object, Class, Filter)}
@@ -111,7 +111,7 @@ public interface Transformer<T> {
      *
      * @return The undefined Object output
      */
-    <O> O fromGenericDB(T db, O entity, Class<O> cls, Filter filter);
+    <O> O fromGenericDB(T db, Object entity, Class<O> cls, Filter filter);
 
     /**
      * Alias of {@link Transformer#fromGenericDB(Object, Object, Class, Filter)}

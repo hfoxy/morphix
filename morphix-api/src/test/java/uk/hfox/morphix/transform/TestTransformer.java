@@ -37,12 +37,12 @@ public class TestTransformer implements Transformer<Object> {
     }
 
     @Override
-    public <O> O fromGenericDB(Object db, O entity, Class<O> cls) {
+    public <O> O fromGenericDB(Object db, Object entity, Class<O> cls) {
         throw Testing.unsupported();
     }
 
     @Override
-    public <O> O fromGenericDB(Object db, O entity, Class<O> cls, Filter filter) {
+    public <O> O fromGenericDB(Object db, Object entity, Class<O> cls, Filter filter) {
         throw Testing.unsupported();
     }
 

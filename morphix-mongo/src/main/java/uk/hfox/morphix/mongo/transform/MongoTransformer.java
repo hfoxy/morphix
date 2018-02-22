@@ -22,6 +22,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.mapper.lifecycle.LifecycleAction;
+import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.mongo.entity.MongoCache;
 import uk.hfox.morphix.mongo.mapper.MongoEntity;
 import uk.hfox.morphix.mongo.mapper.MongoField;
@@ -46,7 +47,7 @@ public class MongoTransformer implements Transformer<Document> {
     private final EnumMap<ConvertedType, Converter<Document>> converters;
     private final Map<Class<?>, MongoEntity> entities;
 
-    public MongoTransformer(MongoCache cache) {
+    public MongoTransformer(MorphixMongoConnector connector, MongoCache cache) {
         this.cache = cache;
         this.converters = new EnumMap<>(ConvertedType.class);
         this.entities = new HashMap<>();
@@ -62,6 +63,7 @@ public class MongoTransformer implements Transformer<Document> {
         setConverter(STRING, new StringConverter());
         setConverter(DATETIME, new DateTimeConverter());
         setConverter(ENTITY, new EntityConverter(this));
+        setConverter(REFERENCE, new ReferenceConverter(connector));
     }
 
     /**
@@ -122,20 +124,20 @@ public class MongoTransformer implements Transformer<Document> {
     }
 
     @Override
-    public <O> O fromGenericDB(Document db, O entity, Class<O> cls) {
+    public <O> O fromGenericDB(Document db, Object entity, Class<O> cls) {
         return fromGenericDB(db, entity, cls, new FieldFilter(true));
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <O> O fromGenericDB(Document document, O entity, Class<O> cls, Filter filter) {
+    public <O> O fromGenericDB(Document document, Object entity, Class<O> cls, Filter filter) {
         Conditions.notNull(document, "document");
         Conditions.notNull(filter, "filter");
 
         if (entity == null) {
             ObjectId key = document.getObjectId("_id");
             if (key != null) {
-                entity = (O) this.cache.getEntity(key);
+                entity = this.cache.getEntity(key);
             }
         }
 
@@ -167,7 +169,7 @@ public class MongoTransformer implements Transformer<Document> {
             Object value;
 
             if (field.getType() == ENTITY || field.getType() == REFERENCE) {
-                value = field.getConverter().pull(field.getName(), document, field.getValue(entity));
+                value = field.getConverter().pull(field.getName(), document, field.getValue(entity), field.getField().getType());
             } else {
                 value = field.getConverter().pull(field.getName(), document);
             }
@@ -176,7 +178,7 @@ public class MongoTransformer implements Transformer<Document> {
         }
 
         mongoEntity.call(LifecycleAction.AFTER_IN_TRANSFORM, entity);
-        return entity;
+        return (O) entity;
     }
 
 }

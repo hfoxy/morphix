@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import uk.hfox.morphix.annotations.Entity;
 import uk.hfox.morphix.annotations.field.Id;
+import uk.hfox.morphix.annotations.field.Reference;
 import uk.hfox.morphix.annotations.field.Transient;
+import uk.hfox.morphix.connector.MorphixConnector;
 import uk.hfox.morphix.entity.EntityHelper;
 import uk.hfox.morphix.mongo.connection.MongoConnector;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
@@ -29,6 +31,8 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 @TestInstance(PER_CLASS)
 class MongoQueryBuilderTest {
 
+    private static MongoQueryBuilderTest test;
+
     private MorphixMongoConnector connector;
 
     @BeforeAll
@@ -37,6 +41,8 @@ class MongoQueryBuilderTest {
         this.connector = connector.build();
         this.connector.connect();
         assumeTrue(this.connector.isConnected(), "Database not provided");
+
+        test = this;
     }
 
     @Test
@@ -368,6 +374,30 @@ class MongoQueryBuilderTest {
         }
     }
 
+    @Test
+    void references() {
+        String name = this.connector.getHelperManager().getCollectionHelper().getCollection(Topic.class);
+        MongoCollection<Document> collection = this.connector.getDatabase().getCollection(name);
+        collection.deleteMany(new BsonDocument());
+        assertEquals(0, collection.count());
+
+        name = this.connector.getHelperManager().getCollectionHelper().getCollection(Index.class);
+        collection = this.connector.getDatabase().getCollection(name);
+        collection.deleteMany(new BsonDocument());
+        assertEquals(0, collection.count());
+
+        Topic topic = new Topic("test");
+        Index index = new Index(topic);
+        topic.save();
+        index.save();
+
+        connector.getEntityManager().getCache().getIds().clear();
+        connector.getEntityManager().getCache().getCache().clear();
+
+        index = connector.createQuery(Index.class).result().first();
+        assertEquals("test", index.topic.name);
+    }
+
     private MongoCollection<Document> populate(String name) {
         MongoCollection<Document> collection = this.connector.getDatabase().getCollection(name);
         collection.deleteMany(new BsonDocument());
@@ -405,6 +435,11 @@ class MongoQueryBuilderTest {
         private int id;
         private String name;
 
+        private Item() {
+            // db only
+            this.connector = null;
+        }
+
         public Item(MorphixMongoConnector connector, int id, String name) {
             this.connector = connector;
             this.id = id;
@@ -414,6 +449,47 @@ class MongoQueryBuilderTest {
         @Override
         public MorphixMongoConnector getConnector() {
             return connector;
+        }
+
+    }
+
+    @Entity
+    private static class Topic implements EntityHelper {
+
+        private String name;
+
+        private Topic() {
+            // db only
+        }
+
+        public Topic(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public MorphixConnector getConnector() {
+            return test.connector;
+        }
+
+    }
+
+    @Entity
+    private static class Index implements EntityHelper {
+
+        @Reference
+        private Topic topic;
+
+        private Index() {
+            // db only
+        }
+
+        public Index(Topic topic) {
+            this.topic = topic;
+        }
+
+        @Override
+        public MorphixConnector getConnector() {
+            return test.connector;
         }
 
     }

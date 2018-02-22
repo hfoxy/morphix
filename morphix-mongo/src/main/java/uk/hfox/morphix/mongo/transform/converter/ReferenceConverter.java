@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix API
+ * Morphix MongoDB
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,43 +16,39 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.transform;
+package uk.hfox.morphix.mongo.transform.converter;
 
-/**
- * Converts a DB type into the correct type
- *
- * @param <T> The DB entry type
- */
-public interface Converter<T> {
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
+import uk.hfox.morphix.transform.Converter;
 
-    /**
-     * Alias of {@link Converter#pull(String, Object, Object, Class)}
-     */
-    default Object pull(String key, T entry) {
-        return pull(key, entry, null, null);
+public class ReferenceConverter implements Converter<Document> {
+
+    private final MorphixMongoConnector connector;
+
+    public ReferenceConverter(MorphixMongoConnector connector) {
+        this.connector = connector;
     }
 
-    /**
-     * Pulls the object from the DB entry
-     *
-     * @param key   The key to pull
-     * @param entry The DB entry to pull from
-     * @param value The current value, or null if no value exists
-     * @param type The type of the owner field
-     *
-     * @return The constructed object created from the entry
-     */
-    default Object pull(String key, T entry, Object value, Class<?> type) {
-        return pull(key, entry);
+    @Override
+    public Object pull(String key, Document entry, Object value, Class<?> type) {
+        ObjectId id = entry.getObjectId(key);
+        if (id == null) {
+            return null;
+        }
+
+        return this.connector.createQuery(type).where("_id").matches(id).result().first();
     }
 
-    /**
-     * Pushes the object to the DB entry
-     *
-     * @param key   The key to push to
-     * @param entry The DB entry to push to
-     * @param value The value to push
-     */
-    void push(String key, T entry, Object value);
+    @Override
+    public void push(String key, Document entry, Object value) {
+        ObjectId id = null;
+        if (value != null) {
+            id = this.connector.getEntityManager().getCache().getId(value);
+        }
+
+        entry.put(key, id);
+    }
 
 }
