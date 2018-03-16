@@ -107,7 +107,7 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
                 MongoEntity entity = this.connector.getTransformer().getOrMapEntity(result.getClass());
                 entity.set(LifecycleAction.ACCESSED_AT, result, LocalDateTime.now());
                 entity.call(LifecycleAction.AFTER_ACCESS, result);
-            }
+            } 
         }
 
         return new MongoQueryResult<>(results);
