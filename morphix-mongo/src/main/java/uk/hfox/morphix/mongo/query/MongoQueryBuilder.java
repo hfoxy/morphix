@@ -97,14 +97,17 @@ public class MongoQueryBuilder<R> implements QueryBuilder<R> {
         MongoFindQuery query = find();
 
         List<R> results = new ArrayList<>();
-        for (Document document : query.getResults()) {
-            R result = this.connector.getTransformer().fromGenericDB(document, null, clazz);
-            results.add(result);
-            this.connector.getEntityManager().getCache().put(document.getObjectId("_id"), result);
+        Iterable<Document> iterable = query.getResults();
+        if (iterable != null) {
+            for (Document document : iterable) {
+                R result = this.connector.getTransformer().fromGenericDB(document, null, clazz);
+                results.add(result);
+                this.connector.getEntityManager().getCache().put(document.getObjectId("_id"), result);
 
-            MongoEntity entity = this.connector.getTransformer().getOrMapEntity(result.getClass());
-            entity.set(LifecycleAction.ACCESSED_AT, result, LocalDateTime.now());
-            entity.call(LifecycleAction.AFTER_ACCESS, result);
+                MongoEntity entity = this.connector.getTransformer().getOrMapEntity(result.getClass());
+                entity.set(LifecycleAction.ACCESSED_AT, result, LocalDateTime.now());
+                entity.call(LifecycleAction.AFTER_ACCESS, result);
+            }
         }
 
         return new MongoQueryResult<>(results);
