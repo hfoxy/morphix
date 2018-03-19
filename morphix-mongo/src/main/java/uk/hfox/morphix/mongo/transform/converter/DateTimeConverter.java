@@ -32,6 +32,10 @@ public class DateTimeConverter implements Converter<Document> {
     @Override
     public LocalDateTime pull(String key, Document entry) {
         Date date = entry.getDate(key);
+        if (date == null) {
+            return null;
+        }
+
         Instant instant = date.toInstant();
 
         return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());

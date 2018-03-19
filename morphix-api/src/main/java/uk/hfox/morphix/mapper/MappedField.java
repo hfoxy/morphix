@@ -91,6 +91,26 @@ public class MappedField<T> {
     public void setValue(Object obj, Object value) {
         try {
             this.field.setAccessible(true);
+            if (value == null && field.getType().isPrimitive()) {
+                if (field.getType() == byte.class) {
+                    value = (byte) 0;
+                } else if (field.getType() == short.class) {
+                    value = (short) 0;
+                } else if (field.getType() == long.class) {
+                    value = (long) 0;
+                } else if (field.getType() == float.class) {
+                    value = (float) 0;
+                } else if (field.getType() == double.class) {
+                    value = (double) 0;
+                } else if (field.getType() == char.class) {
+                    value = '\u0000';
+                } else if (field.getType() == boolean.class) {
+                    value = false;
+                } else {
+                    value = 0;
+                }
+            }
+
             this.field.set(obj, value);
         } catch (IllegalAccessException ex) {
             throw new MorphixFieldException("unable to access field", ex);
