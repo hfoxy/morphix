@@ -112,12 +112,13 @@ public class MongoTransformer implements Transformer<Document> {
         Map<String, MongoField> fields = entity.getFields();
         entity.call(LifecycleAction.BEFORE_OUT_TRANSFORM, object);
 
+        System.out.println(fields);
         if (entity.isPolymorphic()) {
             document.put(POLYMORPHIC_KEY, object.getClass().getName());
         }
 
         for (Map.Entry<String, MongoField> entry : fields.entrySet()) {
-            if (!filter.isAccepted(entry.getKey())) {
+            if (!filter.isAccepted(entry.getValue().getName())) {
                 continue;
             }
 
@@ -190,7 +191,7 @@ public class MongoTransformer implements Transformer<Document> {
         mongoEntity.call(LifecycleAction.BEFORE_IN_TRANSFORM, entity);
 
         for (Map.Entry<String, MongoField> entry : fields.entrySet()) {
-            if (!filter.isAccepted(entry.getKey())) {
+            if (!filter.isAccepted(entry.getValue().getName())) {
                 continue;
             }
 
