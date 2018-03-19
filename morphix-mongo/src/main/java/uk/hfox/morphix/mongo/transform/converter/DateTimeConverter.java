@@ -43,9 +43,12 @@ public class DateTimeConverter implements Converter<Document> {
 
     @Override
     public void push(String key, Document entry, Object value) {
-        LocalDateTime local = (LocalDateTime) value;
-        ZonedDateTime zoned = local.atZone(ZoneId.systemDefault());
-        Date date = Date.from(zoned.toInstant());
+        Date date = null;
+        if (value != null) {
+            LocalDateTime local = (LocalDateTime) value;
+            ZonedDateTime zoned = local.atZone(ZoneId.systemDefault());
+            date = Date.from(zoned.toInstant());
+        }
 
         entry.put(key, date);
     }
