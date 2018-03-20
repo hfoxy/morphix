@@ -63,7 +63,7 @@ public class MongoTransformer implements Transformer<Document> {
         setConverter(CHARACTER, new CharacterConverter());
         setConverter(BOOLEAN, new BooleanConverter());
         setConverter(STRING, new StringConverter());
-        setConverter(DATETIME, new DateTimeConverter());
+        setConverter(DATETIME, new LocalDateTimeConverter());
         setConverter(ENTITY, new EntityConverter(this));
         setConverter(REFERENCE, new ReferenceConverter(connector));
     }

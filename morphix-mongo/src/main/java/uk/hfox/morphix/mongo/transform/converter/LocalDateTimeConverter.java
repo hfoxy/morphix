@@ -27,7 +27,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
-public class DateTimeConverter implements Converter<Document> {
+public class LocalDateTimeConverter implements Converter<Document> {
 
     @Override
     public LocalDateTime pull(String key, Document entry) {
