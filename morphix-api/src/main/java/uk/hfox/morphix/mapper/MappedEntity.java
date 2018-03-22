@@ -34,6 +34,7 @@ import uk.hfox.morphix.utils.search.Search;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,6 +123,10 @@ public abstract class MappedEntity<F extends MappedField, T extends Transformer>
 
         List<Field> allFields = Search.getAllFields(this.clazz, new EntitySearchCriteria());
         for (Field field : allFields) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                continue;
+            }
+
             insert(field);
         }
     }
