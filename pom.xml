@@ -6,7 +6,7 @@
 
     <groupId>uk.hfox.morphix</groupId>
     <artifactId>morphix-parent</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>2.0</version>
     <packaging>pom</packaging>
 
     <name>Morphix Parent</name>
@@ -23,12 +23,12 @@
 
     <distributionManagement>
         <repository>
-            <id>hfox-releases</id>
-            <url>https://nexus.hfox.uk/repository/maven-releases/</url>
+            <id>zither-releases</id>
+            <url>http://zither/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>hfox-snapshots</id>
-            <url>https://nexus.hfox.uk/repository/maven-snapshots/</url>
+            <id>zither-snapshots</id>
+            <url>http://zither/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
