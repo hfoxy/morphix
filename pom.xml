@@ -23,12 +23,12 @@
 
     <distributionManagement>
         <repository>
-            <id>zither-releases</id>
-            <url>http://zither/repository/maven-releases/</url>
+            <id>hfox-releases</id>
+            <url>https://nexus.hfox.uk/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>zither-snapshots</id>
-            <url>http://zither/repository/maven-snapshots/</url>
+            <id>hfox-snapshots</id>
+            <url>https://nexus.hfox.uk/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
