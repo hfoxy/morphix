@@ -56,8 +56,6 @@ public class ArrayConverter implements Converter<Document> {
             list.add(null);
         }
 
-        System.out.println("Created new list with size " + size);
-
         for (int i = 0; i < size; i++) {
             Object item = Array.get(value, i);
             if (item == null) {
@@ -66,7 +64,6 @@ public class ArrayConverter implements Converter<Document> {
             }
 
             ConvertedType type = ConvertedType.findByField(field, item.getClass());
-            System.out.println("Using type " + type + " for " + item.getClass().getName() + " (" + field + ")");
             list.set(i, this.transformer.getConverter(type).push(item, field));
         }
 

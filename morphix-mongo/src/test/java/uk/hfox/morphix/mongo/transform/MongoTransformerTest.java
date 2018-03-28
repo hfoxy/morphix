@@ -18,15 +18,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class MongoTransformerTest {
 
     @Test
-    void toDB() {
+    void transformation() {
         TestMorphixMongoConnector connector = new TestMorphixMongoConnector();
         MongoTransformer transformer = connector.getTransformer();
 
         Base base = new Base();
         Document document = transformer.toDB(base);
         int subHash = base.sub.hashCode();
-        System.out.println(document
-        );
+        System.out.println(document);
 
         ((Document) document.get("sub")).put("sub", "updated");
         transformer.fromGenericDB(document, base, null);
@@ -187,7 +186,7 @@ class MongoTransformerTest {
 
         @Override
         public String toString() {
-            return "Sub{" +
+            return "Sub[" + hashCode() + "]{" +
                     "sub='" + sub + '\'' +
                     '}';
         }
