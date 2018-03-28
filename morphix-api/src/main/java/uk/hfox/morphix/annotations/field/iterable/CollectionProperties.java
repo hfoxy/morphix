@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START========================
- * Morphix MongoDB
+ * Morphix API
  * %%
  * Copyright (C) 2017 - 2018 Harry Fox
  * %%
@@ -16,23 +16,27 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.mongo.transform.converter;
+package uk.hfox.morphix.annotations.field.iterable;
 
-import org.bson.Document;
-import uk.hfox.morphix.transform.Converter;
+import uk.hfox.morphix.mapper.builder.collection.CollectionBuilder;
 
-import java.lang.reflect.Field;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class DoubleConverter implements Converter<Document> {
+/**
+ * Used to define properties for collection fields
+ */
+@Target({ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface CollectionProperties {
 
-    @Override
-    public Double pull(String key, Document entry) {
-        return entry.getDouble(key);
-    }
-
-    @Override
-    public void push(String key, Document entry, Object value, Field field) {
-        entry.put(key, value);
-    }
+    /**
+     * The type of the builder
+     *
+     * @return The type of the builder
+     */
+    Class<? extends CollectionBuilder>[] builder();
 
 }

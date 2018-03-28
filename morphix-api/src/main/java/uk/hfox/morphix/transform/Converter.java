@@ -18,6 +18,8 @@
  */
 package uk.hfox.morphix.transform;
 
+import java.lang.reflect.Field;
+
 /**
  * Converts a DB type into the correct type
  *
@@ -26,10 +28,23 @@ package uk.hfox.morphix.transform;
 public interface Converter<T> {
 
     /**
+     * Converts the DB value to the stored value
+     *
+     * @param value The DB value
+     * @param current The current value, or null if no value exists
+     * @param type The type of the owner field
+     * @return The stored value
+     */
+    default Object pull(Object value, Object current, Class<?> type) {
+        return value;
+    }
+
+    /**
      * Alias of {@link Converter#pull(String, Object, Object, Class)}
      */
     default Object pull(String key, T entry) {
-        return pull(key, entry, null, null);
+        Object value = pull(key, entry, null, null);
+        return pull(value, null, null);
     }
 
     /**
@@ -43,7 +58,29 @@ public interface Converter<T> {
      * @return The constructed object created from the entry
      */
     default Object pull(String key, T entry, Object value, Class<?> type) {
-        return pull(key, entry);
+        Object val = pull(key, entry);
+        return pull(val, value, type);
+    }
+
+    /**
+     * Converts the stored value to the DB value
+     *
+     * @param value The stored value
+     * @return The DB value
+     */
+    default Object push(Object value) {
+        return value;
+    }
+
+    /**
+     * Used specifically for iterable-result converters (array, set, collection)
+     *
+     * @param value The value to convert
+     * @param field The field it was stored in
+     * @return The converted value
+     */
+    default Object push(Object value, Field field) {
+        return push(value);
     }
 
     /**
@@ -52,7 +89,8 @@ public interface Converter<T> {
      * @param key   The key to push to
      * @param entry The DB entry to push to
      * @param value The value to push
+     * @param field The field it was stored in
      */
-    void push(String key, T entry, Object value);
+    void push(String key, T entry, Object value, Field field);
 
 }

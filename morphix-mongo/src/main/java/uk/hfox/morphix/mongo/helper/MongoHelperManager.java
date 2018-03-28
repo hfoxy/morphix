@@ -40,12 +40,12 @@ public class MongoHelperManager extends HelperManager<MorphixMongoConnector> {
     }
 
     @Override
-    public void setHelper(String name, Helper<MorphixMongoConnector> helper) {
+    public void filters(String name, Helper<MorphixMongoConnector> helper) {
+        super.filters(name, helper);
+
         if (name.equals(COLLECTION_HELPER) && !(helper instanceof CollectionHelper)) {
             throw new IllegalArgumentException("invalid helper type for collection helper");
         }
-
-        super.setHelper(name, helper);
     }
 
 }

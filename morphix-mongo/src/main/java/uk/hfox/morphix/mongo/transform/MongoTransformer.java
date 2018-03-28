@@ -20,6 +20,8 @@ package uk.hfox.morphix.mongo.transform;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import uk.hfox.morphix.annotations.field.iterable.CollectionProperties;
+import uk.hfox.morphix.annotations.field.iterable.MapProperties;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.mapper.lifecycle.LifecycleAction;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
@@ -31,6 +33,7 @@ import uk.hfox.morphix.transform.*;
 import uk.hfox.morphix.utils.Conditions;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +57,7 @@ public class MongoTransformer implements Transformer<Document> {
         this.converters = new EnumMap<>(ConvertedType.class);
         this.entities = new HashMap<>();
 
+        setConverter(ARRAY, new ArrayConverter(this));
         setConverter(BYTE, new ByteConverter());
         setConverter(SHORT, new ShortConverter());
         setConverter(INTEGER, new IntegerConverter());
@@ -85,6 +89,23 @@ public class MongoTransformer implements Transformer<Document> {
         }
 
         return entity;
+    }
+
+    @Override
+    public Converter<Document> getConverter(Field field) {
+        ConvertedType type = ConvertedType.findByField(field);
+        if (type.isIterable()) {
+            switch (type) {
+                case COLLECTION:
+                    return new CollectionConverter(field.getAnnotation(CollectionProperties.class));
+                case MAP:
+                    return new MapConverter(field.getAnnotation(MapProperties.class));
+            }
+
+            throw new IllegalArgumentException("No supported converter for type '" + type.name() + "'");
+        }
+
+        return getConverter(type);
     }
 
     @Override
@@ -122,7 +143,7 @@ public class MongoTransformer implements Transformer<Document> {
             }
 
             MongoField field = entry.getValue();
-            field.getConverter().push(field.getName(), document, field.getValue(object));
+            field.getConverter().push(field.getName(), document, field.getValue(object), field.getField());
         }
 
         entity.call(LifecycleAction.AFTER_OUT_TRANSFORM, object);

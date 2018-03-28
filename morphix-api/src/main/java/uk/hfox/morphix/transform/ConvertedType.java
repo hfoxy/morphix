@@ -21,16 +21,39 @@ package uk.hfox.morphix.transform;
 import uk.hfox.morphix.annotations.Entity;
 import uk.hfox.morphix.annotations.field.Id;
 import uk.hfox.morphix.annotations.field.Reference;
+import uk.hfox.morphix.annotations.field.iterable.CollectionProperties;
+import uk.hfox.morphix.annotations.field.iterable.MapProperties;
 import uk.hfox.morphix.exception.mapper.MorphixEntityException;
 import uk.hfox.morphix.exception.mapper.MorphixFieldException;
 import uk.hfox.morphix.utils.Conditions;
 import uk.hfox.morphix.utils.search.Search;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Map;
 
 public enum ConvertedType {
 
+    ARRAY(true, null) {
+        @Override
+        public boolean isSatisfied(Class<?> cls) {
+            return cls.isArray();
+        }
+    },
+    COLLECTION(true, CollectionProperties.class) {
+        @Override
+        public boolean isSatisfied(Class<?> cls) {
+            return Collection.class.isAssignableFrom(cls);
+        }
+    },
+    MAP(true, MapProperties.class) {
+        @Override
+        public boolean isSatisfied(Class<?> cls) {
+            return Map.class.isAssignableFrom(cls);
+        }
+    },
     BYTE {
         @Override
         public boolean isSatisfied(Class<?> cls) {
@@ -111,19 +134,48 @@ public enum ConvertedType {
         }
     };
 
+    private boolean iterable;
+    private Class<? extends Annotation> annotation;
+
+    ConvertedType() {
+        this(false, null);
+    }
+
+    ConvertedType(boolean iterable, Class<? extends Annotation> annotation) {
+        this.iterable = iterable;
+        this.annotation = annotation;
+
+        if (iterable) {
+            IterableType.types.add(this);
+        }
+    }
+
+    public boolean isIterable() {
+        return iterable;
+    }
+
     public abstract boolean isSatisfied(Class<?> cls);
 
-    public static ConvertedType findByField(Field field) {
+    public static ConvertedType findByField(Field field, Class<?> clazz) {
         Conditions.notNull(field);
+        Conditions.notNull(clazz);
 
         Id id = field.getAnnotation(Id.class);
         if (id != null) {
             return ID;
         }
 
+        for (ConvertedType type : IterableType.getTypes()) {
+            boolean required = type.annotation != null;
+            boolean state = !required || field.getAnnotation(type.annotation) != null;
+            if (type.isSatisfied(clazz) && state) {
+                return type;
+            }
+        }
+
         Reference reference = field.getAnnotation(Reference.class);
         if (reference != null) {
-            if (!REFERENCE.isSatisfied(field.getType())) {
+            if (!REFERENCE.isSatisfied(clazz)) {
                 String message = "field '" + field.getName() + "'" +
                         " in " + field.getDeclaringClass().getName() +
                         " declared as reference but was not an entity";
@@ -135,7 +187,7 @@ public enum ConvertedType {
         }
 
         for (ConvertedType type : values()) {
-            if (type.isSatisfied(field.getType())) {
+            if (type.isSatisfied(clazz)) {
                 return type;
             }
         }
@@ -145,6 +197,10 @@ public enum ConvertedType {
                 " has an invalid type";
 
         throw new MorphixFieldException(message);
+    }
+
+    public static ConvertedType findByField(Field field) {
+        return findByField(field, field.getType());
     }
 
 }

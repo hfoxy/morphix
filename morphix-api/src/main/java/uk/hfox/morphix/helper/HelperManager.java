@@ -25,12 +25,18 @@ import java.util.Map;
 
 public class HelperManager<C extends MorphixConnector> {
 
+    private static final String COLLECTION_BUILDER_HELPER = "collection_builder";
+    private static final String MAP_BUILDER_HELPER = "map_builder";
+
     protected final C connector;
     private final Map<String, Helper<C>> helpers;
 
     public HelperManager(C connector) {
         this.connector = connector;
         this.helpers = new HashMap<>();
+
+        setCollectionBuilderHelper(new CollectionBuilderHelper<>(connector));
+        setMapBuilderHelper(new MapBuilderHelper<>(connector));
     }
 
     /**
@@ -89,6 +95,38 @@ public class HelperManager<C extends MorphixConnector> {
     }
 
     /**
+     * Runs any checks and/or filters on the supplied helper
+     *
+     * @param name The name to insert
+     * @param helper The helper to insert
+     */
+    public void filters(String name, Helper<C> helper) {
+        if (name.equals(COLLECTION_BUILDER_HELPER) && !(helper instanceof CollectionBuilderHelper)) {
+            throw new IllegalArgumentException("invalid helper type for collection builder helper");
+        }
+
+        if (name.equals(MAP_BUILDER_HELPER) && !(helper instanceof MapBuilderHelper)) {
+            throw new IllegalArgumentException("invalid helper type for map builder helper");
+        }
+    }
+
+    public CollectionBuilderHelper getCollectionBuilderHelper() {
+        return getHelper(COLLECTION_BUILDER_HELPER, CollectionBuilderHelper.class);
+    }
+
+    public void setCollectionBuilderHelper(CollectionBuilderHelper<C> helper) {
+        setHelper(COLLECTION_BUILDER_HELPER, helper);
+    }
+
+    public MapBuilderHelper getMapBuilderHelper() {
+        return getHelper(MAP_BUILDER_HELPER, MapBuilderHelper.class);
+    }
+
+    public void setMapBuilderHelper(MapBuilderHelper<C> helper) {
+        setHelper(MAP_BUILDER_HELPER, helper);
+    }
+
+    /**
      * Sets the helper for the supplied name.
      * Subclasses are to override this method to include tests to ensure that
      * when a helper is set, is is the correct type of helper for that name.
@@ -97,6 +135,7 @@ public class HelperManager<C extends MorphixConnector> {
      * @param helper The helper to set
      */
     public void setHelper(String name, Helper<C> helper) {
+        filters(name, helper);
         this.helpers.put(name, helper);
     }
 

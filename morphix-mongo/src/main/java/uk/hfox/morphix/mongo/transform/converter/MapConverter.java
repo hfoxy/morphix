@@ -19,15 +19,30 @@
 package uk.hfox.morphix.mongo.transform.converter;
 
 import org.bson.Document;
+import uk.hfox.morphix.annotations.field.iterable.MapProperties;
 import uk.hfox.morphix.transform.Converter;
 
 import java.lang.reflect.Field;
 
-public class DoubleConverter implements Converter<Document> {
+public class MapConverter implements Converter<Document> {
+
+    private final MapProperties properties;
+
+    public MapConverter(MapProperties properties) {
+        this.properties = properties;
+    }
 
     @Override
-    public Double pull(String key, Document entry) {
-        return entry.getDouble(key);
+    public Object pull(Object value, Object current, Class<?> type) {
+        int depth = 1;
+
+
+        return null;
+    }
+
+    @Override
+    public Object pull(String key, Document entry, Object value, Class<?> type) {
+        return null;
     }
 
     @Override

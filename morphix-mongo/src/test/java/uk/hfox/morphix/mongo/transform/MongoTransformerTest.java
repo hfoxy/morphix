@@ -10,6 +10,8 @@ import uk.hfox.morphix.mongo.TestMorphixMongoConnector;
 import uk.hfox.morphix.transform.FieldFilter;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,6 +25,8 @@ class MongoTransformerTest {
         Base base = new Base();
         Document document = transformer.toDB(base);
         int subHash = base.sub.hashCode();
+        System.out.println(document
+        );
 
         ((Document) document.get("sub")).put("sub", "updated");
         transformer.fromGenericDB(document, base, null);
@@ -96,6 +100,35 @@ class MongoTransformerTest {
         @Properties(name = "my_string")
         private String myString = "test";
 
+        private String[] simpleArray = new String[]{"test", "simple", "array"};
+        private String[][] doubleDimensionArray;
+        private String[][][] tripleDimensionArray;
+
+        public Base() {
+            final int SIZE = 3;
+
+            int val = 1;
+            this.doubleDimensionArray = new String[SIZE][];
+            for (int j = 0; j < this.doubleDimensionArray.length; j++) {
+                this.doubleDimensionArray[j] = new String[SIZE];
+                for (int k = 0; k < this.doubleDimensionArray[j].length; k++) {
+                    this.doubleDimensionArray[j][k] = val++ + "a";
+                }
+            }
+
+            val = 1;
+            this.tripleDimensionArray = new String[SIZE][][];
+            for (int j = 0; j < this.tripleDimensionArray.length; j++) {
+                this.tripleDimensionArray[j] = new String[SIZE][];
+                for (int k = 0; k < this.tripleDimensionArray[j].length; k++) {
+                    this.tripleDimensionArray[j][k] = new String[SIZE];
+                    for (int l = 0; l < this.tripleDimensionArray[j][k].length; l++) {
+                        this.tripleDimensionArray[j][k][l] = val++ + "a";
+                    }
+                }
+            }
+        }
+
         @Override
         public String toString() {
             return "Base{" +
@@ -112,6 +145,37 @@ class MongoTransformerTest {
                     ", sub=" + sub +
                     ", myString='" + myString + '\'' +
                     '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Base base = (Base) o;
+            return a == base.a &&
+                    b == base.b &&
+                    c == base.c &&
+                    d == base.d &&
+                    Float.compare(base.e, e) == 0 &&
+                    Double.compare(base.f, f) == 0 &&
+                    g == base.g &&
+                    h == base.h &&
+                    Objects.equals(i, base.i) &&
+                    Objects.equals(time, base.time) &&
+                    Objects.equals(sub, base.sub) &&
+                    Objects.equals(myString, base.myString) &&
+                    Arrays.equals(simpleArray, base.simpleArray) &&
+                    Arrays.equals(doubleDimensionArray, base.doubleDimensionArray) &&
+                    Arrays.equals(tripleDimensionArray, base.tripleDimensionArray);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(a, b, c, d, e, f, g, h, i, time, sub, myString);
+            result = 31 * result + Arrays.hashCode(simpleArray);
+            result = 31 * result + Arrays.hashCode(doubleDimensionArray);
+            result = 31 * result + Arrays.hashCode(tripleDimensionArray);
+            return result;
         }
 
     }

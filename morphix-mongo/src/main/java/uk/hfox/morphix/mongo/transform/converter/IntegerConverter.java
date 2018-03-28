@@ -21,6 +21,8 @@ package uk.hfox.morphix.mongo.transform.converter;
 import org.bson.Document;
 import uk.hfox.morphix.transform.Converter;
 
+import java.lang.reflect.Field;
+
 public class IntegerConverter implements Converter<Document> {
 
     @Override
@@ -29,7 +31,7 @@ public class IntegerConverter implements Converter<Document> {
     }
 
     @Override
-    public void push(String key, Document entry, Object value) {
+    public void push(String key, Document entry, Object value, Field field) {
         entry.put(key, value);
     }
 

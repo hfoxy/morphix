@@ -19,20 +19,69 @@
 package uk.hfox.morphix.mongo.transform.converter;
 
 import org.bson.Document;
+import uk.hfox.morphix.transform.ConvertedType;
 import uk.hfox.morphix.transform.Converter;
+import uk.hfox.morphix.transform.Transformer;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DoubleConverter implements Converter<Document> {
+public class ArrayConverter implements Converter<Document> {
+
+    private Transformer<Document> transformer;
+
+    public ArrayConverter(Transformer<Document> transformer) {
+        this.transformer = transformer;
+    }
 
     @Override
-    public Double pull(String key, Document entry) {
-        return entry.getDouble(key);
+    public Object pull(Object value, Object current, Class<?> type) {
+
+
+        return null;
+    }
+
+    @Override
+    public Object pull(String key, Document entry, Object value, Class<?> type) {
+        return null;
+    }
+
+    @Override
+    public Object push(Object value, Field field) {
+        int size = Array.getLength(value);
+        List list = new ArrayList(size);
+        for (int i = 0; i < size; i++) {
+            list.add(null);
+        }
+
+        System.out.println("Created new list with size " + size);
+
+        for (int i = 0; i < size; i++) {
+            Object item = Array.get(value, i);
+            if (item == null) {
+                list.set(i, null);
+                continue;
+            }
+
+            ConvertedType type = ConvertedType.findByField(field, item.getClass());
+            System.out.println("Using type " + type + " for " + item.getClass().getName() + " (" + field + ")");
+            list.set(i, this.transformer.getConverter(type).push(item, field));
+        }
+
+        return list;
     }
 
     @Override
     public void push(String key, Document entry, Object value, Field field) {
-        entry.put(key, value);
+        if (value == null) {
+            entry.put(key, null);
+            return;
+        }
+
+        Object out = push(value, field);
+        entry.put(key, out);
     }
 
 }

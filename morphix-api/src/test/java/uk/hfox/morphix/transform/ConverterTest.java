@@ -2,6 +2,8 @@ package uk.hfox.morphix.transform;
 
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -31,7 +33,7 @@ class ConverterTest {
         }
 
         @Override
-        public void push(String key, Object entry, Object value) {
+        public void push(String key, Object entry, Object value, Field field) {
             // not interested
         }
     }
@@ -48,7 +50,7 @@ class ConverterTest {
         }
 
         @Override
-        public void push(String key, Object entry, Object value) {
+        public void push(String key, Object entry, Object value, Field field) {
             // not interested
         }
     }

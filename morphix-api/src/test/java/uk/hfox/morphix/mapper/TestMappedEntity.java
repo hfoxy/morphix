@@ -19,8 +19,7 @@ public class TestMappedEntity extends MappedEntity<TestMappedField, TestTransfor
         ConvertedType type = ConvertedType.findByField(field);
         Converter<Object> converter = getTransformer().getConverter(type);
 
-        TestMappedField mappedField = new TestMappedField(name, type, field, converter);
-        return mappedField;
+        return new TestMappedField(name, type, field, converter);
     }
 
 }

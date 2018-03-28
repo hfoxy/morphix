@@ -20,12 +20,25 @@ package uk.hfox.morphix.transform;
 
 import uk.hfox.morphix.exception.transformer.MorphixTransformationException;
 
+import java.lang.reflect.Field;
+
 /**
  * Used to transform an Object into a given type and vice versa
  *
  * @param <T> The DB type to transform from or into
  */
 public interface Transformer<T> {
+
+    /**
+     * Gets the converter used to convert the supplied field
+     *
+     * @param field The field to get the converter for
+     *
+     * @return The converter for that field
+     */
+    default Converter<T> getConverter(Field field) {
+        return getConverter(ConvertedType.findByField(field));
+    }
 
     /**
      * Gets the converter used to convert the supplied type

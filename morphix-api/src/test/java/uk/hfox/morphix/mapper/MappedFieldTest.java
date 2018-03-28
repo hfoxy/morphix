@@ -59,7 +59,7 @@ class MappedFieldTest {
         }
 
         @Override
-        public void push(String key, Object entry, Object value) {
+        public void push(String key, Object entry, Object value, Field field) {
             throw Conditions.unimplemented();
         }
 
