@@ -16,21 +16,22 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.transform;
+package uk.hfox.morphix.transform.data;
 
-import java.util.ArrayList;
-import java.util.List;
+public class ArrayData {
 
-public class IterableType {
+    private int index;
 
-    protected static final List<ConvertedType> types;
-
-    public static List<ConvertedType> getTypes() {
-        return new ArrayList<>(types);
+    public ArrayData() {
+        this.index = 1;
     }
 
-    static {
-        types = new ArrayList<>();
+    public void increment() {
+        this.index++;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
 }

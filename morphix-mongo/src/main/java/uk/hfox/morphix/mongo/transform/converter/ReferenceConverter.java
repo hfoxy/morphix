@@ -22,8 +22,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import uk.hfox.morphix.mongo.connection.MorphixMongoConnector;
 import uk.hfox.morphix.transform.Converter;
-
-import java.lang.reflect.Field;
+import uk.hfox.morphix.transform.data.TransformationData;
 
 public class ReferenceConverter implements Converter<Document> {
 
@@ -34,22 +33,22 @@ public class ReferenceConverter implements Converter<Document> {
     }
 
     @Override
-    public Object pull(Object value, Object current, Class<?> type) {
+    public Object pull(Object value, TransformationData data) {
         ObjectId id = (ObjectId) value;
         if (id == null) {
             return null;
         }
 
-        return this.connector.createQuery(type).where("_id").matches(id).result().first();
+        return this.connector.createQuery(data.getFieldType()).where("_id").matches(id).result().first();
     }
 
     @Override
-    public Object pull(String key, Document entry, Object value, Class<?> type) {
-        return pull(entry.getObjectId(key), value, type);
+    public Object pull(String key, Document entry, TransformationData data) {
+        return pull(entry.getObjectId(key), data);
     }
 
     @Override
-    public ObjectId push(Object value) {
+    public Object push(Object value, TransformationData data) {
         ObjectId id = null;
         if (value != null) {
             id = this.connector.getEntityManager().getCache().getId(value);
@@ -59,8 +58,8 @@ public class ReferenceConverter implements Converter<Document> {
     }
 
     @Override
-    public void push(String key, Document entry, Object value, Field field) {
-        entry.put(key, push(value));
+    public void push(String key, Document entry, Object value, TransformationData data) {
+        entry.put(key, push(value, data));
     }
 
 }

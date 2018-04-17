@@ -21,8 +21,7 @@ package uk.hfox.morphix.mongo.transform.converter;
 import org.bson.Document;
 import uk.hfox.morphix.annotations.field.iterable.MapProperties;
 import uk.hfox.morphix.transform.Converter;
-
-import java.lang.reflect.Field;
+import uk.hfox.morphix.transform.data.TransformationData;
 
 public class MapConverter implements Converter<Document> {
 
@@ -33,21 +32,23 @@ public class MapConverter implements Converter<Document> {
     }
 
     @Override
-    public Object pull(Object value, Object current, Class<?> type) {
-        int depth = 1;
-
-
+    public Object pull(Object value, TransformationData data) {
         return null;
     }
 
     @Override
-    public Object pull(String key, Document entry, Object value, Class<?> type) {
+    public Object pull(String key, Document entry, TransformationData data) {
         return null;
     }
 
     @Override
-    public void push(String key, Document entry, Object value, Field field) {
-        entry.put(key, value);
+    public Object push(Object value, TransformationData data) {
+        return null;
+    }
+
+    @Override
+    public void push(String key, Document entry, Object value, TransformationData data) {
+
     }
 
 }

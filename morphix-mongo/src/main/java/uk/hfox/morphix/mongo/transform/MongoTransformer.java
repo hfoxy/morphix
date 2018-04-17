@@ -30,6 +30,7 @@ import uk.hfox.morphix.mongo.mapper.MongoEntity;
 import uk.hfox.morphix.mongo.mapper.MongoField;
 import uk.hfox.morphix.mongo.transform.converter.*;
 import uk.hfox.morphix.transform.*;
+import uk.hfox.morphix.transform.data.TransformationData;
 import uk.hfox.morphix.utils.Conditions;
 
 import java.lang.reflect.Constructor;
@@ -143,7 +144,8 @@ public class MongoTransformer implements Transformer<Document> {
             }
 
             MongoField field = entry.getValue();
-            field.getConverter().push(field.getName(), document, field.getValue(object), field.getField());
+            TransformationData data = new TransformationData(field.getValue(object), field.getField());
+            field.getConverter().push(field.getName(), document, field.getValue(object), data);
         }
 
         entity.call(LifecycleAction.AFTER_OUT_TRANSFORM, object);
@@ -218,12 +220,14 @@ public class MongoTransformer implements Transformer<Document> {
             MongoField field = entry.getValue();
             Object value;
 
-            if (field.getType() == ENTITY || field.getType() == REFERENCE) {
-                value = field.getConverter().pull(field.getName(), document, field.getValue(entity), field.getField().getType());
+            TransformationData data;
+            if (field.getType() == ENTITY || field.getType() == REFERENCE || field.getType().isIterable()) {
+                data = new TransformationData(field.getValue(entity), field.getField());
             } else {
-                value = field.getConverter().pull(field.getName(), document);
+                data = new TransformationData(field.getValue(entity), null);
             }
 
+            value = field.getConverter().pull(field.getName(), document, data);
             field.setValue(entity, value);
         }
 

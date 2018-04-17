@@ -24,8 +24,11 @@ class MongoTransformerTest {
 
         Base base = new Base();
         Document document = transformer.toDB(base);
+        int baseHash = base.hashCode();
         int subHash = base.sub.hashCode();
-        System.out.println(document);
+
+        transformer.fromGenericDB(document, base, null);
+        assertEquals(baseHash, base.hashCode());
 
         ((Document) document.get("sub")).put("sub", "updated");
         transformer.fromGenericDB(document, base, null);
@@ -143,6 +146,9 @@ class MongoTransformerTest {
                     ", time=" + time +
                     ", sub=" + sub +
                     ", myString='" + myString + '\'' +
+                    ", simpleArray=" + Arrays.deepToString(simpleArray) +
+                    ", doubleDimensionArray=" + Arrays.deepToString(doubleDimensionArray) +
+                    ", tripleDimensionArray=" + Arrays.deepToString(tripleDimensionArray) +
                     '}';
         }
 
@@ -163,17 +169,17 @@ class MongoTransformerTest {
                     Objects.equals(time, base.time) &&
                     Objects.equals(sub, base.sub) &&
                     Objects.equals(myString, base.myString) &&
-                    Arrays.equals(simpleArray, base.simpleArray) &&
-                    Arrays.equals(doubleDimensionArray, base.doubleDimensionArray) &&
-                    Arrays.equals(tripleDimensionArray, base.tripleDimensionArray);
+                    Arrays.deepEquals(simpleArray, base.simpleArray) &&
+                    Arrays.deepEquals(doubleDimensionArray, base.doubleDimensionArray) &&
+                    Arrays.deepEquals(tripleDimensionArray, base.tripleDimensionArray);
         }
 
         @Override
         public int hashCode() {
             int result = Objects.hash(a, b, c, d, e, f, g, h, i, time, sub, myString);
-            result = 31 * result + Arrays.hashCode(simpleArray);
-            result = 31 * result + Arrays.hashCode(doubleDimensionArray);
-            result = 31 * result + Arrays.hashCode(tripleDimensionArray);
+            result = 31 * result + Arrays.deepHashCode(simpleArray);
+            result = 31 * result + Arrays.deepHashCode(doubleDimensionArray);
+            result = 31 * result + Arrays.deepHashCode(tripleDimensionArray);
             return result;
         }
 

@@ -20,8 +20,8 @@ package uk.hfox.morphix.mongo.transform.converter;
 
 import org.bson.Document;
 import uk.hfox.morphix.transform.Converter;
+import uk.hfox.morphix.transform.data.TransformationData;
 
-import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -31,7 +31,7 @@ import java.util.Date;
 public class LocalDateTimeConverter implements Converter<Document> {
 
     @Override
-    public LocalDateTime pull(Object value, Object current, Class<?> type) {
+    public Object pull(Object value, TransformationData data) {
         Date date = (Date) value;
         if (date == null) {
             return null;
@@ -43,12 +43,12 @@ public class LocalDateTimeConverter implements Converter<Document> {
     }
 
     @Override
-    public LocalDateTime pull(String key, Document entry) {
-        return pull(entry.getDate(key), null, null);
+    public Object pull(String key, Document entry, TransformationData data) {
+        return pull(entry.getDate(key), data);
     }
 
     @Override
-    public Object push(Object value) {
+    public Object push(Object value, TransformationData data) {
         Date date = null;
         if (value != null) {
             LocalDateTime local = (LocalDateTime) value;
@@ -60,8 +60,8 @@ public class LocalDateTimeConverter implements Converter<Document> {
     }
 
     @Override
-    public void push(String key, Document entry, Object value, Field field) {
-        entry.put(key, push(value));
+    public void push(String key, Document entry, Object value, TransformationData data) {
+        entry.put(key, push(value, data));
     }
 
 }

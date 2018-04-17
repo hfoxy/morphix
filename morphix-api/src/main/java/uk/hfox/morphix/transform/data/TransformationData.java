@@ -16,21 +16,46 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ========================LICENSE_END========================
  */
-package uk.hfox.morphix.transform;
+package uk.hfox.morphix.transform.data;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Field;
 
-public class IterableType {
+public class TransformationData {
 
-    protected static final List<ConvertedType> types;
+    private final Object originalValue;
+    private final Class<?> fieldType;
+    private final Field field;
 
-    public static List<ConvertedType> getTypes() {
-        return new ArrayList<>(types);
+    private ArrayData arrayData;
+
+    public TransformationData(Object originalValue, Class<?> fieldType, Field field) {
+        this.originalValue = originalValue;
+        this.fieldType = fieldType;
+        this.field = field;
     }
 
-    static {
-        types = new ArrayList<>();
+    public TransformationData(Object originalValue, Field field) {
+        this(originalValue, (field != null ? field.getType() : null), field);
+    }
+
+    public Object getOriginalValue() {
+        return originalValue;
+    }
+
+    public Class<?> getFieldType() {
+        return fieldType;
+    }
+
+    public Field getField() {
+        return field;
+    }
+
+    public ArrayData getArrayData() {
+        return arrayData;
+    }
+
+    public void setArrayData(ArrayData arrayData) {
+        this.arrayData = arrayData;
     }
 
 }

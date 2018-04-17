@@ -20,19 +20,18 @@ package uk.hfox.morphix.mongo.transform.converter;
 
 import org.bson.Document;
 import uk.hfox.morphix.transform.Converter;
-
-import java.lang.reflect.Field;
+import uk.hfox.morphix.transform.data.TransformationData;
 
 public class IntegerConverter implements Converter<Document> {
 
     @Override
-    public Integer pull(String key, Document entry) {
-        return entry.getInteger(key);
+    public Integer pull(String key, Document entry, TransformationData data) {
+        return (Integer) pull(entry.getInteger(key), data);
     }
 
     @Override
-    public void push(String key, Document entry, Object value, Field field) {
-        entry.put(key, value);
+    public void push(String key, Document entry, Object value, TransformationData data) {
+        entry.put(key, push(value, data));
     }
 
 }

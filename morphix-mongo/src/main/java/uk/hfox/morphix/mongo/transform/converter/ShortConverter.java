@@ -20,19 +20,18 @@ package uk.hfox.morphix.mongo.transform.converter;
 
 import org.bson.Document;
 import uk.hfox.morphix.transform.Converter;
-
-import java.lang.reflect.Field;
+import uk.hfox.morphix.transform.data.TransformationData;
 
 public class ShortConverter implements Converter<Document> {
 
     @Override
-    public Short pull(String key, Document entry) {
-        return (short) entry.get(key);
+    public Short pull(String key, Document entry, TransformationData data) {
+        return (Short) pull(entry.get(key), data);
     }
 
     @Override
-    public void push(String key, Document entry, Object value, Field field) {
-        entry.put(key, value);
+    public void push(String key, Document entry, Object value, TransformationData data) {
+        entry.put(key, push(value, data));
     }
 
 }

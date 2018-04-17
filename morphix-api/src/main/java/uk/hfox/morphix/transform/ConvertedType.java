@@ -200,7 +200,12 @@ public enum ConvertedType {
     }
 
     public static ConvertedType findByField(Field field) {
-        return findByField(field, field.getType());
+        Class<?> type = null;
+        if (field != null) {
+            type = field.getType();
+        }
+
+        return findByField(field, type);
     }
 
 }

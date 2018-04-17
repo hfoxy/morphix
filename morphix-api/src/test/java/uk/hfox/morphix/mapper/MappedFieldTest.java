@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.hfox.morphix.transform.ConvertedType;
 import uk.hfox.morphix.transform.Converter;
+import uk.hfox.morphix.transform.data.TransformationData;
 import uk.hfox.morphix.utils.Conditions;
 
 import java.lang.reflect.Field;
@@ -54,12 +55,12 @@ class MappedFieldTest {
     public static class BlankConverter implements Converter<Object> {
 
         @Override
-        public Object pull(String key, Object entry) {
+        public Object pull(String key, Object entry, TransformationData data) {
             throw Conditions.unimplemented();
         }
 
         @Override
-        public void push(String key, Object entry, Object value, Field field) {
+        public void push(String key, Object entry, Object value, TransformationData data) {
             throw Conditions.unimplemented();
         }
 

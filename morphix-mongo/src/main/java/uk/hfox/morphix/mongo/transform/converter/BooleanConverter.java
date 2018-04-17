@@ -20,19 +20,18 @@ package uk.hfox.morphix.mongo.transform.converter;
 
 import org.bson.Document;
 import uk.hfox.morphix.transform.Converter;
-
-import java.lang.reflect.Field;
+import uk.hfox.morphix.transform.data.TransformationData;
 
 public class BooleanConverter implements Converter<Document> {
 
     @Override
-    public Boolean pull(String key, Document entry) {
-        return entry.getBoolean(key);
+    public Boolean pull(String key, Document entry, TransformationData data) {
+        return (Boolean) pull(entry.getBoolean(key), data);
     }
 
     @Override
-    public void push(String key, Document entry, Object value, Field field) {
-        entry.put(key, value);
+    public void push(String key, Document entry, Object value, TransformationData data) {
+        entry.put(key, push(value, data));
     }
 
 }

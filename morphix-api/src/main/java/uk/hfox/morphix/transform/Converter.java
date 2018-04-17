@@ -18,7 +18,7 @@
  */
 package uk.hfox.morphix.transform;
 
-import java.lang.reflect.Field;
+import uk.hfox.morphix.transform.data.TransformationData;
 
 /**
  * Converts a DB type into the correct type
@@ -31,20 +31,11 @@ public interface Converter<T> {
      * Converts the DB value to the stored value
      *
      * @param value The DB value
-     * @param current The current value, or null if no value exists
-     * @param type The type of the owner field
+     * @param data  The data provided about the transformation
      * @return The stored value
      */
-    default Object pull(Object value, Object current, Class<?> type) {
+    default Object pull(Object value, TransformationData data) {
         return value;
-    }
-
-    /**
-     * Alias of {@link Converter#pull(String, Object, Object, Class)}
-     */
-    default Object pull(String key, T entry) {
-        Object value = pull(key, entry, null, null);
-        return pull(value, null, null);
     }
 
     /**
@@ -52,35 +43,21 @@ public interface Converter<T> {
      *
      * @param key   The key to pull
      * @param entry The DB entry to pull from
-     * @param value The current value, or null if no value exists
-     * @param type The type of the owner field
+     * @param data  The data provided about the transformation
      *
      * @return The constructed object created from the entry
      */
-    default Object pull(String key, T entry, Object value, Class<?> type) {
-        Object val = pull(key, entry);
-        return pull(val, value, type);
-    }
+    Object pull(String key, T entry, TransformationData data);
 
     /**
      * Converts the stored value to the DB value
      *
      * @param value The stored value
+     * @param data  The data provided about the transformation
      * @return The DB value
      */
-    default Object push(Object value) {
+    default Object push(Object value, TransformationData data) {
         return value;
-    }
-
-    /**
-     * Used specifically for iterable-result converters (array, set, collection)
-     *
-     * @param value The value to convert
-     * @param field The field it was stored in
-     * @return The converted value
-     */
-    default Object push(Object value, Field field) {
-        return push(value);
     }
 
     /**
@@ -89,8 +66,8 @@ public interface Converter<T> {
      * @param key   The key to push to
      * @param entry The DB entry to push to
      * @param value The value to push
-     * @param field The field it was stored in
+     * @param data  The data provided about the transformation
      */
-    void push(String key, T entry, Object value, Field field);
+    void push(String key, T entry, Object value, TransformationData data);
 
 }

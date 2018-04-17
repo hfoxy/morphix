@@ -21,8 +21,7 @@ package uk.hfox.morphix.mongo.transform.converter;
 import org.bson.Document;
 import uk.hfox.morphix.mongo.transform.MongoTransformer;
 import uk.hfox.morphix.transform.Converter;
-
-import java.lang.reflect.Field;
+import uk.hfox.morphix.transform.data.TransformationData;
 
 public class EntityConverter implements Converter<Document> {
 
@@ -33,24 +32,24 @@ public class EntityConverter implements Converter<Document> {
     }
 
     @Override
-    public Object pull(Object value, Object current, Class<?> type) {
+    public Object pull(Object value, TransformationData data) {
         Document child = (Document) value;
-        return this.transformer.fromGenericDB(child, current, type);
+        return this.transformer.fromGenericDB(child, data.getOriginalValue(), data.getFieldType());
     }
 
     @Override
-    public Object pull(String key, Document entry, Object value, Class<?> type) {
-        return pull(entry.get(key), value, type);
+    public Object pull(String key, Document entry, TransformationData data) {
+        return pull(entry.get(key), data);
     }
 
     @Override
-    public Object push(Object value) {
+    public Object push(Object value, TransformationData data) {
         return this.transformer.toDB(value);
     }
 
     @Override
-    public void push(String key, Document entry, Object value, Field field) {
-        entry.put(key, push(value));
+    public void push(String key, Document entry, Object value, TransformationData data) {
+        entry.put(key, push(value, data));
     }
 
 }

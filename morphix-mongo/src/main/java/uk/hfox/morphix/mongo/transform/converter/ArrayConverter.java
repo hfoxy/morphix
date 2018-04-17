@@ -22,9 +22,10 @@ import org.bson.Document;
 import uk.hfox.morphix.transform.ConvertedType;
 import uk.hfox.morphix.transform.Converter;
 import uk.hfox.morphix.transform.Transformer;
+import uk.hfox.morphix.transform.data.ArrayData;
+import uk.hfox.morphix.transform.data.TransformationData;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,19 +38,42 @@ public class ArrayConverter implements Converter<Document> {
     }
 
     @Override
-    public Object pull(Object value, Object current, Class<?> type) {
+    public Object pull(Object value, TransformationData data) {
+        if (value == null) {
+            return null;
+        }
 
+        List list = (List) value;
 
-        return null;
+        ArrayData arrayData = data.getArrayData();
+        if (arrayData == null) {
+            arrayData = new ArrayData();
+            data.setArrayData(arrayData);
+        }
+
+        int size = list.size();
+        Object array = Array.newInstance(data.getFieldType().getComponentType(), size);
+
+        Class<?> clazz = data.getFieldType().getComponentType();
+        ConvertedType type = ConvertedType.findByField(data.getField(), clazz);
+        Converter<Document> converter = this.transformer.getConverter(type);
+
+        for (int i = 0; i < size; i++) {
+            TransformationData subData = new TransformationData(null, clazz, data.getField());
+            Object sub = converter.pull(list.get(i), subData);
+            Array.set(array, i, sub);
+        }
+
+        return array;
     }
 
     @Override
-    public Object pull(String key, Document entry, Object value, Class<?> type) {
-        return null;
+    public Object pull(String key, Document entry, TransformationData data) {
+        return pull(entry.get(key), data);
     }
 
     @Override
-    public Object push(Object value, Field field) {
+    public Object push(Object value, TransformationData data) {
         int size = Array.getLength(value);
         List list = new ArrayList(size);
         for (int i = 0; i < size; i++) {
@@ -63,21 +87,22 @@ public class ArrayConverter implements Converter<Document> {
                 continue;
             }
 
-            ConvertedType type = ConvertedType.findByField(field, item.getClass());
-            list.set(i, this.transformer.getConverter(type).push(item, field));
+            TransformationData data2 = new TransformationData(null, null, data.getField());
+            ConvertedType type = ConvertedType.findByField(data.getField(), item.getClass());
+            list.set(i, this.transformer.getConverter(type).push(item, data2));
         }
 
         return list;
     }
 
     @Override
-    public void push(String key, Document entry, Object value, Field field) {
+    public void push(String key, Document entry, Object value, TransformationData data) {
         if (value == null) {
             entry.put(key, null);
             return;
         }
 
-        Object out = push(value, field);
+        Object out = push(value, data);
         entry.put(key, out);
     }
 
